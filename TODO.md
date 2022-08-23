@@ -1,0 +1,6 @@
+- NEXTAUTH env variables
+- Add warehouses on application startup
+- Add table for items that are imported from the json
+- Add buttons in the table rows to lower quantity and remove the whole row
+- Add button to add new row with product data
+- Add button to submit the products to the backend
