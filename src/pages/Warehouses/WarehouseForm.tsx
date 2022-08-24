@@ -1,7 +1,7 @@
 import React from "react";
 import { useForm, Controller } from "react-hook-form";
 import { css, TextField } from "@mui/material";
-import { Warehouse } from "./types";
+import { Warehouse } from "../../types";
 
 interface Props {
   data: Warehouse;

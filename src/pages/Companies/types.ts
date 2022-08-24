@@ -1,4 +1,4 @@
-import { Warehouse } from "../Warehouses/types";
+import { Warehouse } from "../../types";
 
 export enum DeliveryCompany {
   Speedy,
