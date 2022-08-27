@@ -1,20 +1,36 @@
 import React from "react";
 import PageContainer from "../../components/PageContainer";
-import Table from "./Table";
-import useSWRMutation from "swr/mutation";
-import { jsonFetch } from "../../utils/fetch";
-
-async function sendRequest(url, options) {
-  // jsonFetch(url, { method: "POST", body: JSON.stringify(options.arg) });
-}
+import Table, { DeliveredProduct } from "./Table";
+import DeliveredProductsSubmitDialog from "./Dialog";
+import { FormData } from "./Form";
 
 export default function Admin() {
-  const handleSave = async (data) => {
-    // return trigger(data);
+  const [open, setOpen] = React.useState(false);
+  const [products, setProducts] = React.useState<DeliveredProduct[]>([]);
+
+  const submitForDelivery = (products: DeliveredProduct[]) => {
+    setProducts(products);
+    setOpen(!open);
   };
+
+  const handleSave = (data: FormData) => {
+    // TODO: Implement submit for delivered products
+    console.log(data, products);
+  };
+
+  const handleClose = () => setOpen(false);
+
   return (
-    <PageContainer title="Стока за заприхождаване">
-      <Table onEditorSave={handleSave} />
-    </PageContainer>
+    <>
+      <PageContainer title="Стока за заприхождаване">
+        <Table onSubmitForDelivery={submitForDelivery} />
+      </PageContainer>
+      <DeliveredProductsSubmitDialog
+        onSave={handleSave}
+        onClose={handleClose}
+        open={open}
+        title="Заприхождаване на продукти"
+      />
+    </>
   );
 }
