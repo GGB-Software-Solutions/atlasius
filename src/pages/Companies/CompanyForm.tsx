@@ -1,24 +1,13 @@
 import React from "react";
-import { useForm, Controller, useFieldArray } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import {
   FormContainer,
   TextFieldElement,
   AutocompleteElement,
-  SelectElement,
 } from "react-hook-form-mui";
-import {
-  Box,
-  css,
-  IconButton,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import AddIcon from "@mui/icons-material/Add";
-import { Company, DeliveryCompany, Ecommerce } from "./types";
+import { Box, css } from "@mui/material";
+import { Company } from "./types";
 import { warehouses } from "../../mocks/mocks";
-import { getSelectOptions } from "../../utils/common";
 import EcommerceCredentialsForm from "./EcommerceCredentialsForm";
 import DeliveryCompaniesForm from "./DeliveryCompaniesForm";
 
@@ -26,13 +15,6 @@ interface Props {
   data: Company;
   onSave: (data: Company) => void;
 }
-
-// TODO: Add warehouses on application startup
-// TODO: Parse import excel to json
-// TODO: Add table for items that are imported from the json
-// TODO: Add buttons in the table rows to lower quantity and remove the whole row
-// TODO: Add button to add new row with product data
-// TODO: Add button to submit the products to the backend
 
 export default function CompanyForm({ data, onSave }: Props) {
   const formContext = useForm({
@@ -45,9 +27,7 @@ export default function CompanyForm({ data, onSave }: Props) {
       FormProps={{
         id: "myform",
       }}
-      onSuccess={(data) => {
-        console.log("DATA:", data);
-      }}
+      onSuccess={onSave}
     >
       <Box
         css={css`

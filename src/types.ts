@@ -20,18 +20,31 @@ interface Timestamps {
   deletedBy: string;
 }
 
-export interface Product extends Timestamps {
+export interface BaseProduct extends Timestamps {
   id: number;
   sku: string;
   name: string;
   ean: string;
   weight: number;
+  category: string;
+}
+
+export interface WarehouseProductQuantity {
+  id: number;
+  product: BaseProduct;
+  company: Company;
+  warehouse: Warehouse;
   quantity: number;
   reserved: number;
   readyToDeliver: number; //TODO: What was this about
   // Item location in the warehouse
   itemLocation: string;
-  warehouse: Warehouse; // TODO: Company already has assigned warehouse why not use it?
+}
+
+export interface Product extends BaseProduct {
+  quantities: WarehouseProductQuantity[];
+}
+
+export interface FormProduct extends Product {
   company: Company;
-  category: string;
 }

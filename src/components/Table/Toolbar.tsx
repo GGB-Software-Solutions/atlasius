@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  GridRowId,
   GridToolbarContainer,
   GridToolbarExport,
   useGridApiContext,
@@ -7,12 +8,12 @@ import {
 import { Divider, Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 
-interface Props {
+interface Props<T> {
   title?: string;
-  children?: (rows) => React.ReactNode;
+  children?: (rows: Map<GridRowId, T>) => React.ReactNode;
 }
 
-export default function Toolbar({ title, children }: Props) {
+export default function Toolbar<T>({ title, children }: Props<T>) {
   const apiRef = useGridApiContext();
   const selectedRows = apiRef?.current?.getSelectedRows();
 
