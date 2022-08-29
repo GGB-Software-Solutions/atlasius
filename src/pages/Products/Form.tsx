@@ -5,14 +5,14 @@ import {
   TextFieldElement,
   AutocompleteElement,
 } from "react-hook-form-mui";
-import { Grid, Typography } from "@mui/material";
-import { companies, warehouses as mockWarehouses } from "../../mocks/mocks";
-import { Product } from "../../types";
+import { Grid } from "@mui/material";
+import { companies } from "../../mocks/mocks";
+import { FormProduct } from "../../types";
 import ProductWarehouseQuantityForm from "./ProductWarehouseQuantityForm";
 
 interface Props {
-  data: Product;
-  onSave: (data: Product) => void;
+  data: FormProduct;
+  onSave: (data: FormProduct) => void;
 }
 
 export default function ProductForm({ data, onSave }: Props) {
@@ -28,9 +28,7 @@ export default function ProductForm({ data, onSave }: Props) {
       FormProps={{
         id: "myform",
       }}
-      onSuccess={(data) => {
-        console.log("DATA:", data);
-      }}
+      onSuccess={onSave}
     >
       <Grid
         container

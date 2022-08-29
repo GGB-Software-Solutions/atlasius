@@ -1,4 +1,5 @@
 import { DeliveryCompany, Ecommerce } from "../pages/Companies/types";
+import { Product, WarehouseProductQuantity } from "../types";
 
 const warehouses = [
   {
@@ -116,30 +117,48 @@ const companies = [
   },
 ];
 
-const products = [
+const quantity: WarehouseProductQuantity[] = [
   {
-    id: 1,
-    sku: "Gorancho",
-    name: "Krenvirsh",
-    ean: "LQLQLQL",
-    weight: 10,
-    quantity: 100,
-    reserved: 10,
-    readyToDeliver: 10,
-    itemLocation: "L",
-    company: companies[0],
-    category: "kozmetika",
-    warehouse: {
+    id: 25,
+    product: {
       id: 1,
-      name: "Snow",
-      address1: "Sofia",
-      address2: "21-vi vek 36",
-      zipCode: "1700",
-      city: "Sofia",
-      country: "Bulgaria",
-      phone: "+358321331231",
+      sku: "Gorancho",
+      name: "Krenvirsh",
+      ean: "LQLQLQL",
+      weight: 10,
+      category: "pampersi",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      deletedAt: new Date(),
+      createdBy: "Gosho",
+      updatedBy: "Gosho",
+      deletedBy: "Gosho",
     },
+    company: companies[0],
+    warehouse: warehouses[0],
+    quantity: 25,
+    reserved: 2,
+    readyToDeliver: 5,
+    itemLocation: "L",
   },
 ];
+
+const product = {
+  id: 1,
+  sku: "Gorancho",
+  name: "Krenvirsh",
+  ean: "LQLQLQL",
+  weight: 10,
+  category: "kozmetika",
+  quantities: quantity,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  deletedAt: new Date(),
+  createdBy: "Gosho",
+  updatedBy: "Gosho",
+  deletedBy: "Gosho",
+};
+
+const products: Product[] = [product];
 
 export { companies, warehouses, products };

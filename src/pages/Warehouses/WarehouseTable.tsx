@@ -4,6 +4,7 @@ import { Button } from "@mui/material";
 import Table from "../../components/Table";
 import withEditor from "../../components/Table/withEditor";
 import { warehouses } from "../../mocks/mocks";
+import { Warehouse } from "../../types";
 
 const columns: GridColDef[] = [
   { field: "id", type: "number", hide: true, headerName: "ID", width: 90 },
@@ -59,4 +60,4 @@ const Warehouses = ({ onRowClick }) => {
   );
 };
 
-export default withEditor(Warehouses);
+export default withEditor<Warehouse>(Warehouses);

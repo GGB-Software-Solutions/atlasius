@@ -1,24 +1,29 @@
 import React from "react";
 import { Grid, IconButton, Stack, Typography } from "@mui/material";
-import { useFieldArray, UseFormReturn } from "react-hook-form";
+import {
+  useFieldArray,
+  UseFieldArrayRemove,
+  UseFormRegister,
+  UseFormReturn,
+} from "react-hook-form";
 import { AutocompleteElement, TextFieldElement } from "react-hook-form-mui";
-import { Company, DeliveryCompany } from "./types";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
-import { Warehouse } from "../../types";
+import { FormProduct, WarehouseProductQuantity } from "../../types";
+import { Company } from "../Companies/types";
 
 interface Props {
-  formContext: UseFormReturn<Company>;
+  formContext: UseFormReturn<FormProduct>;
   isNew: boolean;
 }
 
 const renderField = (
   key: string,
   index: number,
-  register,
-  remove,
+  register: UseFormRegister<FormProduct>,
+  remove: UseFieldArrayRemove,
   isNew: boolean,
-  warehouses: Warehouse[]
+  company: Company
 ) => {
   return (
     <Grid
@@ -31,7 +36,7 @@ const renderField = (
     >
       <Grid item xs={5} sm={3} md={2}>
         <AutocompleteElement
-          {...register(`warehouseQuantities.${index}.deliveryCompanyId`)}
+          {...register(`quantities.${index}.warehouse`)}
           textFieldProps={{
             variant: "standard",
           }}
@@ -40,14 +45,14 @@ const renderField = (
             onChange: () => {},
           }}
           label="Склад"
-          options={warehouses}
+          options={company?.warehouses || []}
           required
         />
       </Grid>
       <Grid item xs={4} sm={4} md={3}>
         <TextFieldElement
           variant="standard"
-          {...register(`warehouseQuantities.${index}.itemLocation`)}
+          {...register(`quantities.${index}.itemLocation`)}
           label="Локация в склад"
           required
         />
@@ -55,7 +60,7 @@ const renderField = (
       <Grid item xs={4} sm={3} md={2}>
         <TextFieldElement
           variant="standard"
-          {...register(`warehouseQuantities.${index}.quantity`)}
+          {...register(`quantities.${index}.quantity`)}
           label="Обща бройка"
           type="number"
           required
@@ -65,10 +70,10 @@ const renderField = (
       <Grid item xs={4} sm={3} md={2}>
         <TextFieldElement
           variant="standard"
-          {...register(`warehouseQuantities.${index}.reserved`)}
+          {...register(`quantities.${index}.reserved`)}
           label="Запазени"
           type="number"
-          required
+          required={!isNew}
           fullWidth
           disabled={isNew}
         />
@@ -76,10 +81,10 @@ const renderField = (
       <Grid item xs={4} sm={3} md={2}>
         <TextFieldElement
           variant="standard"
-          {...register(`warehouseQuantities.${index}.readyToDeliver`)}
+          {...register(`quantities.${index}.readyToDeliver`)}
           label="Готови за изпращане"
           type="number"
-          required
+          required={!isNew}
           fullWidth
           disabled={isNew}
         />
@@ -99,21 +104,14 @@ export default function ProductWarehouseQuantityForm({
 }: Props) {
   const { fields, append, remove } = useFieldArray({
     control: formContext.control,
-    name: "warehouseQuantities",
+    name: "quantities",
   });
   const company = formContext.watch("company");
 
   const render = React.useCallback(
     (item: Record<"id", string>, index: number) =>
-      renderField(
-        item.id,
-        index,
-        formContext.register,
-        remove,
-        isNew,
-        company?.warehouses || []
-      ),
-    [company?.warehouses]
+      renderField(item.id, index, formContext.register, remove, isNew, company),
+    [company]
   );
 
   return (
@@ -127,7 +125,10 @@ export default function ProductWarehouseQuantityForm({
         }}
       >
         <Typography variant="h6">Складова наличност</Typography>
-        <IconButton color="primary" onClick={() => append({})}>
+        <IconButton
+          color="primary"
+          onClick={() => append({} as WarehouseProductQuantity)}
+        >
           <AddIcon />
         </IconButton>
       </Stack>
