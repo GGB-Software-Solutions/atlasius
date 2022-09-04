@@ -4,30 +4,18 @@ import WarehouseTable from "./WarehouseTable";
 import WarehouseDialog from "./WarehouseDialog";
 import useSWRMutation from "swr/mutation";
 import { jsonFetch } from "../../utils/fetch";
+import { API_ENDPOINTS } from "../../api";
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-async function sendRequest(url, options) {
-  console.log("OPTIONS:", options);
-  await sleep(5000);
-  return true;
-  // jsonFetch(url, { method: "POST", body: JSON.stringify(options.arg) });
+async function sendRequest(url: string, options: Record<string, unknown>) {
+  return jsonFetch(url, { method: "POST", body: JSON.stringify(options.arg) });
 }
 
 export default function WarehouseAdmin() {
-  const { trigger, isMutating, error } = useSWRMutation(
-    "/api/user",
-    sendRequest
-  );
-  console.log("IS MUTATING:", isMutating);
-  const handleSave = async (data) => {
-    return trigger(data);
-  };
+  const { trigger } = useSWRMutation(API_ENDPOINTS.Warehouse, sendRequest);
+
   return (
     <PageContainer title="Складове">
-      <WarehouseTable Editor={WarehouseDialog} onEditorSave={handleSave} />
+      <WarehouseTable Editor={WarehouseDialog} onEditorSave={trigger} />
     </PageContainer>
   );
 }
