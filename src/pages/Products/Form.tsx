@@ -6,9 +6,9 @@ import {
   AutocompleteElement,
 } from "react-hook-form-mui";
 import { Grid } from "@mui/material";
-import { companies } from "../../mocks/mocks";
 import { FormProduct } from "../../types";
 import ProductWarehouseQuantityForm from "./ProductWarehouseQuantityForm";
+import useStore from "../../store/globalStore";
 
 interface Props {
   data: FormProduct;
@@ -19,6 +19,7 @@ export default function ProductForm({ data, onSave }: Props) {
   const formContext = useForm({
     defaultValues: data,
   });
+  const companies = useStore((state) => state.companies);
 
   const isNew = !Boolean(data.id);
 

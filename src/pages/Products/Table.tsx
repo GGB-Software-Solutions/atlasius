@@ -3,7 +3,7 @@ import { GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
 import { Button } from "@mui/material";
 import Table from "../../components/Table";
 import withEditor from "../../components/Table/withEditor";
-import { Product } from "../../types";
+import { FormProduct, Product } from "../../types";
 
 const columns: GridColDef<Product>[] = [
   { field: "id", type: "number", hide: true, headerName: "ID", width: 90 },
@@ -39,12 +39,16 @@ const columns: GridColDef<Product>[] = [
     valueGetter: (params: GridValueGetterParams) =>
       `${params.row.company.name}`,
   },
-  //   {
-  //     field: "quantity",
-  //     headerName: "Обща бройка",
-  //     type: "number",
-  //     width: 100,
-  //   },
+  // {
+  //   field: "quantities",
+  //   headerName: "Наличност",
+  //   sortable: false,
+  //   width: 100,
+  //   valueGetter: (params: GridValueGetterParams) =>
+  //     `${params.row.productWarehouseQuantities
+  //       .map((quantity) => `${quantity.warehouse.name}/${quantity.quantity}`)
+  //       .join("\n")}`,
+  // },
   //   {
   //     field: "reserved",
   //     headerName: "Запазени",
@@ -66,35 +70,35 @@ const columns: GridColDef<Product>[] = [
   //       `${params.row.warehouse.name}`,
   //   },
   //   {
-  //     field: "company",
-  //     headerName: "Компания",
-  //     width: 100,
-  //     sortable: false,
-  //     valueGetter: (params: GridValueGetterParams) =>
-  //       `${params.row.company.name}`,
-  //   },
 ];
 
-const ProductsTable = ({ onRowClick, rows }) => {
+export const ProductsTable = ({ onRowClick, rows, ...other }) => {
   return (
     <Table
-      title="Продукти"
-      actions={() => (
-        <Button
-          onClick={() => {
-            onRowClick({
-              row: {},
-            });
-          }}
-        >
-          Добави
-        </Button>
-      )}
-      rows={rows}
+      title={"Продукти"}
+      actions={(rowsMap) => {
+        return (
+          <>
+            {onRowClick && (
+              <Button
+                onClick={() => {
+                  onRowClick({
+                    row: {},
+                  });
+                }}
+              >
+                Добави
+              </Button>
+            )}
+          </>
+        );
+      }}
       columns={columns}
       onRowClick={onRowClick}
+      rows={rows}
+      {...other}
     />
   );
 };
 
-export default withEditor(ProductsTable);
+export default withEditor<FormProduct>(ProductsTable);

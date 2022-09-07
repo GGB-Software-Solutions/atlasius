@@ -7,9 +7,9 @@ import {
 } from "react-hook-form-mui";
 import { Box, css } from "@mui/material";
 import { Company } from "./types";
-import { warehouses } from "../../mocks/mocks";
 import EcommerceCredentialsForm from "./EcommerceCredentialsForm";
 import DeliveryCompaniesForm from "./DeliveryCompaniesForm";
+import useStore from "../../store/globalStore";
 
 interface Props {
   data: Company;
@@ -20,6 +20,7 @@ export default function CompanyForm({ data, onSave }: Props) {
   const formContext = useForm({
     defaultValues: data,
   });
+  const warehouses = useStore((state) => state.warehouses);
 
   return (
     <FormContainer
@@ -82,7 +83,7 @@ export default function CompanyForm({ data, onSave }: Props) {
           autocompleteProps={{
             getOptionLabel: (option) => option.name,
           }}
-          name="warehouses"
+          name="warehouse"
           label="Складове"
           multiple
           options={warehouses}

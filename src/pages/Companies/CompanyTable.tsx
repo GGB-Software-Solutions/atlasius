@@ -33,11 +33,11 @@ const columns: GridColDef<Company>[] = [
     width: 150,
   },
   {
-    field: "warehouses",
+    field: "warehouse",
     headerName: "Складове",
     sortable: false,
     valueGetter: (params: GridValueGetterParams) =>
-      `${params.row.warehouses.map((warehouse) => warehouse.name).join(",")} `,
+      `${params.row.warehouse.map((warehouse) => warehouse.name).join(",")} `,
   },
 ];
 
@@ -61,4 +61,4 @@ const CompanyTable = ({ onRowClick, rows }) => {
   );
 };
 
-export default withEditor(CompanyTable);
+export default withEditor<Company>(CompanyTable);

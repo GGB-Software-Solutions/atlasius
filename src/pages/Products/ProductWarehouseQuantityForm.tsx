@@ -36,7 +36,7 @@ const renderField = (
     >
       <Grid item xs={5} sm={3} md={2}>
         <AutocompleteElement
-          {...register(`quantities.${index}.warehouse`)}
+          {...register(`productWarehouseQuantities${index}.warehouse`)}
           textFieldProps={{
             variant: "standard",
           }}
@@ -52,7 +52,7 @@ const renderField = (
       <Grid item xs={4} sm={4} md={3}>
         <TextFieldElement
           variant="standard"
-          {...register(`quantities.${index}.itemLocation`)}
+          {...register(`productWarehouseQuantities${index}.itemLocation`)}
           label="Локация в склад"
           required
         />
@@ -60,7 +60,7 @@ const renderField = (
       <Grid item xs={4} sm={3} md={2}>
         <TextFieldElement
           variant="standard"
-          {...register(`quantities.${index}.quantity`)}
+          {...register(`productWarehouseQuantities${index}.quantity`)}
           label="Обща бройка"
           type="number"
           required
@@ -70,7 +70,7 @@ const renderField = (
       <Grid item xs={4} sm={3} md={2}>
         <TextFieldElement
           variant="standard"
-          {...register(`quantities.${index}.reserved`)}
+          {...register(`productWarehouseQuantities${index}.reserved`)}
           label="Запазени"
           type="number"
           required={!isNew}
@@ -81,7 +81,7 @@ const renderField = (
       <Grid item xs={4} sm={3} md={2}>
         <TextFieldElement
           variant="standard"
-          {...register(`quantities.${index}.readyToDeliver`)}
+          {...register(`productWarehouseQuantities${index}.readyToDeliver`)}
           label="Готови за изпращане"
           type="number"
           required={!isNew}
@@ -104,7 +104,7 @@ export default function ProductWarehouseQuantityForm({
 }: Props) {
   const { fields, append, remove } = useFieldArray({
     control: formContext.control,
-    name: "quantities",
+    name: "productWarehouseQuantities",
   });
   const company = formContext.watch("company");
 

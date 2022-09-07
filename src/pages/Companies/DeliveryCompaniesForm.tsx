@@ -52,11 +52,11 @@ export default function DeliveryCompaniesForm({ formContext }: Props) {
               }}
               options={deliveryCompanies}
               {...formContext.register(
-                `deliveryCompanyCredentials.${index}.deliveryCompanyId`
+                `deliveryCompanyCredentials.${index}.deliveryCompanyName`
               )}
-              objectOnChange
               label="Куриер"
-              onChange={(data) => {}}
+              objectOnChange
+              onChange={() => {}}
             />
             <TextFieldElement
               {...formContext.register(

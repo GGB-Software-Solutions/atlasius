@@ -16,6 +16,7 @@ const map = (products: DeliveredProduct[], data: FormData) => {
       category: "",
       ean: product.Ean,
       companyId: data.company?.id,
+      createdBy: "6314d8f70e29a132b0262393",
       productWarehouseQuantities: [
         {
           itemLocation: data.itemLocation,

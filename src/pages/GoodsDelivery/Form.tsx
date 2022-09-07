@@ -6,9 +6,9 @@ import {
   TextFieldElement,
 } from "react-hook-form-mui";
 import { Grid } from "@mui/material";
-import { companies } from "../../mocks/mocks";
 import { Warehouse } from "../../types";
 import { Company } from "../Companies/types";
+import useStore from "../../store/globalStore";
 
 export interface FormData {
   company: Company | undefined;
@@ -22,6 +22,7 @@ interface Props {
 
 export default function Form({ onSave }: Props) {
   const formContext = useForm<FormData>();
+  const companies = useStore((state) => state.companies);
 
   const company = formContext.watch("company");
 
@@ -61,7 +62,7 @@ export default function Form({ onSave }: Props) {
             }}
             name="warehouse"
             label="Склад"
-            options={company?.warehouses || []}
+            options={company?.warehouse || []}
             required
           />
         </Grid>

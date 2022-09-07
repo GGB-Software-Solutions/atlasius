@@ -51,9 +51,7 @@ const EcommerceCredentialsForm = ({ formContext }: Props) => {
                 width: 100,
               }}
               options={ecommerceOptions}
-              {...formContext.register(
-                `ecommerceCredentials.${index}.eCommerce`
-              )}
+              {...formContext.register(`ecommerceCredentials.${index}.name`)}
               objectOnChange
               label="E-commerce"
               onChange={(data) => {}}

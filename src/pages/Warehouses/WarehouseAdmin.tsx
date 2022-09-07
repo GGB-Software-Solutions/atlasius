@@ -18,7 +18,7 @@ export default function WarehouseAdmin() {
   return (
     <PageContainer title="Складове">
       <WarehouseTable
-        rows={data?.content || []}
+        rows={data || []}
         Editor={WarehouseDialog}
         onEditorSave={trigger}
       />

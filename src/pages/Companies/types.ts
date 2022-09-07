@@ -1,22 +1,22 @@
 import { Warehouse } from "../../types";
 
 export enum DeliveryCompany {
-  Speedy,
-  Econt,
+  Speedy = "SPEEDY",
+  Econt = "ECONT",
 }
 
 export enum Ecommerce {
-  Shopify,
+  Shopify = "SHOPIFY",
 }
 
 interface DeliveryCompanyCredentials {
-  deliveryCompanyId: DeliveryCompany;
+  deliveryCompanyName: string;
   username: string;
   password: string;
 }
 
 interface EcommerceCredentials {
-  eCommerce: Ecommerce;
+  name: Ecommerce;
   url: string;
   username: string;
   password: string;
@@ -29,7 +29,7 @@ export interface Company {
   vatNumber: string;
   phone: string;
   email: string;
-  warehouses: Warehouse[];
+  warehouse: Warehouse[];
   deliveryCompanyCredentials: DeliveryCompanyCredentials[];
   ecommerceCredentials: EcommerceCredentials[];
   // address1: string;
