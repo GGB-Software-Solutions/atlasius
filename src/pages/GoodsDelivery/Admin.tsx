@@ -3,8 +3,38 @@ import PageContainer from "../../components/PageContainer";
 import Table, { DeliveredProduct } from "./Table";
 import DeliveredProductsSubmitDialog from "./Dialog";
 import { FormData } from "./Form";
+import { API_ENDPOINTS } from "../../api";
+import { jsonFetch } from "../../utils/fetch";
+import useSWRMutation from "swr/mutation";
+
+const map = (products: DeliveredProduct[], data: FormData) => {
+  return products.map((product) => {
+    return {
+      sku: product.Ean,
+      name: product["Product name"],
+      weight: product.ml,
+      category: "",
+      ean: product.Ean,
+      companyId: data.company?.id,
+      productWarehouseQuantities: [
+        {
+          itemLocation: data.itemLocation,
+          quantity: product["Общо Бройка"],
+          reserved: 0, //TODO:?
+          readyToDeliver: 0, //TODO:?
+          warehouseId: data.warehouse?.id,
+        },
+      ],
+    };
+  });
+};
+
+async function sendRequest(url: string, options: Record<string, unknown>) {
+  return jsonFetch(url, { method: "POST", body: JSON.stringify(options.arg) });
+}
 
 export default function Admin() {
+  const { trigger } = useSWRMutation(API_ENDPOINTS.Product, sendRequest);
   const [open, setOpen] = React.useState(false);
   const [products, setProducts] = React.useState<DeliveredProduct[]>([]);
 
@@ -14,8 +44,7 @@ export default function Admin() {
   };
 
   const handleSave = (data: FormData) => {
-    // TODO: Implement submit for delivered products
-    console.log(data, products);
+    trigger(map(products, data));
   };
 
   const handleClose = () => setOpen(false);

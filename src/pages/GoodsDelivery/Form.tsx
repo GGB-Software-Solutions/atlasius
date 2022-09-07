@@ -1,6 +1,10 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { FormContainer, AutocompleteElement } from "react-hook-form-mui";
+import {
+  FormContainer,
+  AutocompleteElement,
+  TextFieldElement,
+} from "react-hook-form-mui";
 import { Grid } from "@mui/material";
 import { companies } from "../../mocks/mocks";
 import { Warehouse } from "../../types";
@@ -9,6 +13,7 @@ import { Company } from "../Companies/types";
 export interface FormData {
   company: Company | undefined;
   warehouse: Warehouse | undefined;
+  itemLocation: string;
 }
 
 interface Props {
@@ -58,6 +63,16 @@ export default function Form({ onSave }: Props) {
             label="Склад"
             options={company?.warehouses || []}
             required
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <TextFieldElement
+            variant="standard"
+            name="itemLocation"
+            label="Локация в склад"
+            required
+            fullWidth
+            disabled={!Boolean(company)}
           />
         </Grid>
       </Grid>

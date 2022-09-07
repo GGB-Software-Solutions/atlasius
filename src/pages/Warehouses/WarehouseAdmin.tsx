@@ -5,17 +5,23 @@ import WarehouseDialog from "./WarehouseDialog";
 import useSWRMutation from "swr/mutation";
 import { jsonFetch } from "../../utils/fetch";
 import { API_ENDPOINTS } from "../../api";
+import useSWR from "swr";
 
 async function sendRequest(url: string, options: Record<string, unknown>) {
   return jsonFetch(url, { method: "POST", body: JSON.stringify(options.arg) });
 }
 
 export default function WarehouseAdmin() {
+  const { data } = useSWR(API_ENDPOINTS.Warehouse, jsonFetch);
   const { trigger } = useSWRMutation(API_ENDPOINTS.Warehouse, sendRequest);
 
   return (
     <PageContainer title="Складове">
-      <WarehouseTable Editor={WarehouseDialog} onEditorSave={trigger} />
+      <WarehouseTable
+        rows={data?.content || []}
+        Editor={WarehouseDialog}
+        onEditorSave={trigger}
+      />
     </PageContainer>
   );
 }

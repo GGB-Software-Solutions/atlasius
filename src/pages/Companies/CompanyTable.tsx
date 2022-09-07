@@ -4,7 +4,6 @@ import { Button } from "@mui/material";
 import Table from "../../components/Table";
 import withEditor from "../../components/Table/withEditor";
 import { Company } from "./types";
-import { companies } from "../../mocks/mocks";
 
 const columns: GridColDef<Company>[] = [
   { field: "id", type: "number", hide: true, headerName: "ID", width: 90 },
@@ -42,7 +41,7 @@ const columns: GridColDef<Company>[] = [
   },
 ];
 
-const CompanyTable = ({ onRowClick }) => {
+const CompanyTable = ({ onRowClick, rows }) => {
   return (
     <Table
       title="Компании"
@@ -55,7 +54,7 @@ const CompanyTable = ({ onRowClick }) => {
           Добави
         </Button>
       )}
-      rows={companies}
+      rows={rows}
       columns={columns}
       onRowClick={onRowClick}
     />

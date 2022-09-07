@@ -3,7 +3,6 @@ import { GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
 import { Button } from "@mui/material";
 import Table from "../../components/Table";
 import withEditor from "../../components/Table/withEditor";
-import { warehouses } from "../../mocks/mocks";
 import { Warehouse } from "../../types";
 
 const columns: GridColDef[] = [
@@ -40,7 +39,7 @@ const columns: GridColDef[] = [
   },
 ];
 
-const Warehouses = ({ onRowClick }) => {
+const Warehouses = ({ onRowClick, rows }) => {
   return (
     <Table
       title="Складове"
@@ -53,7 +52,7 @@ const Warehouses = ({ onRowClick }) => {
           Добави
         </Button>
       )}
-      rows={warehouses}
+      rows={rows}
       columns={columns}
       onRowClick={onRowClick}
     />
