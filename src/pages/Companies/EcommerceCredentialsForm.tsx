@@ -47,9 +47,7 @@ const EcommerceCredentialsForm = ({ formContext }: Props) => {
           >
             <SelectElement
               variant="standard"
-              sx={{
-                width: 150,
-              }}
+              fullWidth
               options={ecommerceOptions}
               {...formContext.register(`ecommerceCredentials.${index}.name`)}
               objectOnChange
@@ -61,6 +59,7 @@ const EcommerceCredentialsForm = ({ formContext }: Props) => {
               variant="standard"
               label="URL"
               required
+              fullWidth
             />
             <TextFieldElement
               {...formContext.register(
@@ -69,6 +68,7 @@ const EcommerceCredentialsForm = ({ formContext }: Props) => {
               variant="standard"
               label="Потребител"
               required
+              fullWidth
             />
             <TextFieldElement
               {...formContext.register(
@@ -77,6 +77,7 @@ const EcommerceCredentialsForm = ({ formContext }: Props) => {
               variant="standard"
               label="Парола"
               required
+              fullWidth
             />
             <IconButton onClick={() => remove(index)}>
               <DeleteIcon />

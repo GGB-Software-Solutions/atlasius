@@ -5,7 +5,7 @@ import {
   TextFieldElement,
   AutocompleteElement,
 } from "react-hook-form-mui";
-import { Box, css } from "@mui/material";
+import { Grid } from "@mui/material";
 import { Company } from "./types";
 import EcommerceCredentialsForm from "./EcommerceCredentialsForm";
 import DeliveryCompaniesForm from "./DeliveryCompaniesForm";
@@ -30,67 +30,71 @@ export default function CompanyForm({ data, onSave }: Props) {
       }}
       onSuccess={onSave}
     >
-      <Box
-        css={css`
-          display: flex;
-          flex-direction: row;
-          flex-wrap: wrap;
-          grid-gap: 16px;
-        `}
-      >
-        <TextFieldElement
-          variant="standard"
-          name="name"
-          label="Име на компания"
-          required
-        />
-        <TextFieldElement
-          variant="standard"
-          name="responsiblePerson"
-          label="МОЛ"
-          required
-        />
-        <TextFieldElement
-          variant="standard"
-          name="vatNumber"
-          label="ДДС номер"
-          required
-        />
-        <TextFieldElement
-          variant="standard"
-          name="phone"
-          label="Телефон"
-          required
-        />
-        <TextFieldElement
-          fullWidth
-          variant="standard"
-          name="email"
-          type="email"
-          label="Имейл"
-          required
-          sx={{
-            width: 320,
-          }}
-        />
-        <AutocompleteElement
-          textFieldProps={{
-            variant: "standard",
-            sx: {
-              width: 160,
-            },
-          }}
-          autocompleteProps={{
-            getOptionLabel: (option) => option.name,
-          }}
-          name="warehouse"
-          label="Складове"
-          multiple
-          options={warehouses}
-        />
-        <DeliveryCompaniesForm formContext={formContext} />
-        <EcommerceCredentialsForm formContext={formContext} />
-      </Box>
+      <Grid container spacing={2}>
+        <Grid item xs={6}>
+          <TextFieldElement
+            variant="standard"
+            name="name"
+            label="Име на компания"
+            required
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <TextFieldElement
+            variant="standard"
+            name="responsiblePerson"
+            label="МОЛ"
+            required
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <TextFieldElement
+            variant="standard"
+            name="vatNumber"
+            label="ДДС номер"
+            required
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <TextFieldElement
+            variant="standard"
+            name="phone"
+            label="Телефон"
+            required
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <AutocompleteElement
+            textFieldProps={{
+              variant: "standard",
+              fullWidth: true,
+            }}
+            autocompleteProps={{
+              getOptionLabel: (option) => option.name,
+            }}
+            name="warehouse"
+            label="Складове"
+            multiple
+            options={warehouses}
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <TextFieldElement
+            fullWidth
+            variant="standard"
+            name="email"
+            type="email"
+            label="Имейл"
+            required
+          />
+        </Grid>
+      </Grid>
+      <DeliveryCompaniesForm formContext={formContext} />
+      <EcommerceCredentialsForm formContext={formContext} />
     </FormContainer>
   );
 }

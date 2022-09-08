@@ -47,9 +47,7 @@ export default function DeliveryCompaniesForm({ formContext }: Props) {
           >
             <SelectElement
               variant="standard"
-              sx={{
-                width: 100,
-              }}
+              fullWidth
               options={deliveryCompanies}
               {...formContext.register(
                 `deliveryCompanyCredentials.${index}.deliveryCompanyName`
@@ -65,6 +63,7 @@ export default function DeliveryCompaniesForm({ formContext }: Props) {
               variant="standard"
               label="Потребител"
               required
+              fullWidth
             />
             <TextFieldElement
               {...formContext.register(
@@ -73,6 +72,7 @@ export default function DeliveryCompaniesForm({ formContext }: Props) {
               variant="standard"
               label="Парола"
               required
+              fullWidth
             />
             <IconButton onClick={() => remove(index)}>
               <DeleteIcon />
