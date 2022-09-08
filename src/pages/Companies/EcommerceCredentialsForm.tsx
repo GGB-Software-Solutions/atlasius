@@ -48,7 +48,7 @@ const EcommerceCredentialsForm = ({ formContext }: Props) => {
             <SelectElement
               variant="standard"
               sx={{
-                width: 100,
+                width: 150,
               }}
               options={ecommerceOptions}
               {...formContext.register(`ecommerceCredentials.${index}.name`)}

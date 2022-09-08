@@ -3,14 +3,14 @@ import { GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
 import { Button } from "@mui/material";
 import Table from "../../components/Table";
 import withEditor from "../../components/Table/withEditor";
-import { FormProduct, Product } from "../../types";
+import { FormProduct, ProductResponse } from "../../types/product";
 
-const columns: GridColDef<Product>[] = [
+const columns: GridColDef<ProductResponse>[] = [
   { field: "id", type: "number", hide: true, headerName: "ID", width: 90 },
   {
     field: "name",
     headerName: "Име на продукт",
-    width: 150,
+    width: 350,
   },
   {
     field: "sku",

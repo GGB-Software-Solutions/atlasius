@@ -6,9 +6,9 @@ import {
   AutocompleteElement,
 } from "react-hook-form-mui";
 import { Grid } from "@mui/material";
-import { FormProduct } from "../../types";
 import ProductWarehouseQuantityForm from "./ProductWarehouseQuantityForm";
 import useStore from "../../store/globalStore";
+import { FormProduct } from "../../types/product";
 
 interface Props {
   data: FormProduct;

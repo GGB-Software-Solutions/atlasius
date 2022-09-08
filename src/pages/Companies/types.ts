@@ -23,7 +23,7 @@ interface EcommerceCredentials {
 }
 
 export interface Company {
-  id: number;
+  id: string;
   name: string;
   responsiblePerson: string;
   vatNumber: string;
