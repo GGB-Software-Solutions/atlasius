@@ -20,7 +20,7 @@ const columns: GridColDef<Company>[] = [
   {
     field: "vatNumber",
     headerName: "ДДС номер",
-    width: 150,
+    width: 120,
   },
   {
     field: "phone",
@@ -30,12 +30,13 @@ const columns: GridColDef<Company>[] = [
   {
     field: "email",
     headerName: "Имейл",
-    width: 150,
+    width: 250,
   },
   {
     field: "warehouse",
     headerName: "Складове",
     sortable: false,
+    width: 250,
     valueGetter: (params: GridValueGetterParams) =>
       `${params.row.warehouse.map((warehouse) => warehouse.name).join(",")} `,
   },

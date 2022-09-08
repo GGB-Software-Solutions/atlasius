@@ -26,7 +26,7 @@ export default function CompaniesAdmin() {
   };
 
   return (
-    <PageContainer title="Складове">
+    <PageContainer title="Компании">
       <CompanyTable
         rows={data || []}
         Editor={CompanyDialog}
