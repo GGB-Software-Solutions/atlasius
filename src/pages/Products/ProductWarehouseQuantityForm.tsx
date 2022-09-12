@@ -9,9 +9,8 @@ import {
 import { AutocompleteElement, TextFieldElement } from "react-hook-form-mui";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
-import { WarehouseProductQuantity } from "../../types";
 import { Company } from "../Companies/types";
-import { FormProduct } from "../../types/product";
+import { FormProduct, ProductWarehouseQuantity } from "../../types/product";
 
 interface Props {
   formContext: UseFormReturn<FormProduct>;
@@ -35,7 +34,7 @@ const renderField = (
         mb: 4,
       }}
     >
-      <Grid item xs={5} sm={3} md={2}>
+      <Grid item xs={5} sm={4} md={3}>
         <AutocompleteElement
           {...register(`productWarehouseQuantities.${index}.warehouseId`)}
           textFieldProps={{
@@ -51,7 +50,7 @@ const renderField = (
           required
         />
       </Grid>
-      <Grid item xs={4} sm={4} md={3}>
+      <Grid item xs={2} sm={1.5} md={1.5}>
         <TextFieldElement
           variant="standard"
           {...register(`productWarehouseQuantities.${index}.itemLocation`)}
@@ -59,7 +58,7 @@ const renderField = (
           required
         />
       </Grid>
-      <Grid item xs={4} sm={3} md={2}>
+      <Grid item xs={1.5} sm={1.5} md={1.5}>
         <TextFieldElement
           variant="standard"
           {...register(`productWarehouseQuantities.${index}.quantity`)}
@@ -129,7 +128,7 @@ export default function ProductWarehouseQuantityForm({
         <Typography variant="h6">Складова наличност</Typography>
         <IconButton
           color="primary"
-          onClick={() => append({} as WarehouseProductQuantity)}
+          onClick={() => append({} as ProductWarehouseQuantity)}
         >
           <AddIcon />
         </IconButton>
