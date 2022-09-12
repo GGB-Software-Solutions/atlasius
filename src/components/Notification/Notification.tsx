@@ -1,20 +1,10 @@
 import React, { SyntheticEvent } from "react";
 
-import {
-  Alert,
-  AlertColor,
-  Snackbar,
-  SnackbarCloseReason,
-} from "@mui/material";
-
-export interface INotification {
-  autoHideDuration?: number;
-  message: string;
-  type: AlertColor;
-}
+import { Alert, Snackbar, SnackbarCloseReason } from "@mui/material";
+import { Notification } from "../../store/globalStore";
 
 interface Props {
-  notification: INotification;
+  notification: Notification;
   clearNotification?: (
     event: Event | SyntheticEvent<any, Event>,
     reason: SnackbarCloseReason

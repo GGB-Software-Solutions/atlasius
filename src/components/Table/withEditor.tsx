@@ -1,22 +1,25 @@
 import { GridRowParams } from "@mui/x-data-grid";
 import React from "react";
+import useStore from "../../store/globalStore";
+import { Props as TableProps } from "./Table";
 
 export interface EditorProps<T = any> {
   open: boolean;
   onClose: () => void;
   onSave: (data: T) => void;
-  title: string;
+  title?: string;
   data: T;
 }
 
-interface Props<T = any> {
+interface Props<T = any> extends Partial<TableProps<T>> {
   Editor: React.JSXElementConstructor<EditorProps>;
   onEditorSave: (data: T) => void;
 }
 
 const withEditor =
-  (WrappedComponent) =>
-  ({ Editor, onEditorSave, ...props }: Props) => {
+  <T,>(WrappedComponent) =>
+  ({ Editor, onEditorSave, ...props }: Props<T>) => {
+    const setNotification = useStore((state) => state.setNotification);
     const [currentlyEditting, setCurrentlyEditting] = React.useState(null);
 
     const onRowClick = (params: GridRowParams) =>
@@ -26,10 +29,11 @@ const withEditor =
       setCurrentlyEditting(null);
     };
 
-    const handleSave = async (formData) => {
+    const handleSave = async (formData: T) => {
       if (onEditorSave) {
         const response = await onEditorSave(formData);
         if (response) {
+          setNotification({ type: "success", message: response.success });
           setCurrentlyEditting(null);
         }
       }
@@ -48,13 +52,6 @@ const withEditor =
             data={currentlyEditting}
             title={props.title}
           />
-          // <Editor
-          //   row={currentlyEditing}
-          //   onClose={handleClose}
-          //   onSave={handleSave}
-          //   onDelete={handleDelete}
-          //   editorProps={EditorProps}
-          // />
         )}
       </>
     );
