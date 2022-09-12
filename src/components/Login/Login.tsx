@@ -1,46 +1,45 @@
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import {
   IconButton,
-  Input,
   InputAdornment,
   TextField,
-  Button,
   Box,
+  Alert,
 } from "@mui/material";
+import LoadingButton from "@mui/lab/LoadingButton";
 import React from "react";
 import { useForm, Controller } from "react-hook-form";
 import { css } from "@emotion/react";
-import useSWRMutation from "swr/mutation";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 
-async function sendRequest(url, { arg }) {
-  return fetch(url, {
-    method: "POST",
-    body: JSON.stringify(arg),
-    headers: new Headers({
-      Authorization: "Basic",
-    }),
-  });
-}
-
 const Login = () => {
   const [showPassword, setShowPassword] = React.useState(false);
+  const [error, setError] = React.useState("");
   const router = useRouter();
-  const { trigger } = useSWRMutation("/api/user", sendRequest);
 
-  const { control, handleSubmit } = useForm({
+  const { control, handleSubmit, formState } = useForm({
     defaultValues: {
       username: "",
       password: "",
     },
   });
+  const { isSubmitting } = formState;
+
+  React.useEffect(() => {
+    router.prefetch("/");
+  }, []);
+
   const onSubmit = async (data) => {
-    const a = await signIn("credentials", { ...data, redirect: false });
-    if (a?.ok && !a.error) {
+    setError("");
+    const response = await signIn("credentials", {
+      ...data,
+      redirect: false,
+    });
+    if (response?.ok && !response.error) {
       router.push("/");
     } else {
-      //TODO: Show a toast message
+      setError("Въведената комбинация от потребител и парола не съществуват.");
     }
   };
 
@@ -54,9 +53,6 @@ const Login = () => {
     event.preventDefault();
   };
 
-  //   if (error) return <div>failed to load</div>;
-  //   if (!data) return <div>loading...</div>;
-
   return (
     <Box
       sx={{
@@ -68,6 +64,12 @@ const Login = () => {
         padding: 5,
       }}
     >
+      {error && (
+        <Alert sx={{ mb: 2 }} severity="error">
+          {error}
+        </Alert>
+      )}
+
       <form
         css={css`
           display: flex;
@@ -85,6 +87,7 @@ const Login = () => {
               variant="standard"
               label="Потребител"
               type="email"
+              required
             />
           )}
         />
@@ -95,6 +98,7 @@ const Login = () => {
             <TextField
               {...field}
               type={showPassword ? "text" : "password"}
+              required
               variant="standard"
               label="Парола"
               InputProps={{
@@ -114,9 +118,9 @@ const Login = () => {
             />
           )}
         />
-        <Button type="submit" variant="contained">
+        <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
           Вход
-        </Button>
+        </LoadingButton>
       </form>
     </Box>
   );

@@ -23,6 +23,7 @@ export default function MyApp(props: MyAppProps) {
     emotionCache = clientSideEmotionCache,
     pageProps: { session, ...pageProps },
   } = props;
+
   return (
     <CacheProvider value={emotionCache}>
       <Head>
@@ -32,9 +33,13 @@ export default function MyApp(props: MyAppProps) {
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
         <SessionProvider session={session}>
-          <App>
+          {Component.whitelist ? (
             <Component {...pageProps} />
-          </App>
+          ) : (
+            <App>
+              <Component {...pageProps} />
+            </App>
+          )}
         </SessionProvider>
       </ThemeProvider>
     </CacheProvider>
