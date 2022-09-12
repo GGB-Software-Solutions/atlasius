@@ -6,6 +6,7 @@ import AppDrawer from "./components/Drawer/Drawer";
 import { useSession } from "next-auth/react";
 import WithRequiredData from "./hocs/withRequiredData";
 import Loader from "./components/Loader";
+import withNotifications from "./hocs/withNotifications";
 
 interface Props {
   children: React.ReactNode;
@@ -37,4 +38,4 @@ const App = ({ children }: Props) => {
   );
 };
 
-export default WithRequiredData(App);
+export default WithRequiredData(withNotifications(App));
