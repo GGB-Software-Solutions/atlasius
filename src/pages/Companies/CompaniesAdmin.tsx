@@ -21,9 +21,7 @@ export default function CompaniesAdmin() {
   const { data } = useSWR(API_ENDPOINTS.Company, jsonFetch);
   const { trigger } = useSWRMutation(API_ENDPOINTS.Company, sendRequest);
 
-  const handleSave = (data: Company) => {
-    trigger(map(data));
-  };
+  const handleSave = (data: Company) => trigger(map(data));
 
   return (
     <PageContainer title="Компании">
