@@ -9,7 +9,7 @@ interface Props {
 export default function PageContainer({ title, children }: Props) {
   return (
     <>
-      {/* <Paper
+      <Paper
         square
         sx={{
           bgcolor: "divider",
@@ -18,7 +18,7 @@ export default function PageContainer({ title, children }: Props) {
         }}
       >
         <Typography variant="subtitle1">{title}</Typography>
-      </Paper> */}
+      </Paper>
       <Box
         sx={{
           p: 4,
