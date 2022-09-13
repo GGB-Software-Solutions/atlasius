@@ -69,6 +69,11 @@ export type Address = {
   zip?: string;
 };
 
+export type ValidationAddressPayload = {
+  address: Address;
+  validationStatus: "normal" | "processed" | "invalid";
+};
+
 /*
  * City served by Econt Express. Required fields for valid city - ID or name + post code
  * (if the City is outside Bulgaria, country is required)
