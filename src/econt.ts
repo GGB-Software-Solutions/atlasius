@@ -1,4 +1,10 @@
-import { Address, City, Country, Office } from "./types/econt";
+import {
+  Address,
+  City,
+  Country,
+  Office,
+  ValidationAddressPayload,
+} from "./types/econt";
 
 const ECONT_DEMO_API_URL = "http://demo.econt.com/ee/services/Nomenclatures";
 const ECONT_API_URL = "http://ee.econt.com/services/Nomenclatures";
@@ -52,7 +58,11 @@ class Econt {
     return data.streets;
   }
   // Address (minimum required parameters: city name, street name and street number or quarter and other)
-  async validateAddress(city: string, street: string, streetNumber: string) {
+  async validateAddress(
+    city: string,
+    street: string,
+    streetNumber: string
+  ): Promise<ValidationAddressPayload> {
     const data = await fetcher("AddressService", "validateAddress", {
       address: {
         city: {
