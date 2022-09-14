@@ -37,13 +37,6 @@ class Econt {
     return data.countries;
   }
 
-  async getOffices(countryCode = "BGR"): Promise<Office[]> {
-    const data = await fetcher("NomenclaturesService", "getOffices", {
-      countryCode,
-    });
-    return data.offices;
-  }
-
   async getCities(countryCode = "BGR"): Promise<City[]> {
     const data = await fetcher("NomenclaturesService", "getCities", {
       countryCode,
@@ -57,6 +50,15 @@ class Econt {
     });
     return data.streets;
   }
+
+  async getOffices(countryCode = "BGR", cityID: number): Promise<Office[]> {
+    const data = await fetcher("NomenclaturesService", "getOffices", {
+      countryCode,
+      cityID,
+    });
+    return data.offices;
+  }
+
   // Address (minimum required parameters: city name, street name and street number or quarter and other)
   async validateAddress(
     city: string,
