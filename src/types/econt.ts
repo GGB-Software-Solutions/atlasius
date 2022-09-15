@@ -134,7 +134,6 @@ export enum ShipmentType {
   // Documents (up to 0.5kg)
   document = "document",
   // Parcel (up to 50kg)
-
   pack = "Pack",
   // Post parcel (up to 20kg, 60x60x60cm and sub-code = office-office)
   post_pack = "post_pack",
@@ -154,7 +153,7 @@ export enum ShipmentType {
   pp = "pp",
 }
 
-type ClientProfile = {
+export type ClientProfile = {
   id?: number;
   // Name
   name: string;
@@ -244,7 +243,7 @@ type CDPayOptions = {
   additionalInstructions: string;
 };
 
-type ShippingLabelServices = {
+export type ShippingLabelServices = {
   // Earliest time for delivery (format: HH:MM)
   priorityTimeFrom: string;
   // Latest time for delivery (format: HH:MM)
@@ -293,7 +292,7 @@ type ShippingLabelServices = {
   invoiceNum: string;
 };
 
-enum InstructionType {
+export enum InstructionType {
   // Instruction type for collecting a shipment from the sender
   take,
   // Instruction type for giving over a shipment to the receiver
@@ -316,7 +315,7 @@ type HostedFile = {
   content: string;
 };
 
-type ReturnInstructionParams = {
+export type ReturnInstructionParams = {
   // Destination of the return parcel (empty -> no return parcel, sender -> return to sender, office -> return to office, address -> return to address)
   returnParcelDestination: string;
   // Indicates if the return parcel is document (true -> the return shipment is a document, false -> the return shipment is the same type as the original)
@@ -368,7 +367,7 @@ type ReturnInstructionParams = {
 /*
  * Additional instructions for receiving, giving over or returning of shipment
  */
-type Instruction = {
+export type Instruction = {
   id: number;
   // The type of the instruction
   type: InstructionType;
@@ -405,7 +404,7 @@ type PackingListElement = {
   file: HostedFile;
 };
 
-type ShippingLabel = {
+export type ShippingLabel = {
   // Shipment number
   shipmentNumber?: string;
   // The number of the parent (previous) shipment
@@ -549,7 +548,7 @@ type NextShipmentElement = {
   pdfURL: string;
 };
 
-type ShipmentStatus = {
+export type ShipmentStatus = {
   // Shipment number
   shipmentNumber: string;
   // Storage office name
