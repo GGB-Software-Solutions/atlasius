@@ -19,13 +19,17 @@ const WithRequiredData = (WrappedComponent) => {
     const setEcontCountries = useStore((state) => state.setEcontCountries);
     const econtCountries = useStore((state) => state.econtCountries);
     const setEcontOffices = useStore((state) => state.setEcontOffices);
+    const setEcontCities = useStore((state) => state.setEcontCities);
+
     const { data: warehouses, isLoading: isLoadingWarehouses } = useSWR(
       API_ENDPOINTS.Warehouse,
-      jsonFetch
+      jsonFetch,
+      { revalidateOnFocus: false }
     );
     const { data: companies, isLoading: isLoadingCompanies } = useSWR(
       API_ENDPOINTS.Company,
-      jsonFetch
+      jsonFetch,
+      { revalidateOnFocus: false }
     );
 
     const { data: offices, isLoading: isLoadingOffices } = useSWR(
@@ -33,6 +37,16 @@ const WithRequiredData = (WrappedComponent) => {
       sendEcontServiceRequest,
       { revalidateOnFocus: false }
     );
+
+    const { data: cities, isLoading: isLoadingCities } = useSWR(
+      "getCities",
+      sendEcontServiceRequest,
+      { revalidateOnFocus: false }
+    );
+
+    React.useEffect(() => {
+      if (cities) setEcontCities(cities);
+    }, [cities]);
 
     React.useEffect(() => {
       if (offices) setEcontOffices(offices);
@@ -57,6 +71,7 @@ const WithRequiredData = (WrappedComponent) => {
     return isLoadingCompanies &&
       isLoadingWarehouses &&
       isLoadingOffices &&
+      isLoadingCities &&
       econtCountries.length ? (
       <Loader />
     ) : (
