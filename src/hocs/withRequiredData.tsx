@@ -6,13 +6,19 @@ import useStore from "../store/globalStore";
 import Loader from "../components/Loader";
 import Econt from "../econt";
 
+const econtService = new Econt();
+
+async function sendEcontServiceRequest(url) {
+  return econtService[url]();
+}
+
 const WithRequiredData = (WrappedComponent) => {
   const withRequiredData = (props) => {
-    const econtService = new Econt();
     const setWarehouses = useStore((state) => state.setWarehouses);
     const setCompanies = useStore((state) => state.setCompanies);
     const setEcontCountries = useStore((state) => state.setEcontCountries);
     const econtCountries = useStore((state) => state.econtCountries);
+    const setEcontOffices = useStore((state) => state.setEcontOffices);
     const { data: warehouses, isLoading: isLoadingWarehouses } = useSWR(
       API_ENDPOINTS.Warehouse,
       jsonFetch
@@ -21,6 +27,17 @@ const WithRequiredData = (WrappedComponent) => {
       API_ENDPOINTS.Company,
       jsonFetch
     );
+
+    const { data: offices, isLoading: isLoadingOffices } = useSWR(
+      "getOffices",
+      sendEcontServiceRequest,
+      { revalidateOnFocus: false }
+    );
+
+    React.useEffect(() => {
+      if (offices) setEcontOffices(offices);
+    }, [offices]);
+
     React.useEffect(() => {
       if (warehouses) setWarehouses(warehouses);
     }, [warehouses]);
@@ -39,6 +56,7 @@ const WithRequiredData = (WrappedComponent) => {
 
     return isLoadingCompanies &&
       isLoadingWarehouses &&
+      isLoadingOffices &&
       econtCountries.length ? (
       <Loader />
     ) : (
