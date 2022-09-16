@@ -12,6 +12,12 @@ async function sendEcontServiceRequest(url) {
   return econtService[url]();
 }
 
+async function sendSpeedyServiceRequest(url) {
+  const response = await fetch(url);
+  const data = await response.json();
+  return data;
+}
+
 const WithRequiredData = (WrappedComponent) => {
   const withRequiredData = (props) => {
     const setWarehouses = useStore((state) => state.setWarehouses);
@@ -20,6 +26,7 @@ const WithRequiredData = (WrappedComponent) => {
     const econtCountries = useStore((state) => state.econtCountries);
     const setEcontOffices = useStore((state) => state.setEcontOffices);
     const setEcontCities = useStore((state) => state.setEcontCities);
+    const setSpeedyOffices = useStore((state) => state.setSpeedyOffices);
 
     const { data: warehouses, isLoading: isLoadingWarehouses } = useSWR(
       API_ENDPOINTS.Warehouse,
@@ -43,6 +50,16 @@ const WithRequiredData = (WrappedComponent) => {
       sendEcontServiceRequest,
       { revalidateOnFocus: false }
     );
+
+    const { data: speedyOffices, isLoading: isLoadingSpeedyOffices } = useSWR(
+      "api/speedy/offices",
+      sendSpeedyServiceRequest,
+      { revalidateOnFocus: false }
+    );
+
+    React.useEffect(() => {
+      if (speedyOffices) setSpeedyOffices(speedyOffices);
+    }, [speedyOffices]);
 
     React.useEffect(() => {
       if (cities) setEcontCities(cities);
@@ -72,6 +89,7 @@ const WithRequiredData = (WrappedComponent) => {
       isLoadingWarehouses &&
       isLoadingOffices &&
       isLoadingCities &&
+      isLoadingSpeedyOffices &&
       econtCountries.length ? (
       <Loader />
     ) : (

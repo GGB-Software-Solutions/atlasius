@@ -4,6 +4,7 @@ import { devtools } from "zustand/middleware";
 import { Company } from "../pages/Companies/types";
 import { Warehouse } from "../types";
 import { City, Country, Office } from "../types/econt";
+import { SpeedyOffice } from "../types/speedy";
 
 export interface Notification {
   autoHideDuration?: number;
@@ -12,6 +13,7 @@ export interface Notification {
 }
 
 interface State {
+  speedyOffices: SpeedyOffice[];
   econtCountries: Country[];
   econtOffices: Office[];
   econtCities: City[];
@@ -24,10 +26,12 @@ interface State {
   setEcontCountries: (countries: Country[]) => void;
   setEcontOffices: (offices: Office[]) => void;
   setEcontCities: (cities: City[]) => void;
+  setSpeedyOffices: (offices: SpeedyOffice[]) => void;
 }
 
 const useStore = create<State>()(
   devtools((set) => ({
+    speedyOffices: [],
     econtCountries: [],
     econtCities: [],
     econtOffices: [],
@@ -41,6 +45,7 @@ const useStore = create<State>()(
     setEcontCountries: (econtCountries) => set(() => ({ econtCountries })),
     setEcontOffices: (econtOffices) => set(() => ({ econtOffices })),
     setEcontCities: (econtCities) => set(() => ({ econtCities })),
+    setSpeedyOffices: (speedyOffices) => set(() => ({ speedyOffices })),
   }))
 );
 
