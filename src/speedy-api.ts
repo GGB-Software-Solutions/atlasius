@@ -20,3 +20,39 @@ export const fetcher = async (api: string, body: Record<string, unknown>) => {
   const data = await response.json();
   return data;
 };
+
+export const findSite = async ({ countryId, name }) => {
+  const response = await fetch("api/speedy/sites", {
+    method: "POST",
+    body: JSON.stringify({ countryId, name }),
+  });
+  const data = await response.json();
+  return data;
+};
+
+export const getOffices = async (countryId: number) => {
+  const response = await fetch("api/speedy/sites", {
+    method: "POST",
+    body: JSON.stringify({ countryId }),
+  });
+  const data = await response.json();
+  return data;
+};
+
+export const getStreets = async ({ siteId, name }) => {
+  const response = await fetch("api/speedy/streets", {
+    method: "POST",
+    body: JSON.stringify({ siteId, name }),
+  });
+  const data = await response.json();
+  return data;
+};
+
+export const validateAddress = async (address) => {
+  const response = await fetch("api/speedy/address", {
+    method: "POST",
+    body: JSON.stringify({ address }),
+  });
+  const data = await response.json();
+  return data;
+};
