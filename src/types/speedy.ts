@@ -58,3 +58,21 @@ export interface SpeedyOffice {
   cashPaymentAllowed: boolean;
   palletOffice: boolean;
 }
+
+export interface SpeedyCountry {
+  id: number;
+  name: string;
+  nameEn: string;
+  isoAlpha2: string;
+  isoAlpha3: string;
+  postCodeFormats: string;
+  requireState: boolean;
+  addressType: number;
+  currencyCode: string;
+  defaultOfficeId: number;
+  streetTypes: string;
+  streetTypesEn: string;
+  complexTypes: string;
+  complexTypesEn: string;
+  siteNomen: number;
+}
