@@ -1,6 +1,7 @@
 import React from "react";
 import useSWR from "swr";
 import Econt from "../../../econt";
+import useStore from "../../../store/globalStore";
 import { City, Country } from "../../../types/econt";
 
 const econtService = new Econt();
@@ -17,6 +18,9 @@ interface Props {
 }
 
 const useEcont = ({ countryCode, cityID, deliverToOffice }: Props) => {
+  //Offices for Bulgaria are fetched on startup so we have them in store
+  const isCountryBulgaria = countryCode && countryCode === "BGR";
+  const bulgarianOffices = useStore((state) => state.econtOffices);
   // Cities
   const { data: cities, isLoading: isLoadingCities } = useSWR(
     countryCode ? ["getCities", countryCode] : null,
@@ -26,8 +30,8 @@ const useEcont = ({ countryCode, cityID, deliverToOffice }: Props) => {
 
   //Offices
   const { data: offices, isLoading: isLoadingOffices } = useSWR(
-    countryCode && cityID && deliverToOffice
-      ? ["getOffices", countryCode, cityID]
+    countryCode && deliverToOffice && !isCountryBulgaria
+      ? ["getOffices", countryCode]
       : null,
     sendRequest,
     { revalidateOnFocus: false }
@@ -42,7 +46,7 @@ const useEcont = ({ countryCode, cityID, deliverToOffice }: Props) => {
 
   return {
     cities,
-    offices,
+    offices: isCountryBulgaria ? bulgarianOffices : offices,
     streets,
     isLoadingCities,
     isLoadingOffices,

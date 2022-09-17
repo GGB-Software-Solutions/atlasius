@@ -45,6 +45,13 @@ export type Office = {
   hubNameEn: string;
 };
 
+export type Street = {
+  id: number;
+  cityID: number;
+  name: string;
+  nameEn: string;
+};
+
 /*
  * Address. Required fields for valid address - city, street and street number (or quarter and other).
  * Use respective fields or all joined together in the field `fullAddress`

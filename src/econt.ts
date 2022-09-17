@@ -19,6 +19,14 @@ const getBasicAuth = (str) => {
   return btoa(unescape(encodeURIComponent(str)));
 };
 
+const getInnerErrors = (response): string => {
+  if (response.innerErrors.length > 0) {
+    return getInnerErrors(response.innerErrors[0]);
+  } else {
+    return response.message;
+  }
+};
+
 interface FetcherProps {
   service: "Nomenclatures" | "Shipments" | "Profile";
   subService:
@@ -107,8 +115,8 @@ class Econt {
     street: string,
     streetNumber: string,
     postCode: string
-  ): Promise<ValidationAddressPayload> {
-    const data = await fetcher("AddressService", "validateAddress", {
+  ) {
+    const response = await fetcher("AddressService", "validateAddress", {
       address: {
         city: {
           name: city,
@@ -118,7 +126,14 @@ class Econt {
         num: streetNumber,
       },
     });
-    return data;
+    let error = null;
+    let address = null;
+    if (response.innerErrors) {
+      error = getInnerErrors(response);
+    } else if (response.validationStatus === "normal") {
+      address = response.address;
+    }
+    return { error, address };
   }
 
   // When preparing a shipment, the addresses of the sender, receiver, and any other parties (who will receive the amount collected from the service "cash on delivery", receive a returned shipment, etc.) need to be valid according to the following criteria:
