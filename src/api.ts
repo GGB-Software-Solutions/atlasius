@@ -3,4 +3,5 @@ export enum API_ENDPOINTS {
   Product = "product",
   Company = "company",
   Orders = "orders",
+  Order = "order",
 }

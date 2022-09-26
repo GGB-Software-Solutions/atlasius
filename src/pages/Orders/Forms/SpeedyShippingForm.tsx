@@ -117,19 +117,19 @@ export default function SpeedyShippingForm({ data, onSave }: Props) {
     printJS({ printable: label, type: "pdf", base64: true });
   };
 
-  const cityFetch = async (inputValue, callback) => {
+  const cityFetch = async (inputValue: string, callback) => {
     const country = formContext.getValues().country;
     const data = await findSite({ countryId: country.id, name: inputValue });
     callback(data);
   };
 
-  const streetFetch = async (inputValue, callback) => {
+  const streetFetch = async (inputValue: string, callback) => {
     const city = formContext.getValues().city;
     const data = await getStreets({ siteId: city.id, name: inputValue });
     callback(data);
   };
 
-  const complexFetch = async (inputValue, callback) => {
+  const complexFetch = async (inputValue: string, callback) => {
     const city = formContext.getValues().city;
     const data = await getComplexes({ siteId: city.id, name: inputValue });
     callback(data);

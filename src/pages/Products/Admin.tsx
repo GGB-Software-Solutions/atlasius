@@ -48,7 +48,7 @@ const transform = (
 ): FormProduct[] =>
   products.map((product) => ({
     ...product,
-    id: `${product.id.companyId}${product.id.sku}`,
+    id: `${product.productId.companyId}${product.productId.sku}`,
     company: companies.find(
       (company) => company.id === product.id.companyId
     ) as Company,
@@ -66,6 +66,8 @@ export default function Admin() {
     trigger(map(data));
   };
   const rows = transform(data || [], companies);
+
+  console.log(data, companies, rows);
 
   return (
     <PageContainer title="Продукти">
