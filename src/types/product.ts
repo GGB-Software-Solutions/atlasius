@@ -1,10 +1,5 @@
 import { Company } from "../pages/Companies/types";
 
-export interface Id {
-  sku: string;
-  companyId: string;
-}
-
 export interface ProductId {
   sku: string;
   companyId: string;
@@ -25,17 +20,15 @@ export interface ProductWarehouseQuantity {
 }
 
 export interface ProductResponse {
-  id: Id;
+  productId: ProductId;
+  id: string;
   sku: string;
   name: string;
   category: string;
   ean: string;
   weight: number;
-  productWarehouseQuantities: ProductWarehouseQuantity[];
-}
-
-export interface OrderProductResponse extends ProductResponse {
   orderedQuantity: number;
+  productWarehouseQuantities: ProductWarehouseQuantity[];
 }
 
 export interface FormProduct extends Omit<ProductResponse, "id"> {

@@ -1,5 +1,6 @@
 import { API_ENDPOINTS } from "../../api";
 import { Order } from "../../types";
+import { Expedition } from "../../types/expedition";
 import { jsonFetch } from "../../utils/fetch";
 
 export type OrderShippingDetails = Partial<
@@ -41,17 +42,7 @@ export const updateOrderStatus = async (orderStatus: UpdateOrderStatus) => {
   return response;
 };
 
-export interface ShippingLabel {
-  shipmentId: string;
-  companyId: string;
-  orderId: string;
-  deliveryCompany: string;
-  trackingNumber: string;
-  deliveryPrice: number;
-  status: string;
-}
-
-export const saveShippingLabel = async (label: ShippingLabel) => {
+export const saveShippingLabel = async (label: Expedition) => {
   const response = await jsonFetch(API_ENDPOINTS.DeliveryDetails, {
     method: "POST",
     body: JSON.stringify(label),
