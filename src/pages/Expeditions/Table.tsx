@@ -1,5 +1,5 @@
 import * as React from "react";
-import { GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
+import { GridColDef } from "@mui/x-data-grid";
 import Table, { Props } from "../../components/Table";
 import { Expedition } from "../../types/expedition";
 
