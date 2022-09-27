@@ -26,15 +26,35 @@ export const updateShippingDetails = async (
   return response;
 };
 
-// errorStatus?
 export type UpdateOrderStatus = Partial<
-  Pick<Order, "status" | "fulfillmentStatus" | "warehouseStatus">
+  Pick<
+    Order,
+    "status" | "fulfillmentStatus" | "warehouseStatus" | "errorStatus"
+  >
 > & { id: string };
 
 export const updateOrderStatus = async (orderStatus: UpdateOrderStatus) => {
   const response = await jsonFetch(API_ENDPOINTS.Order + "/update-status", {
     method: "POST",
     body: JSON.stringify(orderStatus),
+  });
+  return response;
+};
+
+export interface ShippingLabel {
+  shipmentId: string;
+  companyId: string;
+  orderId: string;
+  deliveryCompany: string;
+  trackingNumber: string;
+  deliveryPrice: number;
+  status: string;
+}
+
+export const saveShippingLabel = async (label: ShippingLabel) => {
+  const response = await jsonFetch(API_ENDPOINTS.DeliveryDetails, {
+    method: "POST",
+    body: JSON.stringify(label),
   });
   return response;
 };
