@@ -1,6 +1,6 @@
 import { Company, DeliveryCompany } from "./pages/Companies/types";
 import { Address, City, Country, Office, Street } from "./types/econt";
-import { OrderProductResponse } from "./types/product";
+import { ProductResponse } from "./types/product";
 import {
   SpeedyAddress,
   SpeedyCity,
@@ -80,7 +80,7 @@ type OfficeName =
 
 export interface Order {
   id: string;
-  products: OrderProductResponse[];
+  products: ProductResponse[];
   externalId: string;
   firstName: string;
   lastName: string;
