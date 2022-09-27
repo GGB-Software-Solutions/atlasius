@@ -15,7 +15,7 @@ interface Props<T> {
 
 export default function Toolbar<T>({ title, children }: Props<T>) {
   const apiRef = useGridApiContext();
-  const selectedRows = apiRef?.current?.getSelectedRows();
+  const selectedRows: Map<GridRowId, T> = apiRef?.current?.getSelectedRows();
 
   return (
     <GridToolbarContainer

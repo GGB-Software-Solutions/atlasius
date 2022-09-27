@@ -1,14 +1,26 @@
 import React from "react";
-import { DataGrid, DataGridProps } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  DataGridProps,
+  GridRowId,
+  GridValidRowModel,
+} from "@mui/x-data-grid";
 import Toolbar from "./Toolbar";
 import { Box } from "@mui/material";
 
-type Props = DataGridProps & {
-  actions: (rows) => React.ReactNode;
-  title: string;
-};
+export interface Props<T extends GridValidRowModel> extends DataGridProps<T> {
+  actions?: (rows: Map<GridRowId, T>) => React.ReactNode;
+  title?: string;
+  rows: T[];
+}
 
-export default function Table({ actions, title, ...other }: Props) {
+export default function Table<T extends GridValidRowModel>({
+  actions,
+  title,
+  rows,
+  checkboxSelection = true,
+  ...other
+}: Props<T>) {
   const toolbar = () => <Toolbar title={title}>{actions}</Toolbar>;
   return (
     <Box sx={{ width: "100%" }}>
@@ -20,8 +32,9 @@ export default function Table({ actions, title, ...other }: Props) {
         autoHeight
         pageSize={10}
         rowsPerPageOptions={[10, 25, 50, 100]}
-        checkboxSelection
+        checkboxSelection={checkboxSelection}
         disableSelectionOnClick
+        rows={rows}
       />
     </Box>
   );

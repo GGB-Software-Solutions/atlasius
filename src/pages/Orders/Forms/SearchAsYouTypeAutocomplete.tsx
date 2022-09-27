@@ -61,6 +61,7 @@ export default function SearchAsYouTypeAutocomplete<
 
   return (
     <AutocompleteElement
+      {...other}
       value={value}
       onChange={(event: any, newValue) => {
         setOptions(newValue ? [newValue, ...options] : options);
@@ -81,7 +82,6 @@ export default function SearchAsYouTypeAutocomplete<
           setInputValue(newInputValue);
         },
       }}
-      {...other}
     />
   );
 }

@@ -34,6 +34,10 @@ export interface ProductResponse {
   productWarehouseQuantities: ProductWarehouseQuantity[];
 }
 
+export interface OrderProductResponse extends ProductResponse {
+  orderedQuantity: number;
+}
+
 export interface FormProduct extends Omit<ProductResponse, "id"> {
   id: string;
   company: Company;
