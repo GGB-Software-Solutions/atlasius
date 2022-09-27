@@ -6,7 +6,7 @@ import useStore from "../store/globalStore";
 import Loader from "../components/Loader";
 import Econt from "../econt";
 
-const econtService = new Econt();
+const econtService = new Econt(true);
 
 async function sendEcontServiceRequest(url) {
   return econtService[url]();

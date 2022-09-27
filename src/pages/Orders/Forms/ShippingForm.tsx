@@ -5,44 +5,35 @@ import {
   TextFieldElement,
   AutocompleteElement,
 } from "react-hook-form-mui";
-import {
-  Button,
-  Chip,
-  FormControlLabel,
-  Grid,
-  Switch,
-  Typography,
-} from "@mui/material";
-import Econt from "../../../econt";
+import { Button, FormControlLabel, Grid, Switch } from "@mui/material";
+import Econt, { getInnerErrors } from "../../../econt";
 import { MappedOrder } from "../../../types";
 import { Address, City, Country } from "../../../types/econt";
 import useStore from "../../../store/globalStore";
 import VirtualizedAutocomplete from "./VirtualizedAutocomplete";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import ErrorIcon from "@mui/icons-material/Error";
+
 import useEcont from "./useEcont";
 import {
   generateShippingLabel,
   shouldOrderBeDeliveredToOffice,
 } from "../utils";
 import { DeliveryCompany } from "../../Companies/types";
+import ValidAddress from "./ValidAddress";
+import { OrderShippingDetails, updateShippingDetails } from "../api";
 
 type MappedEcontOrder = MappedOrder<DeliveryCompany.Econt>;
 
 interface Props {
   data: MappedEcontOrder;
+  hideGenerateShippingLabel?: boolean;
   onSave: (data: MappedEcontOrder) => void;
 }
 
-const map = (order: MappedEcontOrder, countries: Country[]) => ({
-  ...order,
-  country: countries.find(
-    (country) =>
-      country.name === order.country || country.nameEn === order.country
-  ),
-});
-
-export default function ShippingForm({ data, onSave }: Props) {
+export default function ShippingForm({
+  data,
+  onSave,
+  hideGenerateShippingLabel = false,
+}: Props) {
   const setNotification = useStore((state) => state.setNotification);
   const [deliverToOffice, setDeliverToOffice] = React.useState(
     shouldOrderBeDeliveredToOffice(data)
@@ -53,7 +44,7 @@ export default function ShippingForm({ data, onSave }: Props) {
   const econtCountries = useStore((state) => state.econtCountries);
   const econtOffices = useStore((state) => state.econtOffices);
   const formContext = useForm({
-    defaultValues: map(data, econtCountries),
+    defaultValues: data,
   });
   const country = formContext.watch("country") as Country;
   const city = formContext.watch("city");
@@ -73,45 +64,69 @@ export default function ShippingForm({ data, onSave }: Props) {
     deliverToOffice,
   });
 
-  const isLoading = isLoadingCities && isLoadingCities;
+  const isLoading = isLoadingCities;
 
-  const handleSubmit = async (data: MappedEcontOrder) => {
-    console.log("DATA1:", data);
-    let toSubmit = {};
+  const updateDetails = async (
+    data: MappedEcontOrder,
+    validatedEcontAddres = {}
+  ) => {
+    const { country, id } = data;
+    let shippingDetails: OrderShippingDetails = {};
     if (deliverToOffice) {
-      toSubmit = {
-        officeId: data.office.code,
-        country: data.country.name,
-        city: data.city.name,
+      shippingDetails = {
+        id,
+        officeId: office?.code,
+        country: (country as Country).name,
       };
     } else {
-      const { error, address } = await econtService.validateAddress(
-        data.city.name,
-        data.street?.name,
-        data.streetNumber,
-        data.zipCode
-      );
-
-      if (error) {
-        setNotification({ type: "error", message: error });
-      } else {
-        formContext.setValue("address1", address.fullAddress);
-        setNotification({
-          type: "success",
-          message: "Адресът е валиден и запазен успешно.",
-        });
-        setValidatedAddress(address);
-        toSubmit = {
-          address1: address.fullAddress,
-          city: address.city.name,
-          zipCode: address.zip,
-          country: address.city.country.name,
-          streetName: address.street,
-          streetNumber: address.num,
-        };
-      }
-      //TODO: We need to submit this to update the order
+      shippingDetails = {
+        id,
+        address1: validatedEcontAddres.fullAddress,
+        city: validatedEcontAddres.city.name,
+        zipCode: validatedEcontAddres.zip,
+        country: validatedEcontAddres.city.country.name,
+        streetName: validatedEcontAddres.street,
+        streetNumber: validatedEcontAddres.num,
+        officeId: undefined,
+      };
     }
+    const response = await updateShippingDetails(shippingDetails);
+    if (response.success) {
+      setNotification({ type: "success", message: response.success });
+      onSave();
+    } else {
+      setNotification({ type: "error", message: response.error });
+    }
+  };
+
+  const handleSubmit = async (data: MappedEcontOrder) => {
+    const { streetNumber, street, zipCode, city } = data;
+    if (deliverToOffice) return updateDetails(data);
+
+    const { error, address } = await econtService.validateAddress(
+      typeof city === "string" ? city : city?.name,
+      street?.name,
+      streetNumber,
+      zipCode
+    );
+
+    if (error) {
+      setNotification({ type: "error", message: error });
+    } else {
+      formContext.setValue("address1", address.fullAddress);
+      setValidatedAddress(address);
+      updateDetails(data, address);
+    }
+  };
+
+  const handleGenerateShippingLabel = async () => {
+    const response = await generateShippingLabel(data);
+    if (response.innerErrors) {
+      setNotification({ type: "error", message: getInnerErrors(response) });
+      return;
+    }
+    const printJS = (await import("print-js")).default;
+    printJS(response.pdfURL);
   };
 
   const handleCheckboxChange = (_, checked: boolean) =>
@@ -119,27 +134,19 @@ export default function ShippingForm({ data, onSave }: Props) {
 
   return (
     <>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "10px",
-          marginBottom: "25px",
-        }}
-      >
-        <Typography variant="h4">Адрес</Typography>
-        {!deliverToOffice && !isLoading && (
-          <Chip
-            color={validatedAddress ? "success" : "error"}
-            icon={validatedAddress ? <CheckCircleIcon /> : <ErrorIcon />}
-            label={validatedAddress ? "Валиден адрес" : "Невалиден адрес"}
-          />
-        )}
-      </div>
-
+      <ValidAddress
+        isValid={deliverToOffice ? Boolean(office) : Boolean(validatedAddress)}
+        isLoading={isLoading}
+        deliverToOffice={deliverToOffice}
+        deliveryCompany={DeliveryCompany.Econt}
+      />
       <FormControlLabel
         control={
-          <Switch checked={deliverToOffice} onChange={handleCheckboxChange} />
+          <Switch
+            checked={deliverToOffice}
+            disabled
+            onChange={handleCheckboxChange}
+          />
         }
         label="До офис"
       />
@@ -275,15 +282,15 @@ export default function ShippingForm({ data, onSave }: Props) {
         <Button variant="contained" type="submit" color="primary">
           Запази
         </Button>
-        <Button
-          variant="contained"
-          onClick={() => {
-            generateShippingLabel(data.company, data, null, office.code);
-          }}
-          color="primary"
-        >
-          Генерирай товарителница
-        </Button>
+        {!hideGenerateShippingLabel && (
+          <Button
+            variant="contained"
+            onClick={handleGenerateShippingLabel}
+            color="primary"
+          >
+            Генерирай товарителница
+          </Button>
+        )}
       </FormContainer>
     </>
   );

@@ -32,10 +32,15 @@ type MappedSpeedyOrder = MappedOrder<DeliveryCompany.Speedy>;
 
 interface Props {
   data: MappedSpeedyOrder;
+  hideGenerateShippingLabel?: boolean;
   onSave: (data: MappedSpeedyOrder) => void;
 }
 
-export default function SpeedyShippingForm({ data, onSave }: Props) {
+export default function SpeedyShippingForm({
+  data,
+  onSave,
+  hideGenerateShippingLabel = false,
+}: Props) {
   const setNotification = useStore((state) => state.setNotification);
   const [deliverToOffice, setDeliverToOffice] = React.useState(
     shouldOrderBeDeliveredToOffice(data)
@@ -81,6 +86,7 @@ export default function SpeedyShippingForm({ data, onSave }: Props) {
     const response = await updateShippingDetails(shippingDetails);
     if (response.success) {
       setNotification({ type: "success", message: response.success });
+      onSave();
     } else {
       setNotification({ type: "error", message: response.error });
     }
@@ -295,13 +301,15 @@ export default function SpeedyShippingForm({ data, onSave }: Props) {
         <Button variant="contained" type="submit" color="primary">
           Запази
         </Button>
-        <Button
-          variant="contained"
-          onClick={handleGenerateShippingLabel}
-          color="primary"
-        >
-          Генерирай товарителница
-        </Button>
+        {!hideGenerateShippingLabel && (
+          <Button
+            variant="contained"
+            onClick={handleGenerateShippingLabel}
+            color="primary"
+          >
+            Генерирай товарителница
+          </Button>
+        )}
       </FormContainer>
     </>
   );

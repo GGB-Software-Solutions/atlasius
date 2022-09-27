@@ -23,12 +23,7 @@ interface Props {
   onClose: () => void;
 }
 
-export default function CollectGoodsDialog({
-  orders,
-  onClose,
-  open,
-  onSave,
-}: Props) {
+export default function OrdersDialog({ orders, onClose, open, onSave }: Props) {
   if (!open) return null;
   const [isLoading, setIsLoading] = React.useState(false);
   const [data, setData] = React.useState(orders);

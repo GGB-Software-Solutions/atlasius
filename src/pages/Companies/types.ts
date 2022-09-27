@@ -13,6 +13,8 @@ interface DeliveryCompanyCredentials {
   deliveryCompanyName: string;
   username: string;
   password: string;
+  agreementId?: string; // Agreement id valid only for Econt
+  senderAgent?: string; // Sender agent valid only for Econt
 }
 
 interface EcommerceCredentials {

@@ -34,6 +34,9 @@ export default function DeliveryCompaniesForm({ formContext }: Props) {
         </IconButton>
       </Stack>
       {fields.map((item, index) => {
+        const deliveryCompany = formContext.watch(
+          `deliveryCompanyCredentials.${index}.deliveryCompanyName`
+        );
         return (
           <Stack
             direction={"row"}
@@ -74,6 +77,29 @@ export default function DeliveryCompaniesForm({ formContext }: Props) {
               required
               fullWidth
             />
+            {deliveryCompany === DeliveryCompany.Econt && (
+              <>
+                <TextFieldElement
+                  {...formContext.register(
+                    `deliveryCompanyCredentials.${index}.agreementId`
+                  )}
+                  variant="standard"
+                  label="Номер на споразумение"
+                  required
+                  fullWidth
+                />
+                <TextFieldElement
+                  {...formContext.register(
+                    `deliveryCompanyCredentials.${index}.senderAgent`
+                  )}
+                  variant="standard"
+                  label="Изпращач"
+                  required
+                  fullWidth
+                />
+              </>
+            )}
+
             <IconButton onClick={() => remove(index)}>
               <DeleteIcon />
             </IconButton>
