@@ -16,7 +16,7 @@ import {
 import { DeliveryCompany } from "../../Companies/types";
 import SearchAsYouTypeAutocomplete from "./SearchAsYouTypeAutocomplete";
 import { speedyCountries } from "../../../speedy-countries";
-import { SpeedyCountry } from "../../../types/speedy";
+import { SpeedyAddress, SpeedyCountry } from "../../../types/speedy";
 import {
   findSite,
   getComplexes,
@@ -49,9 +49,6 @@ export default function SpeedyShippingForm({ data, onSave }: Props) {
   const country = formContext.watch("country") as SpeedyCountry;
   const city = formContext.watch("city");
   const office = formContext.watch("office");
-  const street = formContext.watch("street");
-  const streetNumber = formContext.watch("streetNumber");
-  const address1 = formContext.watch("address1");
 
   const { offices = [], isLoadingOffices } = useSpeedy({
     countryId: country?.id,
@@ -60,43 +57,54 @@ export default function SpeedyShippingForm({ data, onSave }: Props) {
 
   const isLoading = false;
 
-  const handleSubmit = async (data: MappedSpeedyOrder) => {
+  const updateDetails = async (data: MappedSpeedyOrder) => {
+    const { streetNumber, street, country, zipCode, city, address1, id } = data;
     let shippingDetails: OrderShippingDetails = {};
     if (deliverToOffice) {
       shippingDetails = {
+        id,
         officeId: office?.id.toString(),
         country: country.name,
       };
     } else {
-      const address = {
-        countryId: country.id,
-        siteId: city.id,
-        postCode: data.zipCode,
-        streetId: street?.id,
-        streetNo: streetNumber,
-        addressNote: address1,
+      shippingDetails = {
+        id,
+        address1,
+        city: typeof city === "string" ? city : city?.name,
+        zipCode,
+        country: country.name,
+        streetName: street?.name,
+        streetNumber: streetNumber,
+        officeId: undefined,
       };
-      const { error } = await validateAddress(address);
+    }
+    const response = await updateShippingDetails(shippingDetails);
+    if (response.success) {
+      setNotification({ type: "success", message: response.success });
+    } else {
+      setNotification({ type: "error", message: response.error });
+    }
+  };
 
-      if (error) {
-        setNotification({ type: "error", message: error.message });
-      } else {
-        setNotification({
-          type: "success",
-          message: "Адресът е валиден и запазен успешно.",
-        });
-        setValidAddress(true);
-        shippingDetails = {
-          address1: address.addressNote,
-          city: typeof city === "string" ? city : city?.name,
-          zipCode: address.postCode,
-          country: country.name,
-          streetName: street?.name,
-          streetNumber: address.streetNo,
-        };
-        const response = await updateShippingDetails(shippingDetails);
-        //TODO: Show notification if successful/error
-      }
+  const handleSubmit = async (data: MappedSpeedyOrder) => {
+    const { streetNumber, street, country, zipCode, city } = data;
+    if (deliverToOffice) return updateDetails(data);
+
+    const address: SpeedyAddress = {
+      countryId: country.id,
+      siteId: city.id,
+      postCode: zipCode,
+      streetId: street?.id,
+      streetNo: streetNumber,
+    };
+    const { error } = await validateAddress(address);
+
+    if (error) {
+      setNotification({ type: "error", message: error.message });
+    } else {
+      formContext.setValue("validatedAddress", address);
+      setValidAddress(true);
+      updateDetails(data);
     }
   };
 
@@ -104,7 +112,8 @@ export default function SpeedyShippingForm({ data, onSave }: Props) {
     setDeliverToOffice(checked);
 
   const handleGenerateShippingLabel = async () => {
-    const response = await generateSpeedyShippingLabel(data);
+    const order = formContext.getValues();
+    const response = await generateSpeedyShippingLabel(order);
     if (response.error) {
       setNotification({
         type: "error",
@@ -146,7 +155,11 @@ export default function SpeedyShippingForm({ data, onSave }: Props) {
 
       <FormControlLabel
         control={
-          <Switch checked={deliverToOffice} onChange={handleCheckboxChange} />
+          <Switch
+            checked={deliverToOffice}
+            disabled={true}
+            onChange={handleCheckboxChange}
+          />
         }
         label="До офис"
       />

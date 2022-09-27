@@ -25,3 +25,16 @@ export const updateShippingDetails = async (
   );
   return response;
 };
+
+// errorStatus?
+export type UpdateOrderStatus = Partial<
+  Pick<Order, "status" | "fulfillmentStatus" | "warehouseStatus">
+> & { id: string };
+
+export const updateOrderStatus = async (orderStatus: UpdateOrderStatus) => {
+  const response = await jsonFetch(API_ENDPOINTS.Order + "/update-status", {
+    method: "POST",
+    body: JSON.stringify(orderStatus),
+  });
+  return response;
+};

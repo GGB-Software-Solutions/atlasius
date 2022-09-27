@@ -6,6 +6,10 @@ import { MappedOrder } from "../../types";
 import useStore from "../../store/globalStore";
 import { orders } from "./Forms/mocks";
 import { mapOrders } from "./utils";
+import useSWR from "swr";
+import { API_ENDPOINTS } from "../../api";
+import { jsonFetch } from "../../utils/fetch";
+import UpdateOrderDialog from "./UpdateOrderDialog";
 
 export default function Admin() {
   const econtOffices = useStore((state) => state.econtOffices);
@@ -13,10 +17,17 @@ export default function Admin() {
   const econtCities = useStore((state) => state.econtCities);
   const speedyOffices = useStore((state) => state.speedyOffices);
   const [mappedRows, setMappedRows] = React.useState<MappedOrder[]>([]);
-  const data = orders;
+  // const data = orders;
   //TODO: Uncomment this
-  // const { data } = useSWR(API_ENDPOINTS.Orders, jsonFetch);
+  const {
+    data = [],
+    isLoading: isLoadingData,
+    mutate,
+  } = useSWR(API_ENDPOINTS.Order, jsonFetch);
   const [open, setOpen] = React.useState(false);
+  const [openUpdateOrderDialog, setOpenUpdateOrderDialog] =
+    React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
   const [selectedRows, setSelectedRows] = React.useState<MappedOrder[]>([]);
   const handleCollectGoods = (data: MappedOrder[]) => {
     setOpen(true);
@@ -28,7 +39,18 @@ export default function Admin() {
     setSelectedRows([]);
   };
 
+  const handleUpdateOrderClick = (data: MappedOrder[]) => {
+    setOpenUpdateOrderDialog(true);
+    setSelectedRows(data);
+  };
+
+  const handleUpdateOrderDialogClose = () => {
+    setOpenUpdateOrderDialog(false);
+    setSelectedRows([]);
+  };
+
   const mapRows = async () => {
+    setIsLoading(true);
     const rows = await mapOrders(
       data,
       econtOffices,
@@ -37,10 +59,12 @@ export default function Admin() {
       econtCountries
     );
     setMappedRows(rows);
+    setIsLoading(false);
   };
 
   React.useEffect(() => {
     if (
+      !isLoadingData &&
       Boolean(data.length) &&
       Boolean(econtOffices.length) &&
       Boolean(speedyOffices.length) &&
@@ -49,17 +73,35 @@ export default function Admin() {
     ) {
       mapRows();
     }
-  }, [data, econtOffices, speedyOffices, econtCities, econtCountries]);
+  }, [
+    data,
+    econtOffices,
+    speedyOffices,
+    econtCities,
+    econtCountries,
+    isLoadingData,
+  ]);
 
   return (
     <>
       <PageContainer title="Поръчки">
-        <Table rows={mappedRows || []} onCollectGoods={handleCollectGoods} />
+        <Table
+          loading={isLoading || isLoadingData}
+          rows={mappedRows || []}
+          onCollectGoods={handleCollectGoods}
+          onUpdateOrder={handleUpdateOrderClick}
+        />
         <CollectGoodsDialog
           orders={selectedRows}
           open={open}
           onClose={handleDialogClose}
           onSave={() => {}}
+        />
+        <UpdateOrderDialog
+          orders={selectedRows}
+          open={openUpdateOrderDialog}
+          onClose={handleUpdateOrderDialogClose}
+          onSave={mutate}
         />
       </PageContainer>
     </>

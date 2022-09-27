@@ -1,18 +1,19 @@
 export interface SpeedyAddress {
-  countryId: number;
-  siteId: number;
-  siteType: string;
-  siteName: string;
-  postCode: string;
-  streetId: number;
-  streetType: string;
-  streetName: string;
-  streetNo: string;
-  x: number;
-  y: number;
-  fullAddressString: string;
-  siteAddressString: string;
-  localAddressString: string;
+  countryId?: number;
+  siteId?: number;
+  siteType?: string;
+  siteName?: string;
+  postCode?: string;
+  streetId?: number;
+  streetType?: string;
+  streetName?: string;
+  streetNo?: string;
+  x?: number;
+  y?: number;
+  fullAddressString?: string;
+  siteAddressString?: string;
+  localAddressString?: string;
+  addressNote?: string;
 }
 
 export interface MaxParcelDimensions {
