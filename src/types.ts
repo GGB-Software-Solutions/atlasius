@@ -1,4 +1,12 @@
-import { Company } from "./pages/Companies/types";
+import { Company, DeliveryCompany } from "./pages/Companies/types";
+import { Address, City, Country, Office, Street } from "./types/econt";
+import { ProductResponse } from "./types/product";
+import {
+  SpeedyAddress,
+  SpeedyCity,
+  SpeedyCountry,
+  SpeedyOffice,
+} from "./types/speedy";
 
 export interface Warehouse {
   id: number;
@@ -12,39 +20,100 @@ export interface Warehouse {
 }
 
 interface Timestamps {
-  createdAt: Date;
+  createdAt: string;
   createdBy: string; //TODO: Should this be a User object?
-  updatedAt: Date;
+  updatedAt: string;
   updatedBy: string;
-  deletedAt: Date;
+  deletedAt: string;
   deletedBy: string;
 }
 
-export interface BaseProduct extends Timestamps {
-  id: number;
-  sku: string;
-  name: string;
-  ean: string;
-  weight: number;
-  category: string;
+export enum PaymentType {
+  CASH,
+  CREDIT_CARD,
 }
 
-export interface WarehouseProductQuantity {
-  id: number;
-  product: BaseProduct;
+export enum OrderStatus {
+  NEW = "NEW",
+  RESERVED = "RESERVED",
+  CANCELLED = "CANCELLED",
+  ARCHIVED = "ARCHIVED",
+}
+
+export enum WarehouseStatus {
+  PICKING = "PICKING",
+  PACKING = "PACKING",
+  SHIPPING = "SHIPPING",
+}
+
+export enum FulfillmentStatus {
+  //Is either picked or packed
+  UNFULFILLED = "UNFULFILLED",
+  //Order has been picked and packed and on it's way to customer
+  FULFILLED = "FULFILLED",
+}
+
+export enum ErrorStatus {
+  NOT_ENOUGH_QUANTITY = "NOT_ENOUGH_QUANTITY",
+  MISSING_PRODUCT = "MISSING_PRODUCT",
+  WRONG_ADDRESS = "WRONG_ADDRESS",
+  MISSING_PHONE = "MISSING_PHONE",
+}
+
+export interface OrderShippingDetails
+  extends Pick<
+    Order,
+    | "address1"
+    | "address2"
+    | "city"
+    | "zipCode"
+    | "country"
+    | "streetName"
+    | "streetNumber"
+  > {}
+
+type OfficeName =
+  | "СПИЙДИ ДО ОФИС"
+  | "СПИЙДИ ДО АДРЕС"
+  | "ЕКОНТ ДО ОФИС"
+  | "ЕКОНТ ДО АДРЕС";
+
+export interface Order {
+  id: string;
+  products: ProductResponse[];
+  externalId: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  streetName: string;
+  streetNumber: string;
+  address1: string;
+  city: string;
+  zipCode: string;
+  province: string;
+  country: string;
+  address2: string;
   company: Company;
-  warehouse: Warehouse;
-  quantity: number;
-  reserved: number;
-  readyToDeliver: number; //TODO: What was this about
-  // Item location in the warehouse
-  itemLocation: string;
+  countryCode: string;
+  provinceCode: string;
+  officeId: string;
+  officeName: OfficeName;
+  customerNote: string;
+  paymentType: PaymentType;
+  price: number;
+  deliveryPrice: number;
+  status: OrderStatus;
+  warehouseStatus: WarehouseStatus;
+  fulfillmentStatus: FulfillmentStatus;
+  errorStatus: ErrorStatus;
 }
 
-export interface Product extends BaseProduct {
-  quantities: WarehouseProductQuantity[];
-}
-
-export interface FormProduct extends Product {
-  company: Company;
+export interface MappedOrder<T extends DeliveryCompany = any>
+  extends Omit<Order, "city" | "country"> {
+  country: string | (T extends DeliveryCompany.Econt ? Country : SpeedyCountry);
+  city: string | (T extends DeliveryCompany.Econt ? City : SpeedyCity);
+  office?: T extends DeliveryCompany.Econt ? Office : SpeedyOffice;
+  street?: Street; //TODO: Add speedy address type as well;
+  validatedAddress?: T extends DeliveryCompany.Econt ? Address : SpeedyAddress;
 }

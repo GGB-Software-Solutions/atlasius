@@ -77,3 +77,24 @@ export interface SpeedyCountry {
   complexTypesEn: string;
   siteNomen: number;
 }
+
+export interface SpeedyCity {
+  id: number;
+  countryId: number;
+  mainSiteId: number;
+  type: string;
+  typeEn: string;
+  name: string;
+  nameEn: string;
+  municipality: string;
+  municipalityEn: string;
+  region: string;
+  regionEn: string;
+  postCode: string;
+  servingDays: string;
+  addressNomenclature: number;
+  x: number;
+  y: number;
+  servingOfficeId: number;
+  servingHubOfficeId: number;
+}
