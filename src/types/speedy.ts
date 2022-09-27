@@ -98,3 +98,71 @@ export interface SpeedyCity {
   servingOfficeId: number;
   servingHubOfficeId: number;
 }
+
+export interface Parcel {
+  id: string;
+  seqNo: number;
+}
+
+export interface NetAmount {
+  amount: number;
+  vatPercent: number;
+}
+
+export interface AddressPickupSurcharge {
+  amount: number;
+  percent: number;
+  vatPercent: number;
+}
+
+export interface Details {
+  netAmount: NetAmount;
+  addressPickupSurcharge: AddressPickupSurcharge;
+  addressDeliverySurcharge: AddressPickupSurcharge;
+  fixedDiscount: AddressPickupSurcharge;
+  dropOffDiscount: AddressPickupSurcharge;
+  pickUpDiscount: AddressPickupSurcharge;
+  additionalDiscount: AddressPickupSurcharge;
+  fuelSurcharge: AddressPickupSurcharge;
+  nonStandardDeliveryDateSurcharge: AddressPickupSurcharge;
+  loadUnload: AddressPickupSurcharge;
+  islandSurcharge: AddressPickupSurcharge;
+  optionsBeforePaymentSurcharge: AddressPickupSurcharge;
+  codPremium: AddressPickupSurcharge;
+  heavyParcelSurcharge: AddressPickupSurcharge;
+  addressNormalizationSurcharge: AddressPickupSurcharge;
+  tollSurcharge: AddressPickupSurcharge;
+  insurancePremium: AddressPickupSurcharge;
+  voucherDiscount: AddressPickupSurcharge;
+}
+
+export interface Price {
+  amount: number;
+  vat: number;
+  total: number;
+  currency: string;
+  details: Details;
+  amountLocal: number;
+  vatLocal: number;
+  totalLocal: number;
+  currencyLocal: string;
+  detailsLocal: Details;
+  currencyExchangeRateUnit: number;
+  currencyExchangeRate: number;
+}
+
+export interface SpeedyLabel {
+  id: string;
+  parcels: Parcel[];
+  pickupDate: string;
+  price: Price;
+  deliveryDeadline: Date;
+}
+
+export interface SpeedyError {
+  context: string;
+  message: string;
+  id: string;
+  code: number;
+  component: string;
+}

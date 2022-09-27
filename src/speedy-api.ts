@@ -1,4 +1,9 @@
-import { SpeedyAddress, SpeedyCountry } from "./types/speedy";
+import {
+  SpeedyAddress,
+  SpeedyCountry,
+  SpeedyError,
+  SpeedyLabel,
+} from "./types/speedy";
 
 const BASE_URL = "https://api.speedy.bg/v1";
 
@@ -84,7 +89,9 @@ export const validateAddress = async (address: SpeedyAddress) => {
   return data;
 };
 
-export const generateLabel = async (label) => {
+export const generateLabel = async (
+  label
+): Promise<SpeedyLabel & { error: SpeedyError }> => {
   const response = await fetch("api/speedy/label", {
     method: "POST",
     body: JSON.stringify(label),
