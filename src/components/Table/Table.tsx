@@ -29,8 +29,8 @@ export default function Table<T extends GridValidRowModel>({
         components={{
           Toolbar: toolbar,
         }}
+        pagination
         autoHeight
-        pageSize={10}
         rowsPerPageOptions={[10, 25, 50, 100]}
         checkboxSelection={checkboxSelection}
         disableSelectionOnClick
