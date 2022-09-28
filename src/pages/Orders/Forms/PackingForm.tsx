@@ -65,7 +65,8 @@ export default function PackingForm({ data }: Props) {
     setOrders((orders) => orders.filter((order) => order.id !== orderId));
   };
 
-  const isAllProductsPacked = packedProducts.length === orders.length;
+  const isAllProductsPacked =
+    packedProducts.length === selectedOrder?.products.length;
 
   const handleReturnForPicking = async () => {
     const orderStatus: UpdateOrderStatus = {
