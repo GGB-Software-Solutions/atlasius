@@ -33,8 +33,8 @@ type MappedSpeedyOrder = MappedOrder<DeliveryCompany.Speedy>;
 
 interface Props {
   hideGenerateShippingLabel?: boolean;
-  onSave: (data: MappedSpeedyOrder) => void;
-  onSubmit: (data: MappedSpeedyOrder) => void;
+  onSave?: () => void;
+  onSubmit?: (data: MappedSpeedyOrder) => void;
   formContext: UseFormReturn<MappedSpeedyOrder>;
 }
 
@@ -88,7 +88,8 @@ export default function SpeedyShippingForm({
     const response = await updateShippingDetails(shippingDetails);
     if (response.success) {
       setNotification({ type: "success", message: response.success });
-      onSave();
+      //Called from UpdateOrderDialog
+      if (onSave) onSave();
     } else {
       setNotification({ type: "error", message: response.error });
     }

@@ -13,6 +13,7 @@ import { getDeliveryCourier } from "./utils";
 import { DeliveryCompany } from "../Companies/types";
 import ShippingForm from "./Forms/ShippingForm";
 import SpeedyShippingForm from "./Forms/SpeedyShippingForm";
+import { useForm } from "react-hook-form";
 
 interface Props {
   orders: MappedOrder[];
@@ -29,6 +30,7 @@ export default function UpdateOrderDialog({
 }: Props) {
   if (!open) return null;
   const order = orders[0];
+  const formContext = useForm({ defaultValues: order });
 
   const handleSave = () => {
     onClose();
@@ -41,13 +43,13 @@ export default function UpdateOrderDialog({
       <DialogContent>
         {getDeliveryCourier(order) === DeliveryCompany.Econt ? (
           <ShippingForm
-            data={order}
+            formContext={formContext}
             hideGenerateShippingLabel
             onSave={handleSave}
           />
         ) : (
           <SpeedyShippingForm
-            data={order}
+            formContext={formContext}
             hideGenerateShippingLabel
             onSave={handleSave}
           />

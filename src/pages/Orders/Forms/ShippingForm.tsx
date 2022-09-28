@@ -26,8 +26,8 @@ type MappedEcontOrder = MappedOrder<DeliveryCompany.Econt>;
 
 interface Props {
   hideGenerateShippingLabel?: boolean;
-  onSave: (data: MappedEcontOrder) => void;
-  onSubmit: (data: MappedEcontOrder) => void;
+  onSave?: () => void;
+  onSubmit?: (data: MappedEcontOrder) => void;
   formContext: UseFormReturn<MappedEcontOrder>;
 }
 
@@ -94,7 +94,7 @@ export default function ShippingForm({
     const response = await updateShippingDetails(shippingDetails);
     if (response.success) {
       setNotification({ type: "success", message: response.success });
-      onSave();
+      if (onSave) onSave();
     } else {
       setNotification({ type: "error", message: response.error });
     }
