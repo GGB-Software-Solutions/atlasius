@@ -2,14 +2,14 @@ import React from "react";
 import PageContainer from "../../components/PageContainer";
 import Table from "./Table";
 import CollectGoodsDialog from "./Dialog";
-import { MappedOrder } from "../../types";
+import { MappedOrder, OrderStatus } from "../../types";
 import useStore from "../../store/globalStore";
-import { orders } from "./Forms/mocks";
 import { mapOrders } from "./utils";
 import useSWR from "swr";
 import { API_ENDPOINTS } from "../../api";
 import { jsonFetch } from "../../utils/fetch";
 import UpdateOrderDialog from "./UpdateOrderDialog";
+import { updateOrderStatus, UpdateOrderStatus } from "./api";
 
 export default function Admin() {
   const econtOffices = useStore((state) => state.econtOffices);
@@ -17,8 +17,6 @@ export default function Admin() {
   const econtCities = useStore((state) => state.econtCities);
   const speedyOffices = useStore((state) => state.speedyOffices);
   const [mappedRows, setMappedRows] = React.useState<MappedOrder[]>([]);
-  // const data = orders;
-  //TODO: Uncomment this
   const {
     data = [],
     isLoading: isLoadingData,
@@ -29,12 +27,15 @@ export default function Admin() {
     React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const [selectedRows, setSelectedRows] = React.useState<MappedOrder[]>([]);
-  const handleCollectGoods = (data: MappedOrder[]) => {
+  const handleCollectGoods = async (data: MappedOrder[]) => {
+    await changeStatus(data, OrderStatus.RESERVED);
     setOpen(true);
     setSelectedRows(data);
   };
 
-  const handleDialogClose = () => {
+  const handleDialogClose = async () => {
+    await changeStatus(selectedRows, OrderStatus.NEW);
+    mutate();
     setOpen(false);
     setSelectedRows([]);
   };
@@ -47,6 +48,18 @@ export default function Admin() {
   const handleUpdateOrderDialogClose = () => {
     setOpenUpdateOrderDialog(false);
     setSelectedRows([]);
+  };
+
+  const changeStatus = async (data: MappedOrder[], status: OrderStatus) => {
+    await Promise.all(
+      data.map((order) => {
+        const orderStatus: UpdateOrderStatus = {
+          id: order.id,
+          status,
+        };
+        return updateOrderStatus(orderStatus);
+      })
+    );
   };
 
   const mapRows = async () => {
