@@ -7,9 +7,6 @@ import {
 } from "@mui/x-data-grid";
 import { Button, Chip } from "@mui/material";
 import Table, { Props as TableProps } from "../../components/Table";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import WarningIcon from "@mui/icons-material/Warning";
-import CancelIcon from "@mui/icons-material/Cancel";
 
 import { getDeliveryCourier, shouldOrderBeDeliveredToOffice } from "./utils";
 import CircleIcon from "@mui/icons-material/Circle";
@@ -101,18 +98,6 @@ const columns: GridColDef[] = [
     },
   },
   {
-    field: "validatedAddress",
-    headerName: "Валиден адрес",
-    renderCell: (params: GridRenderCellParams) => {
-      const isToOffice = shouldOrderBeDeliveredToOffice(params.row);
-      let isValidShippingAddress = isToOffice
-        ? Boolean(params.row.officeId)
-        : Boolean(params.row.validatedAddress);
-      if (isValidShippingAddress) return <CheckCircleIcon color="success" />;
-      return <WarningIcon color="warning" />;
-    },
-  },
-  {
     field: "firstName",
     headerName: "Клиент",
     width: 250,
@@ -121,20 +106,25 @@ const columns: GridColDef[] = [
       `${params.row.firstName} ${params.row.lastName}`,
   },
   {
+    field: "phone",
+    headerName: "Телефон",
+    width: 125,
+  },
+  {
+    field: "email",
+    headerName: "Email",
+    width: 200,
+  },
+  {
     field: "officeId",
+    type: "boolean",
     headerName: "До офис",
-    renderCell: (params: GridRenderCellParams) => {
-      const isToOffice = shouldOrderBeDeliveredToOffice(params.row);
-      return isToOffice ? (
-        <CheckCircleIcon color="primary" />
-      ) : (
-        <CancelIcon color="secondary" />
-      );
-    },
+    valueGetter: (params: GridValueGetterParams) =>
+      shouldOrderBeDeliveredToOffice(params.row),
   },
   {
     field: "officeName",
-    headerName: "До офис",
+    headerName: "Куриер",
     valueGetter: (params: GridValueGetterParams) =>
       `${getDeliveryCourier(params.row)}`,
   },
@@ -151,6 +141,11 @@ const columns: GridColDef[] = [
     field: "address1",
     headerName: "Адрес",
     width: 500,
+  },
+  {
+    field: "paymentType",
+    headerName: "Вид плащане",
+    width: 150,
   },
 ];
 

@@ -35,6 +35,14 @@ export default function Table<T extends GridValidRowModel>({
         checkboxSelection={checkboxSelection}
         disableSelectionOnClick
         rows={rows}
+        sx={{
+          "& .MuiDataGrid-columnHeaderTitle": {
+            textOverflow: "clip",
+            whiteSpace: "break-spaces",
+            lineHeight: 1,
+          },
+          ...other.sx,
+        }}
       />
     </Box>
   );
