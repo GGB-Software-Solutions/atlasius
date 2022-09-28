@@ -7,7 +7,6 @@ const columns: GridColDef<Expedition>[] = [
   {
     field: "shipmentId",
     type: "number",
-    hide: true,
     headerName: "ID",
     width: 90,
   },
@@ -44,7 +43,14 @@ const columns: GridColDef<Expedition>[] = [
 ];
 
 const ExpeditionsTable = ({ rows }: Omit<Props<Expedition>, "columns">) => {
-  return <Table title="Експедиции" rows={rows} columns={columns} />;
+  return (
+    <Table
+      getRowId={(row) => row.shipmentId}
+      title="Експедиции"
+      rows={rows}
+      columns={columns}
+    />
+  );
 };
 
 export default ExpeditionsTable;
