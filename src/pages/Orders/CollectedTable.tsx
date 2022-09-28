@@ -2,9 +2,9 @@ import * as React from "react";
 import { GridColDef } from "@mui/x-data-grid";
 import { Button } from "@mui/material";
 import Table from "../../components/Table";
-import { ProductResponse } from "../../types/product";
+import { CollectProduct } from "../../types/product";
 
-const columns: GridColDef<ProductResponse>[] = [
+const columns: GridColDef<CollectProduct>[] = [
   { field: "id", type: "number", hide: true, headerName: "ID", width: 90 },
   {
     field: "name",
@@ -24,8 +24,8 @@ const columns: GridColDef<ProductResponse>[] = [
 ];
 
 interface Props {
-  onUncollect: (products: ProductResponse[]) => void;
-  rows: ProductResponse[];
+  onUncollect: (products: CollectProduct[]) => void;
+  rows: CollectProduct[];
 }
 
 export const CollectedTable = ({ onUncollect, rows }: Props) => {

@@ -108,7 +108,6 @@ export default function Admin() {
           orders={selectedRows}
           open={open}
           onClose={handleDialogClose}
-          onSave={() => {}}
         />
         <UpdateOrderDialog
           orders={selectedRows}

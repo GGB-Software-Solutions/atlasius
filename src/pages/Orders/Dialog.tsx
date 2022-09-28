@@ -15,24 +15,26 @@ import CollectedTable from "./CollectedTable";
 import UncollectedTable from "./UncollectedTable";
 import { getOrderDialogTitle, mapProductsPieces } from "./utils";
 import { updateOrderStatus, UpdateOrderStatus } from "./api";
+import { CollectProduct } from "../../types/product";
 
 interface Props {
   orders: MappedOrder[];
   open: boolean;
-  onSave: () => void;
   onClose: () => void;
 }
 
-export default function OrdersDialog({ orders, onClose, open, onSave }: Props) {
+export default function OrdersDialog({ orders, onClose, open }: Props) {
   if (!open) return null;
   const [isLoading, setIsLoading] = React.useState(false);
   const [data, setData] = React.useState(orders);
   const title = getOrderDialogTitle(data[0]);
   const warehouseStatus = data[0].warehouseStatus;
-  const [collected, setCollected] = React.useState([]);
-  const [uncollected, setUncollected] = React.useState(mapProductsPieces(data));
+  const [collected, setCollected] = React.useState<CollectProduct[]>([]);
+  const [uncollected, setUncollected] = React.useState<CollectProduct[]>(
+    mapProductsPieces(data)
+  );
 
-  const handleCollect = (toCollect) => {
+  const handleCollect = (toCollect: CollectProduct[]) => {
     const toCollectKeys = toCollect.map((item) => item.id);
     setCollected((prev) => [...prev, ...toCollect]);
     setUncollected((prev) =>
@@ -40,7 +42,7 @@ export default function OrdersDialog({ orders, onClose, open, onSave }: Props) {
     );
   };
 
-  const handleUnCollect = (toUnCollect) => {
+  const handleUnCollect = (toUnCollect: CollectProduct[]) => {
     const toUnCollectKeys = toUnCollect.map((item) => item.id);
     setUncollected((prev) => [...prev, ...toUnCollect]);
     setCollected((prev) =>
@@ -82,6 +84,8 @@ export default function OrdersDialog({ orders, onClose, open, onSave }: Props) {
                   onCollect={handleCollect}
                   rows={uncollected}
                 />
+              </Grid>
+              <Grid item xs={12}>
                 <CollectedTable
                   onUncollect={handleUnCollect}
                   rows={collected}
