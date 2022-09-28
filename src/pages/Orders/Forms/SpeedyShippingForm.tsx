@@ -294,22 +294,34 @@ export default function SpeedyShippingForm({
               </Grid>
             </>
           ) : (
-            <Grid item xs={6} md={8}>
-              <VirtualizedAutocomplete
-                name="office"
-                label="Офис"
-                options={offices}
-                required
-                loading={isLoadingOffices}
-                autocompleteProps={{
-                  disabled: !city,
-                  getOptionLabel(option) {
-                    if (typeof option === "string") return option;
-                    return `${option.name} - ${option?.address?.localAddressString}`;
-                  },
-                }}
-              />
-            </Grid>
+            <>
+              <Grid item xs={6} md={8}>
+                <VirtualizedAutocomplete
+                  name="office"
+                  label="Офис"
+                  options={offices}
+                  required
+                  loading={isLoadingOffices}
+                  autocompleteProps={{
+                    disabled: !city,
+                    getOptionLabel(option) {
+                      if (typeof option === "string") return option;
+                      return `${option.name} - ${option?.address?.localAddressString}`;
+                    },
+                  }}
+                />
+              </Grid>
+              <Grid item xs={6} md={4}>
+                <TextFieldElement
+                  variant="standard"
+                  name="address1"
+                  label="Адрес 1"
+                  required
+                  fullWidth
+                  disabled
+                />
+              </Grid>
+            </>
           )}
         </Grid>
         <Button

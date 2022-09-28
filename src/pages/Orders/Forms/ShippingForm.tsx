@@ -46,6 +46,7 @@ export default function ShippingForm({
   const [deliverToOffice, setDeliverToOffice] = React.useState(
     shouldOrderBeDeliveredToOffice(formContext.getValues())
   );
+
   const [validatedAddress, setValidatedAddress] =
     React.useState<Address>(validAddress);
   const econtCountries = useStore((state) => state.econtCountries);
@@ -275,21 +276,33 @@ export default function ShippingForm({
               </Grid>
             </>
           ) : (
-            <Grid item xs={6} md={4}>
-              <VirtualizedAutocomplete
-                name="office"
-                label="Офис"
-                options={offices}
-                required
-                loading={isLoadingOffices}
-                autocompleteProps={{
-                  disabled: !city,
-                  getOptionLabel({ name, nameEn }) {
-                    return `${name} - ${nameEn}`;
-                  },
-                }}
-              />
-            </Grid>
+            <>
+              <Grid item xs={6} md={4}>
+                <VirtualizedAutocomplete
+                  name="office"
+                  label="Офис"
+                  options={offices}
+                  required
+                  loading={isLoadingOffices}
+                  autocompleteProps={{
+                    disabled: !city,
+                    getOptionLabel({ name, nameEn }) {
+                      return `${name} - ${nameEn}`;
+                    },
+                  }}
+                />
+              </Grid>
+              <Grid item xs={6} md={4}>
+                <TextFieldElement
+                  variant="standard"
+                  name="address1"
+                  label="Адрес 1"
+                  required
+                  fullWidth
+                  disabled
+                />
+              </Grid>
+            </>
           )}
         </Grid>
         <Button

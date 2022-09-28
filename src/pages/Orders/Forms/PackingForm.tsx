@@ -46,13 +46,8 @@ export default function PackingForm({ data }: Props) {
   const formContext = useForm({ defaultValues: selectedOrder || {} });
   const expedition = formContext.watch("shippingLabel");
 
-  React.useEffect(() => {
-    if (selectedOrder) {
-      formContext.reset(selectedOrder);
-    }
-  }, [selectedOrder]);
-
   const onRowClick = (params: GridRowParams) => {
+    formContext.reset(params.row);
     setSelectedOrder(params.row);
   };
 
