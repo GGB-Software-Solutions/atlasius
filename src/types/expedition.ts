@@ -3,7 +3,6 @@ export interface Expedition {
   companyId: string;
   orderId: string;
   deliveryCompany: string;
-  trackingNumber: string;
   deliveryPrice: number;
   status: string;
 }

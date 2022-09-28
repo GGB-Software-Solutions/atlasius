@@ -1,10 +1,18 @@
 import { Company, DeliveryCompany } from "./pages/Companies/types";
-import { Address, City, Country, Office, Street } from "./types/econt";
+import {
+  Address,
+  City,
+  Country,
+  Office,
+  ShipmentStatus,
+  Street,
+} from "./types/econt";
 import { ProductResponse } from "./types/product";
 import {
   SpeedyAddress,
   SpeedyCity,
   SpeedyCountry,
+  SpeedyLabel,
   SpeedyOffice,
 } from "./types/speedy";
 
@@ -116,4 +124,7 @@ export interface MappedOrder<T extends DeliveryCompany = any>
   office?: T extends DeliveryCompany.Econt ? Office : SpeedyOffice;
   street?: Street; //TODO: Add speedy address type as well;
   validatedAddress?: T extends DeliveryCompany.Econt ? Address : SpeedyAddress;
+  shippingLabel?: T extends DeliveryCompany.Econt
+    ? ShipmentStatus
+    : SpeedyLabel;
 }

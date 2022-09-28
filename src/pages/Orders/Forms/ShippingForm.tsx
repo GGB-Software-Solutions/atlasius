@@ -1,5 +1,5 @@
 import React from "react";
-import { useForm } from "react-hook-form";
+import { UseFormReturn } from "react-hook-form";
 import {
   FormContainer,
   TextFieldElement,
@@ -8,13 +8,14 @@ import {
 import { Button, FormControlLabel, Grid, Switch } from "@mui/material";
 import Econt, { getInnerErrors } from "../../../econt";
 import { MappedOrder } from "../../../types";
-import { Address, City, Country } from "../../../types/econt";
+import { Address, Country } from "../../../types/econt";
 import useStore from "../../../store/globalStore";
 import VirtualizedAutocomplete from "./VirtualizedAutocomplete";
 
 import useEcont from "./useEcont";
 import {
   generateShippingLabel,
+  mapEcontLabelToExpedition,
   shouldOrderBeDeliveredToOffice,
 } from "../utils";
 import { DeliveryCompany } from "../../Companies/types";
@@ -24,31 +25,31 @@ import { OrderShippingDetails, updateShippingDetails } from "../api";
 type MappedEcontOrder = MappedOrder<DeliveryCompany.Econt>;
 
 interface Props {
-  data: MappedEcontOrder;
   hideGenerateShippingLabel?: boolean;
   onSave: (data: MappedEcontOrder) => void;
+  onSubmit: (data: MappedEcontOrder) => void;
+  formContext: UseFormReturn<MappedEcontOrder>;
 }
 
 export default function ShippingForm({
-  data,
+  formContext,
   onSave,
+  onSubmit,
   hideGenerateShippingLabel = false,
 }: Props) {
-  const setNotification = useStore((state) => state.setNotification);
-  const [deliverToOffice, setDeliverToOffice] = React.useState(
-    shouldOrderBeDeliveredToOffice(data)
-  );
-  const [validatedAddress, setValidatedAddress] = React.useState<Address>(
-    Boolean(data.validatedAddress)
-  );
-  const econtCountries = useStore((state) => state.econtCountries);
-  const econtOffices = useStore((state) => state.econtOffices);
-  const formContext = useForm({
-    defaultValues: data,
-  });
   const country = formContext.watch("country") as Country;
   const city = formContext.watch("city");
   const office = formContext.watch("office");
+  const validAddress = formContext.watch("validatedAddress");
+
+  const setNotification = useStore((state) => state.setNotification);
+  const [deliverToOffice, setDeliverToOffice] = React.useState(
+    shouldOrderBeDeliveredToOffice(formContext.getValues())
+  );
+  const [validatedAddress, setValidatedAddress] =
+    React.useState<Address>(validAddress);
+  const econtCountries = useStore((state) => state.econtCountries);
+  const econtOffices = useStore((state) => state.econtOffices);
 
   const econtService = React.useRef(new Econt()).current;
   const {
@@ -99,7 +100,8 @@ export default function ShippingForm({
     }
   };
 
-  const handleSubmit = async (data: MappedEcontOrder) => {
+  const saveShippingDetails = async () => {
+    const data = formContext.getValues();
     const { streetNumber, street, zipCode, city } = data;
     if (deliverToOffice) return updateDetails(data);
 
@@ -120,11 +122,16 @@ export default function ShippingForm({
   };
 
   const handleGenerateShippingLabel = async () => {
+    const data = formContext.getValues();
     const response = await generateShippingLabel(data);
     if (response.innerErrors) {
       setNotification({ type: "error", message: getInnerErrors(response) });
       return;
     }
+    formContext.setValue(
+      "shippingLabel",
+      mapEcontLabelToExpedition(response, data)
+    );
     const printJS = (await import("print-js")).default;
     printJS(response.pdfURL);
   };
@@ -151,7 +158,13 @@ export default function ShippingForm({
         label="До офис"
       />
 
-      <FormContainer formContext={formContext} onSuccess={handleSubmit}>
+      <FormContainer
+        formContext={formContext}
+        onSuccess={onSubmit}
+        FormProps={{
+          id: "packing-form",
+        }}
+      >
         <Grid
           container
           spacing={2}
@@ -279,7 +292,11 @@ export default function ShippingForm({
             </Grid>
           )}
         </Grid>
-        <Button variant="contained" type="submit" color="primary">
+        <Button
+          variant="contained"
+          onClick={saveShippingDetails}
+          color="primary"
+        >
           Запази
         </Button>
         {!hideGenerateShippingLabel && (

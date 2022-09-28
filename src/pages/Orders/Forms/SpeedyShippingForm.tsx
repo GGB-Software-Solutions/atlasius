@@ -1,5 +1,5 @@
 import React from "react";
-import { useForm } from "react-hook-form";
+import { useForm, UseFormReturn } from "react-hook-form";
 import {
   FormContainer,
   TextFieldElement,
@@ -11,6 +11,7 @@ import useStore from "../../../store/globalStore";
 import VirtualizedAutocomplete from "./VirtualizedAutocomplete";
 import {
   generateSpeedyShippingLabel,
+  mapSpeedyLabelToExpedition,
   shouldOrderBeDeliveredToOffice,
 } from "../utils";
 import { DeliveryCompany } from "../../Companies/types";
@@ -31,29 +32,30 @@ import { OrderShippingDetails, updateShippingDetails } from "../api";
 type MappedSpeedyOrder = MappedOrder<DeliveryCompany.Speedy>;
 
 interface Props {
-  data: MappedSpeedyOrder;
   hideGenerateShippingLabel?: boolean;
   onSave: (data: MappedSpeedyOrder) => void;
+  onSubmit: (data: MappedSpeedyOrder) => void;
+  formContext: UseFormReturn<MappedSpeedyOrder>;
 }
 
 export default function SpeedyShippingForm({
-  data,
   onSave,
+  onSubmit,
+  formContext,
   hideGenerateShippingLabel = false,
 }: Props) {
-  const setNotification = useStore((state) => state.setNotification);
-  const [deliverToOffice, setDeliverToOffice] = React.useState(
-    shouldOrderBeDeliveredToOffice(data)
-  );
-  const [validAddress, setValidAddress] = React.useState(
-    Boolean(data.validatedAddress)
-  );
-  const formContext = useForm({
-    defaultValues: data,
-  });
   const country = formContext.watch("country") as SpeedyCountry;
   const city = formContext.watch("city");
   const office = formContext.watch("office");
+  const validatedAddress = formContext.watch("validatedAddress");
+
+  const setNotification = useStore((state) => state.setNotification);
+  const [deliverToOffice, setDeliverToOffice] = React.useState(
+    shouldOrderBeDeliveredToOffice(formContext.getValues())
+  );
+  const [validAddress, setValidAddress] = React.useState(
+    Boolean(validatedAddress)
+  );
 
   const { offices = [], isLoadingOffices } = useSpeedy({
     countryId: country?.id,
@@ -92,7 +94,8 @@ export default function SpeedyShippingForm({
     }
   };
 
-  const handleSubmit = async (data: MappedSpeedyOrder) => {
+  const saveShippingDetails = async () => {
+    const data = formContext.getValues();
     const { streetNumber, street, country, zipCode, city } = data;
     if (deliverToOffice) return updateDetails(data);
 
@@ -127,6 +130,10 @@ export default function SpeedyShippingForm({
       });
       return;
     }
+    formContext.setValue(
+      "shippingLabel",
+      mapSpeedyLabelToExpedition(response, order)
+    );
     const label = await printLabel(response.parcels[0].id);
     const printJS = (await import("print-js")).default;
     printJS({ printable: label, type: "pdf", base64: true });
@@ -170,7 +177,13 @@ export default function SpeedyShippingForm({
         label="До офис"
       />
 
-      <FormContainer formContext={formContext} onSuccess={handleSubmit}>
+      <FormContainer
+        formContext={formContext}
+        onSuccess={onSubmit}
+        FormProps={{
+          id: "packing-form",
+        }}
+      >
         <Grid
           container
           spacing={2}
@@ -298,7 +311,11 @@ export default function SpeedyShippingForm({
             </Grid>
           )}
         </Grid>
-        <Button variant="contained" type="submit" color="primary">
+        <Button
+          variant="contained"
+          onClick={saveShippingDetails}
+          color="primary"
+        >
           Запази
         </Button>
         {!hideGenerateShippingLabel && (
