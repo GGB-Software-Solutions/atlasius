@@ -55,6 +55,13 @@ const columns: GridColDef[] = [
         label = "В процес на пакетиране";
       }
 
+      if (
+        status === OrderStatus.ARCHIVED &&
+        warehouseStatus === WarehouseStatus.SHIPPING
+      ) {
+        label = "Изпратена";
+      }
+
       if (errorStatus === ErrorStatus.WRONG_ADDRESS) {
         label = "Невалиден адрес";
       }
@@ -77,6 +84,10 @@ const columns: GridColDef[] = [
 
       if (status === OrderStatus.NEW) {
         color = "#56f000";
+      }
+
+      if (status === OrderStatus.ARCHIVED) {
+        color = "#2e7d32";
       }
 
       if (errorStatus) {

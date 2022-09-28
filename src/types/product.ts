@@ -40,7 +40,7 @@ export interface FormProduct extends Omit<ProductResponse, "id"> {
   company: Company;
 }
 
-export interface ProductSubmit extends Omit<ProductResponse, "id"> {
+export interface ProductSubmit extends ProductResponse {
   companyId: string;
   createdBy: string;
 }

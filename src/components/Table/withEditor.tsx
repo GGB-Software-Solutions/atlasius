@@ -32,9 +32,16 @@ const withEditor =
     const handleSave = async (formData: T) => {
       if (onEditorSave) {
         const response = await onEditorSave(formData);
-        if (response) {
-          setNotification({ type: "success", message: response.success });
+        if (response && response.success) {
+          setNotification({
+            type: "success",
+            message: Array.isArray(response.success)
+              ? response.success.join(",")
+              : response.success,
+          });
           setCurrentlyEditting(null);
+        } else {
+          setNotification({ type: "error", message: response.error });
         }
       }
     };

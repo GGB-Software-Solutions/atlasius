@@ -19,25 +19,12 @@ async function saveProduct(url: string, options) {
 }
 
 const map = (data: FormProduct): ProductSubmit[] => {
-  const {
-    sku,
-    name,
-    ean,
-    weight,
-    category,
-    company,
-    productWarehouseQuantities,
-  } = data;
+  const { company } = data;
   return [
     {
-      sku,
-      name,
-      weight,
-      category,
-      ean,
+      ...data,
       companyId: company.id,
       createdBy: "6314d8f70e29a132b0262393", //TODO: Get user from the state
-      productWarehouseQuantities,
     },
   ];
 };
@@ -48,9 +35,8 @@ const transform = (
 ): FormProduct[] =>
   products.map((product) => ({
     ...product,
-    id: `${product.productId.companyId}${product.productId.sku}`,
     company: companies.find(
-      (company) => company.id === product.id.companyId
+      (company) => company.id === product.productId.companyId
     ) as Company,
   }));
 
@@ -61,13 +47,8 @@ export default function Admin() {
     jsonFetch
   );
   const companies = useStore((state) => state.companies);
-
-  const handleSave = (data: FormProduct) => {
-    trigger(map(data));
-  };
+  const handleSave = async (data: FormProduct) => trigger(map(data));
   const rows = transform(data || [], companies);
-
-  console.log(data, companies, rows);
 
   return (
     <PageContainer title="Продукти">
