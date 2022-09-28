@@ -159,7 +159,7 @@ type Props = {
   onCollectGoods: (data: MappedOrder[]) => void;
   onUpdateOrder: (data: MappedOrder[]) => void;
   rows: MappedOrder[];
-} & TableProps<MappedOrder>;
+} & Partial<TableProps<MappedOrder>>;
 
 const OrdersTable = ({
   onCollectGoods,
