@@ -4,12 +4,7 @@ import ShippingForm from "./ShippingForm";
 import OrdersTable from "../Table";
 import { GridRowParams } from "@mui/x-data-grid";
 import PackingProductsTable from "./PackingProductsTable";
-import {
-  getDeliveryCourier,
-  mapEcontLabelToExpedition,
-  mapProductsPieces,
-  mapSpeedyLabelToExpedition,
-} from "../utils";
+import { getDeliveryCourier, mapProductsPieces } from "../utils";
 import SpeedyShippingForm from "./SpeedyShippingForm";
 import { DeliveryCompany } from "../../Companies/types";
 import {
@@ -61,6 +56,12 @@ export default function PackingForm({ data }: Props) {
     }
   };
 
+  const resetSelectedOrder = (orderId: string) => {
+    setSelectedOrder(null);
+    setPackedProducts([]);
+    setOrders((orders) => orders.filter((order) => order.id !== orderId));
+  };
+
   const isAllProductsPacked = packedProducts.length === orders.length;
 
   const handleReturnForPicking = async () => {
@@ -70,12 +71,8 @@ export default function PackingForm({ data }: Props) {
     };
     const response = await updateOrderStatus(orderStatus);
     if (response.success) {
-      setSelectedOrder(null);
-      setPackedProducts([]);
-      setOrders((orders) =>
-        orders.filter((order) => order.id !== selectedOrder.id)
-      );
       setNotification({ type: "success", message: response.success });
+      resetSelectedOrder(selectedOrder.id);
     } else {
       setNotification({ type: "error", message: response.error });
     }
@@ -90,9 +87,7 @@ export default function PackingForm({ data }: Props) {
     };
     await updateOrderStatus(orderStatus);
     await saveShippingLabel(data.shippingLabel);
-    setSelectedOrder(null);
-    setPackedProducts([]);
-    setOrders((orders) => orders.filter((order) => order.id !== data.id));
+    resetSelectedOrder(data.id);
   };
 
   return (
@@ -155,7 +150,7 @@ export default function PackingForm({ data }: Props) {
             <LoadingButton
               variant="contained"
               color="primary"
-              disabled={!isAllProductsPacked}
+              disabled={!isAllProductsPacked || !expedition}
               type="submit"
               form="packing-form"
             >

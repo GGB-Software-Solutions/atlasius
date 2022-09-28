@@ -50,7 +50,6 @@ export default function ShippingForm({
   const [validatedAddress, setValidatedAddress] =
     React.useState<Address>(validAddress);
   const econtCountries = useStore((state) => state.econtCountries);
-  const econtOffices = useStore((state) => state.econtOffices);
 
   const econtService = React.useRef(new Econt()).current;
   const {
