@@ -4,7 +4,7 @@ import ShippingForm from "./ShippingForm";
 import OrdersTable from "../Table";
 import { GridRowParams } from "@mui/x-data-grid";
 import PackingProductsTable from "./PackingProductsTable";
-import { getDeliveryCourier, mapProductsPieces } from "../utils";
+import { getDeliveryCourier } from "../utils";
 import SpeedyShippingForm from "./SpeedyShippingForm";
 import { DeliveryCompany } from "../../Companies/types";
 import {
@@ -26,6 +26,7 @@ import {
 } from "../../../utils/common";
 import { useForm } from "react-hook-form";
 import ExpeditionsTable from "../../Expeditions/Table";
+import { ProductResponse } from "../../../types/product";
 
 interface Props {
   data: MappedOrder[];
@@ -37,7 +38,9 @@ export default function PackingForm({ data }: Props) {
   const [selectedOrder, setSelectedOrder] = React.useState<MappedOrder | null>(
     null
   );
-  const [packedProducts, setPackedProducts] = React.useState([]);
+  const [packedProducts, setPackedProducts] = React.useState<ProductResponse[]>(
+    []
+  );
   const formContext = useForm({ defaultValues: selectedOrder || {} });
   const expedition = formContext.watch("shippingLabel");
 
@@ -46,7 +49,7 @@ export default function PackingForm({ data }: Props) {
     setSelectedOrder(params.row);
   };
 
-  const handlePack = (data, pack: boolean) => {
+  const handlePack = (data: ProductResponse, pack: boolean) => {
     if (pack) {
       setPackedProducts((prev) => [...prev, data]);
     } else {
@@ -136,7 +139,7 @@ export default function PackingForm({ data }: Props) {
           <Paper sx={{ padding: 2, mt: 4 }} variant="outlined">
             <PackingProductsTable
               onPack={handlePack}
-              rows={mapProductsPieces([selectedOrder])}
+              rows={selectedOrder.products}
               packedProductsIds={packedProducts.map((product) => product.id)}
             />
           </Paper>

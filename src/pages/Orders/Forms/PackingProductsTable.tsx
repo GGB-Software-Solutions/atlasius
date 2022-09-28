@@ -2,16 +2,18 @@ import * as React from "react";
 import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { Box, Button } from "@mui/material";
 import Table from "../../../components/Table";
-import { darken, lighten } from "@mui/material/styles";
-
-const getBackgroundColor = (color: string, mode: string) =>
-  mode === "dark" ? darken(color, 0.6) : lighten(color, 0.6);
-
-const getHoverBackgroundColor = (color: string, mode: string) =>
-  mode === "dark" ? darken(color, 0.5) : lighten(color, 0.5);
+import {
+  getBackgroundColor,
+  getHoverBackgroundColor,
+} from "../../../utils/common";
+import { ProductResponse } from "../../../types/product";
 
 const renderPackButton =
-  (onClick, packedProductsIds) => (params: GridRenderCellParams) => {
+  (
+    onClick: (row: ProductResponse, isPacked: boolean) => void,
+    packedProductsIds: string[]
+  ) =>
+  (params: GridRenderCellParams) => {
     const isPacked = packedProductsIds.includes(params.row.id);
     const handleClick = () => onClick(params.row, !isPacked);
     return (
@@ -28,7 +30,10 @@ const renderPackButton =
     );
   };
 
-const columns = (onPack, packedProductsIds): GridColDef[] => [
+const columns = (
+  onPack: (row: ProductResponse, isPacked: boolean) => void,
+  packedProductsIds: string[]
+): GridColDef[] => [
   { field: "id", type: "number", hide: true, headerName: "ID", width: 90 },
   {
     field: "name",
@@ -46,27 +51,32 @@ const columns = (onPack, packedProductsIds): GridColDef[] => [
     width: 150,
   },
   {
-    field: "pieces",
+    field: "orderedQuantity",
     headerName: "Бройка",
     width: 150,
   },
   {
-    field: "",
+    field: "a",
     headerName: "Пакетирай",
-    width: 150,
+    width: 200,
     sortable: false,
     filterable: false,
     renderCell: renderPackButton(onPack, packedProductsIds),
   },
 ];
 
-//TODO: Create econt label when products are packed and the address is valid
+interface Props {
+  rows: ProductResponse[];
+  packedProductsIds: string[];
+  onPack: (row: ProductResponse, isPacked: boolean) => void;
+}
+
 export const PackingProductsTable = ({
   rows,
   onPack,
   packedProductsIds,
   ...other
-}) => {
+}: Props) => {
   return (
     <Box
       sx={{
