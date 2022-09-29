@@ -14,7 +14,7 @@ import {
   ProductSubmit,
 } from "../../types/product";
 
-async function saveProduct(url: string, options) {
+async function saveProduct(url: string, options: Record<string, unknown>) {
   return jsonFetch(url, { method: "POST", body: JSON.stringify(options.arg) });
 }
 
