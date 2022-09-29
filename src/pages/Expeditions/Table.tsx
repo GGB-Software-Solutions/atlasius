@@ -26,11 +26,6 @@ const columns: GridColDef<Expedition>[] = [
     width: 120,
   },
   {
-    field: "trackingNumber",
-    headerName: "Тракинг номер",
-    width: 150,
-  },
-  {
     field: "deliveryPrice",
     headerName: "Цена за доставка",
     width: 250,

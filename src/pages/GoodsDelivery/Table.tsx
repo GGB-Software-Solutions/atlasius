@@ -24,6 +24,13 @@ const columns: GridColDef[] = [
     width: 150,
     editable: true,
   },
+  {
+    field: "Type",
+    headerName: "Категория",
+    type: "number",
+    width: 150,
+    editable: true,
+  },
 ];
 
 export interface DeliveredProduct {

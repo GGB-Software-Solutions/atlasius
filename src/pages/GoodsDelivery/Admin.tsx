@@ -13,16 +13,14 @@ const map = (products: DeliveredProduct[], data: FormData) => {
       sku: product.Ean,
       name: product["Product name"],
       weight: product.ml,
-      category: "",
+      category: product.Type,
       ean: product.Ean,
       companyId: data.company?.id,
-      createdBy: "6314d8f70e29a132b0262393",
+      createdBy: "6314d8f70e29a132b0262393", //TODO:
       productWarehouseQuantities: [
         {
           itemLocation: data.itemLocation,
           quantity: product["Общо Бройка"],
-          reserved: 0, //TODO:?
-          readyToDeliver: 0, //TODO:?
           warehouseId: data.warehouse?.id,
         },
       ],
