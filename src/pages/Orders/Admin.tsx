@@ -9,13 +9,22 @@ import useSWR from "swr";
 import { API_ENDPOINTS } from "../../api";
 import { jsonFetch } from "../../utils/fetch";
 import UpdateOrderDialog from "./UpdateOrderDialog";
-import { updateOrderStatus, UpdateOrderStatus } from "./api";
+import {
+  updateOrderStatus,
+  UpdateOrderStatus,
+  updateShippingDetails,
+} from "./api";
+import useProcessRowUpdate from "./useProcessRowUpdate";
+import UpdatePhoneDialog from "./UpdatePhoneDialog";
 
 export default function Admin() {
+  const { processRowUpdate, onClose, promiseArguments, onError, onSuccess } =
+    useProcessRowUpdate();
   const econtOffices = useStore((state) => state.econtOffices);
   const econtCountries = useStore((state) => state.econtCountries);
   const econtCities = useStore((state) => state.econtCities);
   const speedyOffices = useStore((state) => state.speedyOffices);
+  const setNotification = useStore((state) => state.setNotification);
   const [mappedRows, setMappedRows] = React.useState<MappedOrder[]>([]);
   const {
     data = [],
@@ -51,6 +60,24 @@ export default function Admin() {
   const handleUpdateOrderDialogClose = () => {
     setOpenUpdateOrderDialog(false);
     setSelectedRows([]);
+  };
+
+  const handleSavePhoneNumber = async () => {
+    const { newRow } = promiseArguments;
+
+    console.log("New row:", newRow);
+
+    const response = await updateShippingDetails({
+      id: newRow.id,
+      phone: newRow.phone,
+    });
+    if (response.success) {
+      setNotification({ type: "success", message: response.success });
+      onSuccess(newRow);
+    } else {
+      setNotification({ type: "error", message: response.error });
+      onError();
+    }
   };
 
   const changeStatus = async (data: MappedOrder[], status: OrderStatus) => {
@@ -106,6 +133,7 @@ export default function Admin() {
           rows={mappedRows || []}
           onCollectGoods={handleCollectGoods}
           onUpdateOrder={handleUpdateOrderClick}
+          processRowUpdate={processRowUpdate}
         />
         <CollectGoodsDialog
           orders={selectedRows}
@@ -117,6 +145,11 @@ export default function Admin() {
           open={openUpdateOrderDialog}
           onClose={handleUpdateOrderDialogClose}
           onSave={mutate}
+        />
+        <UpdatePhoneDialog
+          promiseArguments={promiseArguments}
+          onClose={onClose}
+          onSave={handleSavePhoneNumber}
         />
       </PageContainer>
     </>
