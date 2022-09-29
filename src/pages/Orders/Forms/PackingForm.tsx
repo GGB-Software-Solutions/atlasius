@@ -29,13 +29,13 @@ import ExpeditionsTable from "../../Expeditions/Table";
 import { ProductResponse } from "../../../types/product";
 
 interface Props {
-  data: MappedOrder[];
+  orders: MappedOrder[];
   onClose: () => void;
+  setOrders: React.Dispatch<React.SetStateAction<MappedOrder<any>[]>>;
 }
 
-export default function PackingForm({ data, onClose }: Props) {
+export default function PackingForm({ orders, onClose, setOrders }: Props) {
   const setNotification = useStore((state) => state.setNotification);
-  const [orders, setOrders] = React.useState(data);
   const [selectedOrder, setSelectedOrder] = React.useState<MappedOrder | null>(
     null
   );

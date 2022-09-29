@@ -20,18 +20,23 @@ import { CollectProduct } from "../../types/product";
 interface Props {
   orders: MappedOrder[];
   open: boolean;
-  onClose: (shouldChangeStatus: boolean) => void;
+  onClose: () => void;
+  setOrders: React.Dispatch<React.SetStateAction<MappedOrder<any>[]>>;
 }
 
-export default function OrdersDialog({ orders, onClose, open }: Props) {
+export default function OrdersDialog({
+  orders,
+  onClose,
+  open,
+  setOrders,
+}: Props) {
   if (!open) return null;
   const [isLoading, setIsLoading] = React.useState(false);
-  const [data, setData] = React.useState(orders);
-  const title = getOrderDialogTitle(data[0]);
-  const warehouseStatus = data[0].warehouseStatus;
+  const title = getOrderDialogTitle(orders[0]);
+  const warehouseStatus = orders[0].warehouseStatus;
   const [collected, setCollected] = React.useState<CollectProduct[]>([]);
   const [uncollected, setUncollected] = React.useState<CollectProduct[]>(
-    mapProductsPieces(data)
+    mapProductsPieces(orders)
   );
 
   const handleCollect = (toCollect: CollectProduct[]) => {
@@ -54,7 +59,7 @@ export default function OrdersDialog({ orders, onClose, open }: Props) {
     setIsLoading(true);
 
     await Promise.all(
-      data.map((order) => {
+      orders.map((order) => {
         const orderStatus: UpdateOrderStatus = {
           id: order.id,
           warehouseStatus: WarehouseStatus.PACKING,
@@ -63,17 +68,13 @@ export default function OrdersDialog({ orders, onClose, open }: Props) {
       })
     );
 
-    setData((data) =>
+    setOrders((data) =>
       data.map((order) => ({
         ...order,
         warehouseStatus: WarehouseStatus.PACKING,
       }))
     );
     setIsLoading(false);
-  };
-
-  const handleClose = () => {
-    onClose(warehouseStatus !== WarehouseStatus.PACKING);
   };
 
   return (
@@ -98,11 +99,15 @@ export default function OrdersDialog({ orders, onClose, open }: Props) {
             </Grid>
           </>
         ) : (
-          <PackingForm data={data} onClose={handleClose} />
+          <PackingForm
+            orders={orders}
+            onClose={onClose}
+            setOrders={setOrders}
+          />
         )}
       </DialogContent>
       <DialogActions>
-        <Button disabled={isLoading} onClick={handleClose}>
+        <Button disabled={isLoading} onClick={onClose}>
           Затвори
         </Button>
         {warehouseStatus === WarehouseStatus.PICKING && (

@@ -42,11 +42,8 @@ export default function Admin() {
     setSelectedRows(data);
   };
 
-  const handleDialogClose = async (shouldChangeStatus = true) => {
-    //When finishing the order we should not change the status
-    if (shouldChangeStatus) {
-      await changeStatus(selectedRows, OrderStatus.NEW);
-    }
+  const handleDialogClose = async () => {
+    await changeStatus(selectedRows, OrderStatus.NEW);
     mutate();
     setOpen(false);
     setSelectedRows([]);
@@ -64,8 +61,6 @@ export default function Admin() {
 
   const handleSavePhoneNumber = async () => {
     const { newRow } = promiseArguments;
-
-    console.log("New row:", newRow);
 
     const response = await updateShippingDetails({
       id: newRow.id,
@@ -137,6 +132,7 @@ export default function Admin() {
         />
         <CollectGoodsDialog
           orders={selectedRows}
+          setOrders={setSelectedRows}
           open={open}
           onClose={handleDialogClose}
         />
