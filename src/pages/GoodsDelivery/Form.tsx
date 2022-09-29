@@ -21,8 +21,13 @@ interface Props {
 }
 
 export default function Form({ onSave }: Props) {
-  const formContext = useForm<FormData>();
   const companies = useStore((state) => state.companies);
+  const selectedCompany = useStore((state) => state.selectedCompany);
+  const formContext = useForm<FormData>({
+    defaultValues: {
+      company: selectedCompany,
+    },
+  });
 
   const company = formContext.watch("company");
 

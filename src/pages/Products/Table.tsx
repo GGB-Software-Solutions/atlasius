@@ -4,6 +4,7 @@ import { Button } from "@mui/material";
 import Table from "../../components/Table";
 import withEditor from "../../components/Table/withEditor";
 import { FormProduct, ProductResponse } from "../../types/product";
+import useStore from "../../store/globalStore";
 
 const columns: GridColDef<ProductResponse>[] = [
   { field: "id", type: "number", hide: true, headerName: "ID", width: 90 },
@@ -80,6 +81,8 @@ const columns: GridColDef<ProductResponse>[] = [
 ];
 
 export const ProductsTable = ({ onRowClick, rows, ...other }) => {
+  const selectedCompany = useStore((state) => state.selectedCompany);
+
   return (
     <Table
       title={"Продукти"}
@@ -90,7 +93,9 @@ export const ProductsTable = ({ onRowClick, rows, ...other }) => {
               <Button
                 onClick={() => {
                   onRowClick({
-                    row: {},
+                    row: {
+                      company: selectedCompany,
+                    },
                   });
                 }}
               >
