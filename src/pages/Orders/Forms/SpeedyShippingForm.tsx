@@ -137,7 +137,7 @@ export default function SpeedyShippingForm({
     );
     const label = await printLabel(response.parcels[0].id);
     const printJS = (await import("print-js")).default;
-    printJS({ printable: label, type: "pdf", base64: true });
+    printJS({ printable: label, type: "pdf", base64: true, showModal: true });
   };
 
   const cityFetch = async (inputValue: string, callback) => {
