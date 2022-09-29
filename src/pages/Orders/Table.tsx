@@ -119,6 +119,7 @@ const columns: GridColDef[] = [
   {
     field: "phone",
     headerName: "Телефон",
+    editable: true,
     width: 125,
   },
   {
@@ -182,6 +183,7 @@ const OrdersTable = ({
     <Table
       {...other}
       title="Поръчки"
+      experimentalFeatures={{ newEditingApi: true }}
       isRowSelectable={(params: GridRowParams) =>
         params.row.status !== OrderStatus.RESERVED
       }
