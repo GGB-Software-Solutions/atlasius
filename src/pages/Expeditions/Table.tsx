@@ -35,6 +35,11 @@ const columns: GridColDef<Expedition>[] = [
     headerName: "Статус",
     width: 250,
   },
+  {
+    field: "pdfUrl",
+    headerName: "URL",
+    width: 250,
+  },
 ];
 
 const ExpeditionsTable = ({ rows }: Omit<Props<Expedition>, "columns">) => {

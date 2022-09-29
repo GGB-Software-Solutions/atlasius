@@ -5,4 +5,5 @@ export interface Expedition {
   deliveryCompany: string;
   deliveryPrice: number;
   status: string;
+  pdfUrl?: string; //For econt only
 }
