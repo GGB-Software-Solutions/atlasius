@@ -133,7 +133,11 @@ export default function ShippingForm({
       mapEcontLabelToExpedition(response.label, data)
     );
     const printJS = (await import("print-js")).default;
-    printJS({ printable: response.label.pdfURL, type: "pdf", showModal: true });
+    printJS({
+      printable: response.label.pdfURL,
+      type: "pdf",
+      showModal: true,
+    });
   };
 
   const handleCheckboxChange = (_, checked: boolean) =>
