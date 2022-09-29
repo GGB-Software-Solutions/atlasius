@@ -18,6 +18,7 @@ interface State {
   econtOffices: Office[];
   econtCities: City[];
   companies: Company[];
+  selectedCompany: Company;
   warehouses: Warehouse[];
   notification: Notification | null;
   setNotification: (notification: Notification) => void;
@@ -27,6 +28,7 @@ interface State {
   setEcontOffices: (offices: Office[]) => void;
   setEcontCities: (cities: City[]) => void;
   setSpeedyOffices: (offices: SpeedyOffice[]) => void;
+  setSelectedCompany: (company: Company) => void;
 }
 
 const useStore = create<State>()(
@@ -37,6 +39,7 @@ const useStore = create<State>()(
     econtOffices: [],
     warehouses: [],
     companies: [],
+    selectedCompany: null,
     notification: null,
     setNotification: (notification: Notification) =>
       set(() => ({ notification })),
@@ -46,6 +49,7 @@ const useStore = create<State>()(
     setEcontOffices: (econtOffices) => set(() => ({ econtOffices })),
     setEcontCities: (econtCities) => set(() => ({ econtCities })),
     setSpeedyOffices: (speedyOffices) => set(() => ({ speedyOffices })),
+    setSelectedCompany: (company) => set(() => ({ selectedCompany: company })),
   }))
 );
 

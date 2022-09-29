@@ -85,12 +85,12 @@ const WithRequiredData = (WrappedComponent) => {
       getCountries();
     }, []);
 
-    return isLoadingCompanies &&
-      isLoadingWarehouses &&
-      isLoadingOffices &&
-      isLoadingCities &&
-      isLoadingSpeedyOffices &&
-      econtCountries.length ? (
+    return isLoadingCompanies ||
+      isLoadingWarehouses ||
+      isLoadingOffices ||
+      isLoadingCities ||
+      isLoadingSpeedyOffices ||
+      econtCountries.length === 0 ? (
       <Loader />
     ) : (
       <WrappedComponent {...props} />

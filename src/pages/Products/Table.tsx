@@ -34,7 +34,14 @@ const columns: GridColDef<ProductResponse>[] = [
     width: 100,
   },
   {
+    field: "weight",
+    headerName: "Тегло",
+    type: "number",
+    width: 100,
+  },
+  {
     field: "company",
+    width: 150,
     headerName: "Компания",
     valueGetter: (params: GridValueGetterParams) =>
       `${params.row.company.name}`,

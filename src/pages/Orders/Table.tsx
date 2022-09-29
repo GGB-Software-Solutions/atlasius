@@ -159,6 +159,13 @@ const columns: GridColDef[] = [
     headerName: "Вид плащане",
     width: 150,
   },
+  {
+    field: "company",
+    width: 150,
+    headerName: "Компания",
+    valueGetter: (params: GridValueGetterParams) =>
+      `${params.row.company?.name}`,
+  },
 ];
 
 // !== Archived !== Cancelled and !== Shipped and !== Unfullfilled

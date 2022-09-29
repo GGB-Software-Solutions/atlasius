@@ -1,7 +1,9 @@
 import * as React from "react";
-import { GridColDef } from "@mui/x-data-grid";
+import { GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
 import Table, { Props } from "../../components/Table";
 import { Expedition } from "../../types/expedition";
+import useStore from "../../store/globalStore";
+import { Company } from "../Companies/types";
 
 const columns: GridColDef<Expedition>[] = [
   {
@@ -9,11 +11,6 @@ const columns: GridColDef<Expedition>[] = [
     type: "number",
     headerName: "ID",
     width: 90,
-  },
-  {
-    field: "companyId",
-    headerName: "Име на компания",
-    width: 150,
   },
   {
     field: "orderId",
@@ -40,14 +37,28 @@ const columns: GridColDef<Expedition>[] = [
     headerName: "URL",
     width: 250,
   },
+  {
+    field: "company",
+    width: 150,
+    headerName: "Компания",
+    valueGetter: (params: GridValueGetterParams) =>
+      `${params.row.company?.name || ""}`,
+  },
 ];
 
+const map = (rows: Expedition[], companies: Company[]) =>
+  rows.map((row) => ({
+    ...row,
+    company: companies.find((company) => company.id === row.companyId),
+  }));
+
 const ExpeditionsTable = ({ rows }: Omit<Props<Expedition>, "columns">) => {
+  const companies = useStore((state) => state.companies);
   return (
     <Table
       getRowId={(row) => row.shipmentId}
       title="Експедиции"
-      rows={rows}
+      rows={map(rows, companies)}
       columns={columns}
     />
   );
