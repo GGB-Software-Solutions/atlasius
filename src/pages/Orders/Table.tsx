@@ -70,7 +70,7 @@ const columns: GridColDef[] = [
         label = "Липсващ продукт";
       }
 
-      if (errorStatus === ErrorStatus.MISSING_PHONE) {
+      if (errorStatus === ErrorStatus.MISSING_WRONG_PHONE) {
         label = "Невалиден/липсващ телефон";
       }
 

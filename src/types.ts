@@ -59,7 +59,7 @@ export enum ErrorStatus {
   NOT_ENOUGH_QUANTITY = "NOT_ENOUGH_QUANTITY",
   MISSING_PRODUCT = "MISSING_PRODUCT",
   WRONG_ADDRESS = "WRONG_ADDRESS",
-  MISSING_PHONE = "MISSING_PHONE",
+  MISSING_WRONG_PHONE = "MISSING_WRONG_PHONE",
 }
 
 export interface OrderShippingDetails
@@ -113,10 +113,10 @@ export interface Order {
 
 export interface MappedOrder<T extends DeliveryCompany = any>
   extends Omit<Order, "city" | "country"> {
-  country: string | (T extends DeliveryCompany.Econt ? Country : SpeedyCountry);
+  country: T extends DeliveryCompany.Econt ? Country : SpeedyCountry;
   city: string | (T extends DeliveryCompany.Econt ? City : SpeedyCity);
   office?: T extends DeliveryCompany.Econt ? Office : SpeedyOffice;
   street?: Street; //TODO: Add speedy address type as well;
   validatedAddress?: T extends DeliveryCompany.Econt ? Address : SpeedyAddress;
-  shippingLabel: Expedition;
+  shippingLabel?: Expedition;
 }
