@@ -20,7 +20,7 @@ import { CollectProduct } from "../../types/product";
 interface Props {
   orders: MappedOrder[];
   open: boolean;
-  onClose: () => void;
+  onClose: (shouldChangeStatus: boolean) => void;
 }
 
 export default function OrdersDialog({ orders, onClose, open }: Props) {
@@ -72,6 +72,10 @@ export default function OrdersDialog({ orders, onClose, open }: Props) {
     setIsLoading(false);
   };
 
+  const handleClose = () => {
+    onClose(warehouseStatus !== WarehouseStatus.PACKING);
+  };
+
   return (
     <Dialog open={open} fullWidth maxWidth="xl" fullScreen>
       <DialogTitle>{title}</DialogTitle>
@@ -94,11 +98,11 @@ export default function OrdersDialog({ orders, onClose, open }: Props) {
             </Grid>
           </>
         ) : (
-          <PackingForm data={data} />
+          <PackingForm data={data} onClose={handleClose} />
         )}
       </DialogContent>
       <DialogActions>
-        <Button disabled={isLoading} onClick={onClose}>
+        <Button disabled={isLoading} onClick={handleClose}>
           Затвори
         </Button>
         {warehouseStatus === WarehouseStatus.PICKING && (

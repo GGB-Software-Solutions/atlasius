@@ -33,8 +33,11 @@ export default function Admin() {
     setSelectedRows(data);
   };
 
-  const handleDialogClose = async () => {
-    await changeStatus(selectedRows, OrderStatus.NEW);
+  const handleDialogClose = async (shouldChangeStatus = true) => {
+    //When finishing the order we should not change the status
+    if (shouldChangeStatus) {
+      await changeStatus(selectedRows, OrderStatus.NEW);
+    }
     mutate();
     setOpen(false);
     setSelectedRows([]);

@@ -30,9 +30,10 @@ import { ProductResponse } from "../../../types/product";
 
 interface Props {
   data: MappedOrder[];
+  onClose: () => void;
 }
 
-export default function PackingForm({ data }: Props) {
+export default function PackingForm({ data, onClose }: Props) {
   const setNotification = useStore((state) => state.setNotification);
   const [orders, setOrders] = React.useState(data);
   const [selectedOrder, setSelectedOrder] = React.useState<MappedOrder | null>(
@@ -43,6 +44,13 @@ export default function PackingForm({ data }: Props) {
   );
   const formContext = useForm({ defaultValues: selectedOrder || {} });
   const expedition = formContext.watch("shippingLabel");
+
+  React.useEffect(() => {
+    //If all orders are finished automatically close the dialog
+    if (orders.length === 0) {
+      onClose();
+    }
+  }, [orders.length]);
 
   const onRowClick = (params: GridRowParams) => {
     formContext.reset(params.row);
