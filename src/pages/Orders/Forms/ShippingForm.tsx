@@ -11,16 +11,17 @@ import { MappedOrder } from "../../../types";
 import { Address, Country } from "../../../types/econt";
 import useStore from "../../../store/globalStore";
 import VirtualizedAutocomplete from "./VirtualizedAutocomplete";
+import Alert from "@mui/material/Alert";
 
 import useEcont from "./useEcont";
 import {
-  generateShippingLabel,
   mapEcontLabelToExpedition,
   shouldOrderBeDeliveredToOffice,
 } from "../utils";
 import { DeliveryCompany } from "../../Companies/types";
 import ValidAddress from "./ValidAddress";
 import { OrderShippingDetails, updateShippingDetails } from "../api";
+import { getDeliveryCompanyCredentials } from "../../../utils/common";
 
 type MappedEcontOrder = MappedOrder<DeliveryCompany.Econt>;
 
@@ -41,6 +42,11 @@ export default function ShippingForm({
   const city = formContext.watch("city");
   const office = formContext.watch("office");
   const validAddress = formContext.watch("validatedAddress");
+  const company = formContext.getValues("company");
+  const credentials = getDeliveryCompanyCredentials(
+    company,
+    DeliveryCompany.Econt
+  );
 
   const setNotification = useStore((state) => state.setNotification);
   const [deliverToOffice, setDeliverToOffice] = React.useState(
@@ -51,7 +57,7 @@ export default function ShippingForm({
     React.useState<Address>(validAddress);
   const econtCountries = useStore((state) => state.econtCountries);
 
-  const econtService = React.useRef(new Econt()).current;
+  const econtService = React.useRef(new Econt(credentials)).current;
   const {
     offices = [],
     streets = [],
@@ -63,6 +69,7 @@ export default function ShippingForm({
     countryCode: country?.code3,
     cityID: typeof city === "string" ? undefined : city?.id,
     deliverToOffice,
+    service: econtService,
   });
 
   const isLoading = isLoadingCities;
@@ -123,7 +130,7 @@ export default function ShippingForm({
 
   const handleGenerateShippingLabel = async () => {
     const data = formContext.getValues();
-    const response = await generateShippingLabel(data);
+    const response = await econtService.generateShippingLabel(data);
     if (response.innerErrors) {
       setNotification({ type: "error", message: getInnerErrors(response) });
       return;
@@ -145,12 +152,21 @@ export default function ShippingForm({
 
   return (
     <>
-      <ValidAddress
-        isValid={deliverToOffice ? Boolean(office) : Boolean(validatedAddress)}
-        isLoading={isLoading}
-        deliverToOffice={deliverToOffice}
-        deliveryCompany={DeliveryCompany.Econt}
-      />
+      {!credentials ? (
+        <Alert severity="warning">
+          Липсват данни за Еконт за компания {company.name}
+        </Alert>
+      ) : (
+        <ValidAddress
+          isValid={
+            deliverToOffice ? Boolean(office) : Boolean(validatedAddress)
+          }
+          isLoading={isLoading}
+          deliverToOffice={deliverToOffice}
+          deliveryCompany={DeliveryCompany.Econt}
+        />
+      )}
+
       <FormControlLabel
         control={
           <Switch
@@ -312,6 +328,7 @@ export default function ShippingForm({
           variant="contained"
           onClick={saveShippingDetails}
           color="primary"
+          disabled={!credentials}
         >
           Запази
         </Button>
@@ -320,6 +337,7 @@ export default function ShippingForm({
             variant="contained"
             onClick={handleGenerateShippingLabel}
             color="primary"
+            disabled={!credentials}
           >
             Генерирай товарителница
           </Button>

@@ -177,12 +177,14 @@ const columns: GridColDef[] = [
 type Props = {
   onCollectGoods?: (data: MappedOrder[]) => void;
   onUpdateOrder?: (data: MappedOrder[]) => void;
+  onReturnForPreparation?: (data: MappedOrder[]) => void;
   rows: MappedOrder[];
 } & Partial<TableProps<MappedOrder>>;
 
 const OrdersTable = ({
   onCollectGoods,
   onUpdateOrder,
+  onReturnForPreparation,
   rows = [],
   ...other
 }: Props) => {
@@ -191,9 +193,6 @@ const OrdersTable = ({
       {...other}
       title="Поръчки"
       experimentalFeatures={{ newEditingApi: true }}
-      isRowSelectable={(params: GridRowParams) =>
-        params.row.status !== OrderStatus.RESERVED
-      }
       actions={(rowsMap) => {
         const rows = Array.from(rowsMap.values());
         const isRowsStatusTheSame =
@@ -214,6 +213,20 @@ const OrdersTable = ({
           return (
             <Button onClick={() => onUpdateOrder(rows)}>
               {"Актуализирай поръчка"}
+            </Button>
+          );
+        }
+
+        if (
+          rows &&
+          rows.length &&
+          rows[0].status === OrderStatus.RESERVED &&
+          onReturnForPreparation &&
+          isRowsStatusTheSame
+        ) {
+          return (
+            <Button onClick={() => onReturnForPreparation(rows)}>
+              {"Върни за обработка"}
             </Button>
           );
         }

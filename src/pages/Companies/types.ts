@@ -9,7 +9,7 @@ export enum Ecommerce {
   Shopify = "SHOPIFY",
 }
 
-interface DeliveryCompanyCredentials {
+export interface DeliveryCompanyCredentials {
   deliveryCompanyName: string;
   username: string;
   password: string;

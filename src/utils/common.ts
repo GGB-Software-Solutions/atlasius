@@ -1,4 +1,5 @@
 import { darken, lighten } from "@mui/material/styles";
+import { Company, DeliveryCompany } from "../pages/Companies/types";
 
 export const getSelectOptions = (tsEnum) =>
   Object.keys(tsEnum)
@@ -10,3 +11,11 @@ export const getBackgroundColor = (color: string, mode: string) =>
 
 export const getHoverBackgroundColor = (color: string, mode: string) =>
   mode === "dark" ? darken(color, 0.5) : lighten(color, 0.5);
+
+export const getDeliveryCompanyCredentials = (
+  company: Company,
+  deliveryCompany: DeliveryCompany
+) =>
+  company.deliveryCompanyCredentials.find(
+    (credentials) => credentials.deliveryCompanyName === deliveryCompany
+  );

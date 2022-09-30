@@ -221,7 +221,7 @@ enum Weekday {
   sunday = "Sunday",
 }
 
-type CDPayOptions = {
+export type CDPayOptions = {
   // Shipment number
   num: string;
   // Client

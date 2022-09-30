@@ -9,13 +9,9 @@ import {
 } from "../../types";
 import {
   City,
-  ClientProfile,
   Country,
   Office,
   ShipmentStatus,
-  ShipmentType,
-  ShippingLabel,
-  ShippingLabelServices,
   Street,
 } from "../../types/econt";
 import { DeliveryCompany } from "../Companies/types";
@@ -36,6 +32,7 @@ import {
 import { speedyCountries } from "../../speedy-countries";
 import { Expedition } from "../../types/expedition";
 import { CollectProduct } from "../../types/product";
+import { getDeliveryCompanyCredentials } from "../../utils/common";
 
 export const mapProductsPieces = (data: MappedOrder[]): CollectProduct[] =>
   data.reduce<CollectProduct[]>((previousValue, currentValue) => {
@@ -58,91 +55,6 @@ export const getContentsDescription = (order: MappedOrder) => {
   );
   const uniqueContents = [...new Set(contents)];
   return uniqueContents.join(",");
-};
-
-const econtService = new Econt(true);
-
-export const generateShippingLabel = async (
-  order: MappedOrder<DeliveryCompany.Econt>
-) => {
-  const profile = await econtService.getClientProfiles();
-  const econtCredentials = order.company.deliveryCompanyCredentials.find(
-    (credentials) => credentials.deliveryCompanyName === DeliveryCompany.Econt
-  );
-  console.log("Econt profile:", profile);
-
-  const senderClient: ClientProfile = profile.client;
-  const senderAgent = {
-    name: econtCredentials?.senderAgent,
-    // phones: ["0888166368"],
-  };
-
-  // Bokar manastirski livadi office
-  const senderOfficeCode = "1137"; //TODO: Fix this?
-
-  const receiverClient: ClientProfile = {
-    name: `${order.firstName} ${order.lastName}`,
-    phones: [order.phone],
-  };
-  const receiverOfficeCode = order.officeId;
-  let receiverAddress = null;
-
-  if (!receiverOfficeCode) {
-    receiverAddress = order.validatedAddress;
-  }
-
-  const packCount = 1;
-  const shipmentType = ShipmentType.pack;
-  const weight = order.products.reduce((prevValue, currValue) => {
-    return prevValue + currValue.orderedQuantity * currValue.weight;
-  }, 0);
-  const shipmentDescription = getContentsDescription(order);
-
-  const services: { services?: Partial<ShippingLabelServices> } =
-    order.paymentType === PaymentType.CARD
-      ? {}
-      : {
-          services: {
-            cdAmount: order.price,
-            cdType: "get",
-            cdCurrency: "BGN",
-            cdPayOptions: profile.cdPayOptions.find(
-              (option) => option.num === econtCredentials?.agreementId
-            ),
-          },
-        };
-
-  // const instruction: Instruction = {
-  //   id: "508047615",
-  //   type: "return",
-  //   returnInstructionParams: {
-  //     returnParcelDestination: "sender",
-  //     returnParcelPaymentSide: "receiver",
-  //     rejectOriginalParcelPaySide: "sender",
-  //     rejectReturnParcelPaySide: "sender",
-  //   },
-  // };
-
-  const label: ShippingLabel = {
-    payAfterAccept: true,
-    senderClient,
-    senderOfficeCode,
-    senderAgent,
-    receiverAddress,
-    receiverClient,
-    receiverOfficeCode,
-    packCount,
-    shipmentType,
-    ...services,
-    instructions: profile.instructionTemplates,
-    weight,
-    shipmentDescription,
-    paymentSenderMethod: "credit",
-    // paymentReceiverMethod: "",
-    // paymentReceiverAmount: "",
-  };
-
-  return econtService.createLabel(label);
 };
 
 export const generateSpeedyShippingLabel = async (
@@ -189,10 +101,9 @@ export const generateSpeedyShippingLabel = async (
     },
     content: {
       parcelsCount: 1,
-      totalWeight: 1, //TODO: Uncomment this
-      // totalWeight: order.products.reduce((prevValue, currValue) => {
-      //   return prevValue + currValue.orderedQuantity * currValue.weight;
-      // }, 0),
+      totalWeight: order.products.reduce((prevValue, currValue) => {
+        return prevValue + currValue.orderedQuantity * currValue.weight;
+      }, 0),
       contents: getContentsDescription(order),
       package: "BOX",
     },
@@ -249,7 +160,7 @@ export const shouldOrderBeDeliveredToOffice = (order: MappedOrder) => {
   );
 };
 
-export const getDeliveryCourier = (order: MappedOrder) => {
+export const getDeliveryCourier = (order: Order | MappedOrder) => {
   if (
     order.officeName === "СПИЙДИ ДО ОФИС" ||
     order.officeName === "СПИЙДИ ДО АДРЕС"
@@ -263,11 +174,11 @@ export const getDeliveryCourier = (order: MappedOrder) => {
 };
 
 export const mapEcontOfficeDelivery = (
-  order: Order,
+  order: MappedOrder<DeliveryCompany.Econt>,
   econtOffices: Office[]
 ): MappedOrder<DeliveryCompany.Econt> => {
   const mappedOrder: MappedOrder<DeliveryCompany.Econt> = { ...order };
-  const offices = findEcontOffices(econtOffices, order.city).filter(
+  const offices = findEcontOffices(econtOffices, order.city as string).filter(
     (office) => !office.isAPS
   );
 
@@ -299,7 +210,7 @@ export const mapEcontOfficeDelivery = (
 };
 
 export const mapSpeedyOfficeDelivery = (
-  order: Order,
+  order: MappedOrder<DeliveryCompany.Speedy>,
   speedyOffices: SpeedyOffice[]
 ) => {
   const mappedOrder: MappedOrder<DeliveryCompany.Speedy> = { ...order };
@@ -333,20 +244,20 @@ export const mapSpeedyOfficeDelivery = (
 };
 
 export const mapSpeedyAddressDelivery = async (
-  order: Order
+  order: MappedOrder<DeliveryCompany.Speedy>
 ): Promise<MappedOrder<DeliveryCompany.Speedy>> => {
-  const countryId = (order.country as SpeedyCountry).id;
+  const countryId = order.country.id;
   const address: SpeedyAddress = {
     countryId,
     streetName: order.streetName,
     streetNo: order.streetNumber,
-    siteName: order.city,
+    siteName: order.city as string,
     postCode: order.zipCode,
   };
   const { valid } = await validateAddress(address);
   const mappedOrder: MappedOrder<DeliveryCompany.Speedy> = { ...order };
 
-  const sites = await findSite({ countryId, name: order.city });
+  const sites = await findSite({ countryId, name: order.city as string });
 
   if (sites.length > 0) {
     mappedOrder.city = sites[0];
@@ -369,16 +280,19 @@ export const mapSpeedyAddressDelivery = async (
 };
 
 export const mapEcontAddressDelivery = async (
-  order: Order,
+  order: MappedOrder<DeliveryCompany.Econt>,
   econtCities: City[]
 ): Promise<MappedOrder<DeliveryCompany.Econt>> => {
-  const econtService = new Econt(true);
-  const city = findEcontCity(econtCities, order.city);
+  const city = findEcontCity(econtCities, order.city as string);
   const mappedOrder: MappedOrder<DeliveryCompany.Econt> = { ...order };
-  if (city) {
+  const credentials = getDeliveryCompanyCredentials(
+    mappedOrder.company,
+    DeliveryCompany.Econt
+  );
+  if (city && credentials) {
     mappedOrder.city = city;
-
-    const streets = await econtService.getStreets(city?.id);
+    const econtService = new Econt(credentials);
+    const streets = await econtService.getStreets(city.id);
     const results = fuseSearch(streets, order.address1);
     const topResult = results[0].item;
 
@@ -414,27 +328,30 @@ export const getOrderDialogTitle = (order: MappedOrder) => {
   }
 };
 
-export const getOrderCountry = (order: Order, econtCountries: Country[]) => {
+export const getOrderCountry = (
+  order: Order,
+  econtCountries: Country[]
+): Country | SpeedyCountry | undefined => {
   const deliveryCourier = getDeliveryCourier(order);
-  let country: MappedOrder["country"] = order.country;
+  let country = undefined;
   if (
     deliveryCourier === DeliveryCompany.Econt &&
-    typeof country === "string"
+    typeof order.country === "string"
   ) {
     country = econtCountries.find(
       (ecountCountry) =>
-        ecountCountry.name?.toLowerCase() === country.toLowerCase() ||
-        ecountCountry.nameEn.toLowerCase() === country.toLowerCase()
+        ecountCountry.name?.toLowerCase() === order.country.toLowerCase() ||
+        ecountCountry.nameEn?.toLowerCase() === order.country.toLowerCase()
     );
   }
   if (
     deliveryCourier === DeliveryCompany.Speedy &&
-    typeof country === "string"
+    typeof order.country === "string"
   ) {
     country = speedyCountries.find(
       (speedyCountry) =>
-        speedyCountry.name.toLowerCase() === country.toLowerCase() ||
-        speedyCountry.nameEn.toLowerCase() === country.toLowerCase()
+        speedyCountry.name.toLowerCase() === order.country.toLowerCase() ||
+        speedyCountry.nameEn.toLowerCase() === order.country.toLowerCase()
     );
   }
   return country;
@@ -456,26 +373,30 @@ export const mapOrders = async (
 ): Promise<MappedOrder<DeliveryCompany.Speedy | DeliveryCompany.Econt>[]> => {
   const data = await Promise.all(
     orders.map(async (order) => {
-      order.streetNumber =
-        order.streetNumber || extractStreetNumber(order.address1);
-      order.country = getOrderCountry(order, econtCountries);
+      let mappedOrder: MappedOrder = {
+        ...order,
+        streetNumber: order.streetNumber || extractStreetNumber(order.address1),
+        country: getOrderCountry(order, econtCountries) as
+          | Country
+          | SpeedyCountry,
+      };
 
-      if (order.officeName === "ЕКОНТ ДО ОФИС") {
-        return mapEcontOfficeDelivery(order, econtOffices);
+      if (mappedOrder.officeName === "ЕКОНТ ДО ОФИС") {
+        mappedOrder = mapEcontOfficeDelivery(mappedOrder, econtOffices);
       }
 
-      if (order.officeName === "СПИЙДИ ДО ОФИС") {
-        return mapSpeedyOfficeDelivery(order, speedyOffices);
+      if (mappedOrder.officeName === "СПИЙДИ ДО ОФИС") {
+        mappedOrder = mapSpeedyOfficeDelivery(mappedOrder, speedyOffices);
       }
 
-      if (order.officeName === "ЕКОНТ ДО АДРЕС") {
-        return mapEcontAddressDelivery(order, econtCities);
+      if (mappedOrder.officeName === "ЕКОНТ ДО АДРЕС") {
+        mappedOrder = await mapEcontAddressDelivery(mappedOrder, econtCities);
       }
 
-      if (order.officeName === "СПИЙДИ ДО АДРЕС") {
-        return mapSpeedyAddressDelivery(order);
+      if (mappedOrder.officeName === "СПИЙДИ ДО АДРЕС") {
+        mappedOrder = await mapSpeedyAddressDelivery(mappedOrder);
       }
-      return order;
+      return mappedOrder;
     })
   );
   return data;
@@ -506,6 +427,7 @@ export const mapEcontLabelToExpedition = (
     orderId: order.id,
     deliveryCompany: DeliveryCompany.Econt,
     deliveryPrice: label.totalPrice,
+    pdfUrl: label.pdfURL,
     // status: //TODO:
   };
   return expedition;

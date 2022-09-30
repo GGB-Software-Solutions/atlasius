@@ -1,25 +1,37 @@
 import {
+  DeliveryCompany,
+  DeliveryCompanyCredentials,
+} from "./pages/Companies/types";
+import { getContentsDescription } from "./pages/Orders/utils";
+import { MappedOrder, PaymentType } from "./types";
+import {
   Address,
+  CDPayOptions,
   City,
+  ClientProfile,
   Country,
   Office,
   ShipmentStatus,
+  ShipmentType,
   ShippingLabel,
+  ShippingLabelServices,
   ValidationAddressPayload,
 } from "./types/econt";
 
 const ECONT_DEMO_API_URL = "http://demo.econt.com/ee/services";
 const ECONT_API_URL = "http://ee.econt.com/services";
-const ECONT_API_USERNAME = "ВАЯ 911";
 const ECONT_DEMO_API_USERNAME = "iasp-dev";
-const ECONT_API_PASSWORD = "VAQ!2345";
 const ECONT_DEMO_API_PASSWORD = "iasp-dev";
+const IS_PROD = process.env.NODE_ENV === "production";
+
+const ECONT_API_USERNAME = "e.kisyova@abv.bg";
+const ECONT_API_PASSWORD = "Makemoney123";
 
 const getBasicAuth = (str) => {
   return btoa(unescape(encodeURIComponent(str)));
 };
 
-const getInnerErrors = (response): string => {
+export const getInnerErrors = (response): string => {
   if (response.innerErrors.length > 0) {
     return getInnerErrors(response.innerErrors[0]);
   } else {
@@ -28,32 +40,26 @@ const getInnerErrors = (response): string => {
 };
 
 interface FetcherProps {
-  service: "Nomenclatures" | "Shipments" | "Profile";
-  subService:
-    | "NomenclaturesService"
-    | "AddressService"
-    | "LabelService"
-    | "ProfileService";
-  method: string;
-  body: Record<string, unknown>;
+  url: string;
+  body?: Record<string, unknown>;
   isRealMode?: boolean;
+  credentials?: DeliveryCompanyCredentials;
 }
 
-export const fetcher = async (
-  service: string,
-  method: string,
-  body: Record<string, unknown>,
-  mainService: string = "Nomenclatures",
-  isRealMode = false
-) => {
-  const url = `${
+export const fetcher = async ({
+  url,
+  body = {},
+  isRealMode = IS_PROD,
+  credentials,
+}: FetcherProps) => {
+  const absoluteUrl = `${
     isRealMode ? ECONT_API_URL : ECONT_DEMO_API_URL
-  }/${mainService}/${service}.${method}.json`;
+  }/${url}`;
   const auth =
-    (isRealMode ? ECONT_API_USERNAME : ECONT_DEMO_API_USERNAME) +
+    (isRealMode ? credentials?.username : ECONT_DEMO_API_USERNAME) +
     ":" +
-    (isRealMode ? ECONT_API_PASSWORD : ECONT_DEMO_API_PASSWORD);
-  const response = await fetch(url, {
+    (isRealMode ? credentials?.password : ECONT_DEMO_API_PASSWORD);
+  const response = await fetch(absoluteUrl, {
     body: JSON.stringify(body),
     method: "POST",
     headers: [
@@ -66,46 +72,59 @@ export const fetcher = async (
 };
 
 class Econt {
+  credentials: DeliveryCompanyCredentials;
   isRealMode: boolean = false;
-  constructor(isRealMode = false) {
+  constructor(credentials: DeliveryCompanyCredentials, isRealMode = false) {
     this.isRealMode = isRealMode;
+    this.credentials = credentials;
   }
 
   async getCountries(): Promise<Country[]> {
-    const data = await fetcher("NomenclaturesService", "getCountries", {});
+    const url = "Nomenclatures/NomenclaturesService.getCountries.json";
+    const data = await fetcher({ url, credentials: this.credentials });
     return data.countries;
   }
 
   async getCities(countryCode = "BGR"): Promise<City[]> {
-    const data = await fetcher("NomenclaturesService", "getCities", {
-      countryCode,
+    const url = "Nomenclatures/NomenclaturesService.getCities.json";
+    const data = await fetcher({
+      url,
+      body: {
+        countryCode,
+      },
+      credentials: this.credentials,
     });
     return data.cities;
   }
 
   async getStreets(cityID: number): Promise<Address[]> {
-    const data = await fetcher("NomenclaturesService", "getStreets", {
-      cityID,
+    const url = "Nomenclatures/NomenclaturesService.getStreets.json";
+    const data = await fetcher({
+      url,
+      body: {
+        cityID,
+      },
+      credentials: this.credentials,
     });
     return data.streets;
   }
 
   async getOffices(countryCode = "BGR", cityID: number): Promise<Office[]> {
-    const data = await fetcher("NomenclaturesService", "getOffices", {
-      countryCode,
-      cityID,
+    const url = "Nomenclatures/NomenclaturesService.getOffices.json";
+    const data = await fetcher({
+      url,
+      body: {
+        countryCode,
+        cityID,
+      },
+      credentials: this.credentials,
     });
     return data.offices;
   }
 
   async getClientProfiles() {
-    const data = await fetcher(
-      "ProfileService",
-      "getClientProfiles",
-      {},
-      "Profile",
-      this.isRealMode
-    );
+    const url = "Profile/ProfileService.getClientProfiles.json";
+    const data = await fetcher({ url, credentials: this.credentials });
     return data.profiles[0];
   }
 
@@ -116,15 +135,20 @@ class Econt {
     streetNumber: string,
     postCode: string
   ) {
-    const response = await fetcher("AddressService", "validateAddress", {
-      address: {
-        city: {
-          name: city,
-          postCode,
+    const url = "Nomenclatures/AddressService.validateAddress.json";
+    const response = await fetcher({
+      url,
+      body: {
+        address: {
+          city: {
+            name: city,
+            postCode,
+          },
+          street,
+          num: streetNumber,
         },
-        street,
-        num: streetNumber,
       },
+      credentials: this.credentials,
     });
     let error = null;
     let address = null;
@@ -144,17 +168,83 @@ class Econt {
   // for cities with missing street data: street name without validation (tag <street>) and number (tag < num>)
   // for shipments on request (sent to Econt office): valid Econt office code (tag <office_code>)
   async createLabel(label: ShippingLabel): Promise<ShipmentStatus> {
-    const data = await fetcher(
-      "LabelService",
-      "createLabel",
-      {
+    const url = "Shipments/LabelService.createLabel.json";
+    const data = await fetcher({
+      url,
+      credentials: this.credentials,
+      body: {
         label,
-        mode: "validate",
+        mode: "create",
       },
-      "Shipments",
-      this.isRealMode
-    );
+    });
     return data;
+  }
+
+  async generateShippingLabel(order: MappedOrder<DeliveryCompany.Econt>) {
+    const profile = await this.getClientProfiles();
+    const econtCredentials = order.company.deliveryCompanyCredentials.find(
+      (credentials) => credentials.deliveryCompanyName === DeliveryCompany.Econt
+    );
+
+    const senderClient: ClientProfile = profile.client;
+    const senderAgent = {
+      name: econtCredentials?.senderAgent,
+      email: profile.client.email,
+    };
+
+    // Bokar manastirski livadi office
+    const senderOfficeCode = "1137"; //TODO: Fix this?
+
+    const receiverClient: ClientProfile = {
+      name: `${order.firstName} ${order.lastName}`,
+      phones: [order.phone],
+    };
+    const receiverOfficeCode = order.officeId;
+    let receiverAddress = null;
+
+    if (!receiverOfficeCode) {
+      receiverAddress = order.validatedAddress;
+    }
+
+    const packCount = 1;
+    const shipmentType = ShipmentType.pack;
+    const weight = order.products.reduce((prevValue, currValue) => {
+      return prevValue + currValue.orderedQuantity * currValue.weight;
+    }, 0);
+    const shipmentDescription = getContentsDescription(order);
+
+    const services: { services?: Partial<ShippingLabelServices> } =
+      order.paymentType === PaymentType.CARD
+        ? {}
+        : {
+            services: {
+              cdAmount: order.price,
+              cdType: "get",
+              cdCurrency: "BGN",
+              cdPayOptions: (profile.cdPayOptions as CDPayOptions[]).find(
+                (option) => option.num === econtCredentials?.agreementId
+              ),
+            },
+          };
+
+    const label: ShippingLabel = {
+      payAfterAccept: true,
+      senderClient,
+      senderOfficeCode,
+      senderAgent,
+      receiverAddress,
+      receiverClient,
+      receiverOfficeCode,
+      packCount,
+      shipmentType,
+      ...services,
+      instructions: profile.instructionTemplates,
+      weight,
+      shipmentDescription,
+      paymentSenderMethod: "credit",
+    };
+
+    return this.createLabel(label);
   }
 }
 

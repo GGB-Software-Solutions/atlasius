@@ -75,6 +75,10 @@ export default function Admin() {
     }
   };
 
+  const handleReturnOrderForPreparationClick = async (data: MappedOrder[]) => {
+    await changeStatus(data, OrderStatus.NEW);
+  };
+
   const changeStatus = async (data: MappedOrder[], status: OrderStatus) => {
     await Promise.all(
       data.map((order) => {
@@ -128,6 +132,7 @@ export default function Admin() {
           rows={mappedRows || []}
           onCollectGoods={handleCollectGoods}
           onUpdateOrder={handleUpdateOrderClick}
+          onReturnForPreparation={handleReturnOrderForPreparationClick}
           processRowUpdate={processRowUpdate}
         />
         <CollectGoodsDialog
