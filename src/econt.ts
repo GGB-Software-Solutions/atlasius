@@ -15,17 +15,15 @@ import {
   ShipmentType,
   ShippingLabel,
   ShippingLabelServices,
-  ValidationAddressPayload,
 } from "./types/econt";
 
 const ECONT_DEMO_API_URL = "http://demo.econt.com/ee/services";
 const ECONT_API_URL = "http://ee.econt.com/services";
 const ECONT_DEMO_API_USERNAME = "iasp-dev";
 const ECONT_DEMO_API_PASSWORD = "iasp-dev";
-const IS_PROD = process.env.NODE_ENV === "production";
 
-const ECONT_API_USERNAME = "e.kisyova@abv.bg";
-const ECONT_API_PASSWORD = "Makemoney123";
+const IS_PROD = process.env.NODE_ENV === "production";
+const IS_TEST_API_MODE = process.env.ECONT_API_MODE === "test";
 
 const getBasicAuth = (str) => {
   return btoa(unescape(encodeURIComponent(str)));
@@ -42,23 +40,22 @@ export const getInnerErrors = (response): string => {
 interface FetcherProps {
   url: string;
   body?: Record<string, unknown>;
-  isRealMode?: boolean;
-  credentials?: DeliveryCompanyCredentials;
+  credentials?: Pick<DeliveryCompanyCredentials, "username" | "password">;
 }
 
 export const fetcher = async ({
   url,
   body = {},
-  isRealMode = IS_PROD,
   credentials,
 }: FetcherProps) => {
+  const isTestMode = !IS_PROD || IS_TEST_API_MODE;
   const absoluteUrl = `${
-    isRealMode ? ECONT_API_URL : ECONT_DEMO_API_URL
+    !isTestMode ? ECONT_API_URL : ECONT_DEMO_API_URL
   }/${url}`;
   const auth =
-    (isRealMode ? credentials?.username : ECONT_DEMO_API_USERNAME) +
+    (!isTestMode ? credentials?.username : ECONT_DEMO_API_USERNAME) +
     ":" +
-    (isRealMode ? credentials?.password : ECONT_DEMO_API_PASSWORD);
+    (!isTestMode ? credentials?.password : ECONT_DEMO_API_PASSWORD);
   const response = await fetch(absoluteUrl, {
     body: JSON.stringify(body),
     method: "POST",
@@ -72,11 +69,15 @@ export const fetcher = async ({
 };
 
 class Econt {
-  credentials: DeliveryCompanyCredentials;
-  isRealMode: boolean = false;
-  constructor(credentials: DeliveryCompanyCredentials, isRealMode = false) {
-    this.isRealMode = isRealMode;
-    this.credentials = credentials;
+  credentials:
+    | Pick<DeliveryCompanyCredentials, "username" | "password">
+    | undefined;
+  constructor(credentials?: DeliveryCompanyCredentials) {
+    //If the credentials are not provided we fallback to demo credentials and it's reponsibility of the caller to decide whether to call or not the service
+    this.credentials = credentials || {
+      username: ECONT_DEMO_API_USERNAME,
+      password: ECONT_DEMO_API_PASSWORD,
+    };
   }
 
   async getCountries(): Promise<Country[]> {
