@@ -1,7 +1,7 @@
 import { GridRowModel } from "@mui/x-data-grid";
 import React from "react";
 
-const useProcessRowUpdate = () => {
+const useProcessRowUpdate = <T>() => {
   const [promiseArguments, setPromiseArguments] = React.useState<any>(null);
 
   const onClose = () => {
@@ -10,7 +10,7 @@ const useProcessRowUpdate = () => {
     setPromiseArguments(null);
   };
 
-  const onSuccess = (data) => {
+  const onSuccess = (data: T) => {
     const { resolve } = promiseArguments;
     resolve(data);
     setPromiseArguments(null);

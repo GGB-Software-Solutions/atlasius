@@ -86,7 +86,7 @@ export type ValidationAddressPayload = {
  * (if the City is outside Bulgaria, country is required)
  */
 export type City = {
-  id?: number;
+  id: number;
   // The country where the city is located
   country: Country;
   // Post code
