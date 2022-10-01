@@ -1,5 +1,6 @@
 import { Box, Paper, Typography } from "@mui/material";
 import React from "react";
+import useStore from "../../store/globalStore";
 
 interface Props {
   title: string;
@@ -7,6 +8,10 @@ interface Props {
 }
 
 export default function PageContainer({ title, children }: Props) {
+  const selectedCompany = useStore((state) => state.selectedCompany);
+  const pageTitle = `${title}${
+    selectedCompany ? "/" + selectedCompany.name : ""
+  }`;
   return (
     <>
       <Paper
@@ -17,7 +22,7 @@ export default function PageContainer({ title, children }: Props) {
           borderBottomColor: "divider",
         }}
       >
-        <Typography variant="subtitle1">{title}</Typography>
+        <Typography variant="subtitle1">{pageTitle}</Typography>
       </Paper>
       <Box
         sx={{
