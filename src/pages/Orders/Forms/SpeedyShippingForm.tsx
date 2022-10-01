@@ -5,12 +5,11 @@ import {
   TextFieldElement,
   AutocompleteElement,
 } from "react-hook-form-mui";
-import { Button, FormControlLabel, Grid, Switch } from "@mui/material";
+import { Alert, Button, FormControlLabel, Grid, Switch } from "@mui/material";
 import { MappedOrder } from "../../../types";
 import useStore from "../../../store/globalStore";
 import VirtualizedAutocomplete from "./VirtualizedAutocomplete";
 import {
-  generateSpeedyShippingLabel,
   mapSpeedyLabelToExpedition,
   shouldOrderBeDeliveredToOffice,
 } from "../utils";
@@ -18,16 +17,11 @@ import { DeliveryCompany } from "../../Companies/types";
 import SearchAsYouTypeAutocomplete from "./SearchAsYouTypeAutocomplete";
 import { speedyCountries } from "../../../speedy-countries";
 import { SpeedyAddress, SpeedyCountry } from "../../../types/speedy";
-import {
-  findSite,
-  getComplexes,
-  getStreets,
-  printLabel,
-  validateAddress,
-} from "../../../speedy-api";
+import { Speedy } from "../../../speedy-api";
 import useSpeedy from "./useSpeedy";
 import ValidAddress from "./ValidAddress";
 import { OrderShippingDetails, updateShippingDetails } from "../api";
+import { getDeliveryCompanyCredentials } from "../../../utils/common";
 
 type MappedSpeedyOrder = MappedOrder<DeliveryCompany.Speedy>;
 
@@ -48,6 +42,12 @@ export default function SpeedyShippingForm({
   const city = formContext.watch("city");
   const office = formContext.watch("office");
   const validatedAddress = formContext.watch("validatedAddress");
+  const company = formContext.getValues("company");
+  const credentials = getDeliveryCompanyCredentials(
+    company,
+    DeliveryCompany.Speedy
+  );
+  const speedyService = React.useRef(new Speedy(credentials)).current;
 
   const setNotification = useStore((state) => state.setNotification);
   const [deliverToOffice, setDeliverToOffice] = React.useState(
@@ -60,6 +60,7 @@ export default function SpeedyShippingForm({
   const { offices = [], isLoadingOffices } = useSpeedy({
     countryId: country?.id,
     deliverToOffice,
+    service: speedyService,
   });
 
   const isLoading = false;
@@ -107,7 +108,7 @@ export default function SpeedyShippingForm({
       streetId: street?.id,
       streetNo: streetNumber,
     };
-    const { error } = await validateAddress(address);
+    const { error } = await speedyService.validateAddress(address);
 
     if (error) {
       setNotification({ type: "error", message: error.message });
@@ -123,7 +124,7 @@ export default function SpeedyShippingForm({
 
   const handleGenerateShippingLabel = async () => {
     const order = formContext.getValues();
-    const response = await generateSpeedyShippingLabel(order);
+    const response = await speedyService.generateLabel(order);
     if (response.error) {
       setNotification({
         type: "error",
@@ -135,37 +136,52 @@ export default function SpeedyShippingForm({
       "shippingLabel",
       mapSpeedyLabelToExpedition(response, order)
     );
-    const label = await printLabel(response.parcels[0].id);
+    const label = await speedyService.printLabel(response.parcels[0].id);
     const printJS = (await import("print-js")).default;
     printJS({ printable: label, type: "pdf", base64: true, showModal: true });
   };
 
   const cityFetch = async (inputValue: string, callback) => {
     const country = formContext.getValues().country;
-    const data = await findSite({ countryId: country.id, name: inputValue });
+    const data = await speedyService.findSite({
+      countryId: country.id,
+      name: inputValue,
+    });
     callback(data);
   };
 
   const streetFetch = async (inputValue: string, callback) => {
     const city = formContext.getValues().city;
-    const data = await getStreets({ siteId: city.id, name: inputValue });
+    const data = await speedyService.getStreets({
+      siteId: city.id,
+      name: inputValue,
+    });
     callback(data);
   };
 
   const complexFetch = async (inputValue: string, callback) => {
     const city = formContext.getValues().city;
-    const data = await getComplexes({ siteId: city.id, name: inputValue });
+    const data = await speedyService.getComplexes({
+      siteId: city.id,
+      name: inputValue,
+    });
     callback(data);
   };
 
   return (
     <>
-      <ValidAddress
-        isValid={deliverToOffice ? Boolean(office) : validAddress}
-        isLoading={isLoading}
-        deliverToOffice={deliverToOffice}
-        deliveryCompany={DeliveryCompany.Speedy}
-      />
+      {!credentials ? (
+        <Alert severity="warning">
+          Липсват данни за Спийди за компания {company.name}
+        </Alert>
+      ) : (
+        <ValidAddress
+          isValid={deliverToOffice ? Boolean(office) : validAddress}
+          isLoading={isLoading}
+          deliverToOffice={deliverToOffice}
+          deliveryCompany={DeliveryCompany.Speedy}
+        />
+      )}
 
       <FormControlLabel
         control={
@@ -232,7 +248,6 @@ export default function SpeedyShippingForm({
                   name="zipCode"
                   label="Пощенски код"
                   fullWidth
-                  required
                 />
               </Grid>
               <Grid item xs={6} md={4}>
@@ -240,7 +255,6 @@ export default function SpeedyShippingForm({
                   fetch={complexFetch}
                   name="quarter"
                   label="Квартал"
-                  required
                   autocompleteProps={{
                     disabled: !city,
                     getOptionLabel(option) {
@@ -328,6 +342,7 @@ export default function SpeedyShippingForm({
           variant="contained"
           onClick={saveShippingDetails}
           color="primary"
+          disabled={!credentials}
         >
           Запази
         </Button>
@@ -336,6 +351,7 @@ export default function SpeedyShippingForm({
             variant="contained"
             onClick={handleGenerateShippingLabel}
             color="primary"
+            disabled={!credentials}
           >
             Генерирай товарителница
           </Button>

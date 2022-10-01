@@ -30,7 +30,7 @@ export default function OrdersDialog({
   open,
   setOrders,
 }: Props) {
-  if (!open) return null;
+  if (!open || orders.length === 0) return null;
   const [isLoading, setIsLoading] = React.useState(false);
   const title = getOrderDialogTitle(orders[0]);
   const warehouseStatus = orders[0].warehouseStatus;

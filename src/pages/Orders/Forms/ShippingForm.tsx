@@ -237,7 +237,6 @@ export default function ShippingForm({
                   name="zipCode"
                   label="Пощенски код"
                   fullWidth
-                  required
                 />
               </Grid>
               <Grid item xs={6} md={4}>
@@ -272,7 +271,6 @@ export default function ShippingForm({
                   variant="standard"
                   name="streetNumber"
                   label="Номер на улица"
-                  required
                   fullWidth
                 />
               </Grid>

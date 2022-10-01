@@ -10,7 +10,7 @@ const columns: GridColDef<Expedition>[] = [
     field: "shipmentId",
     type: "number",
     headerName: "ID",
-    width: 90,
+    width: 150,
   },
   {
     field: "orderId",

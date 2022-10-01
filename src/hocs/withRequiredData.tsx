@@ -4,16 +4,20 @@ import useSWR from "swr";
 import { API_ENDPOINTS } from "../api";
 import useStore from "../store/globalStore";
 import Loader from "../components/Loader";
-import Econt from "../econt";
+import Econt, { TEST_CREDENTIALS as ECONT_TEST_CREDENTIALS } from "../econt";
+import { TEST_CREDENTIALS } from "../speedy-api";
 
-const econtService = new Econt();
+const econtService = new Econt(ECONT_TEST_CREDENTIALS, true);
 
 async function sendEcontServiceRequest(url) {
   return econtService[url]();
 }
 
 async function sendSpeedyServiceRequest(url) {
-  const response = await fetch(url);
+  const response = await fetch(url, {
+    method: "POST",
+    body: JSON.stringify(TEST_CREDENTIALS),
+  });
   const data = await response.json();
   return data;
 }

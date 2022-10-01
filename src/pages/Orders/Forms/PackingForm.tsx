@@ -45,13 +45,6 @@ export default function PackingForm({ orders, onClose, setOrders }: Props) {
   const formContext = useForm({ defaultValues: selectedOrder || {} });
   const expedition = formContext.watch("shippingLabel");
 
-  React.useEffect(() => {
-    //If all orders are finished automatically close the dialog
-    if (orders.length === 0) {
-      onClose();
-    }
-  }, [orders.length]);
-
   const onRowClick = (params: GridRowParams) => {
     formContext.reset(params.row);
     setSelectedOrder(params.row);

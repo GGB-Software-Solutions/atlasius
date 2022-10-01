@@ -23,12 +23,7 @@ import {
   SpeedyLabel,
   SpeedyOffice,
 } from "../../types/speedy";
-import {
-  findSite,
-  generateLabel,
-  getStreets,
-  validateAddress,
-} from "../../speedy-api";
+import { Speedy } from "../../speedy-api";
 import { speedyCountries } from "../../speedy-countries";
 import { Expedition } from "../../types/expedition";
 import { CollectProduct } from "../../types/product";
@@ -55,65 +50,6 @@ export const getContentsDescription = (order: MappedOrder) => {
   );
   const uniqueContents = [...new Set(contents)];
   return uniqueContents.join(",");
-};
-
-export const generateSpeedyShippingLabel = async (
-  order: MappedOrder<DeliveryCompany.Speedy>
-) => {
-  const cod =
-    order.paymentType === PaymentType.CARD
-      ? {}
-      : {
-          cod: {
-            amount: order.price,
-            payoutToLoggedClient: true,
-            includeShippingPrice: false,
-            processingType: "POSTAL_MONEY_TRANSFER",
-          },
-        };
-  const label = {
-    recipient: {
-      phone1: {
-        number: order.phone,
-      },
-      clientName: `${order.firstName} ${order.lastName}`,
-      privatePerson: true,
-      address: order.validatedAddress,
-      pickupOfficeId: order.officeId,
-    },
-    service: {
-      serviceId: 505, // Standard 24-hour Speedy service
-      autoAdjustPickupDate: true,
-      additionalServices: {
-        ...cod,
-        obpd: {
-          option: "OPEN",
-          returnShipmentServiceId: 505,
-          returnShipmentPayer: "RECIPIENT",
-        },
-        returns: {
-          swap: {
-            serviceId: 505,
-            parcelsCount: 1,
-          },
-        },
-      },
-    },
-    content: {
-      parcelsCount: 1,
-      totalWeight: order.products.reduce((prevValue, currValue) => {
-        return prevValue + currValue.orderedQuantity * currValue.weight;
-      }, 0),
-      contents: getContentsDescription(order),
-      package: "BOX",
-    },
-    payment: {
-      courierServicePayer: "SENDER",
-      packagePayer: "RECIPIENT",
-    },
-  };
-  const response = await generateLabel(label);
-  return response;
 };
 
 const options = (keys) => ({
@@ -247,32 +183,48 @@ export const mapSpeedyAddressDelivery = async (
   order: MappedOrder<DeliveryCompany.Speedy>
 ): Promise<MappedOrder<DeliveryCompany.Speedy>> => {
   const countryId = order.country.id;
-  const address: SpeedyAddress = {
-    countryId,
-    streetName: order.streetName,
-    streetNo: order.streetNumber,
-    siteName: order.city as string,
-    postCode: order.zipCode,
-  };
-  const { valid } = await validateAddress(address);
+  const credentials = getDeliveryCompanyCredentials(
+    order.company,
+    DeliveryCompany.Speedy
+  );
   const mappedOrder: MappedOrder<DeliveryCompany.Speedy> = { ...order };
+  let valid;
 
-  const sites = await findSite({ countryId, name: order.city as string });
+  if (credentials) {
+    const speedyService = new Speedy(credentials);
+    const address: SpeedyAddress = {
+      countryId,
+      streetName: order.streetName,
+      streetNo: order.streetNumber,
+      siteName: order.city as string,
+      postCode: order.zipCode,
+    };
+    const { valid: isAddressValid } = await speedyService.validateAddress(
+      address
+    );
+    valid = isAddressValid;
+    if (valid) {
+      mappedOrder.validatedAddress = address;
+    } else {
+      const sites = await speedyService.findSite({
+        countryId,
+        name: order.city as string,
+      });
 
-  if (sites.length > 0) {
-    mappedOrder.city = sites[0];
-    const streets = await getStreets({
-      siteId: sites[0].id,
-      name: order.streetName,
-    });
-    if (streets.length > 0) {
-      mappedOrder.street = streets[0];
+      if (sites.length > 0) {
+        mappedOrder.city = sites[0];
+        const streets = await speedyService.getStreets({
+          siteId: sites[0].id,
+          name: order.streetName,
+        });
+        if (streets.length > 0) {
+          mappedOrder.street = streets[0];
+        }
+      }
     }
   }
 
-  if (valid) {
-    mappedOrder.validatedAddress = address;
-  } else {
+  if (!valid) {
     mappedOrder.errorStatus = ErrorStatus.WRONG_ADDRESS;
   }
 

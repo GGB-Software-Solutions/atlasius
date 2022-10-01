@@ -41,21 +41,35 @@ interface FetcherProps {
   url: string;
   body?: Record<string, unknown>;
   credentials?: Pick<DeliveryCompanyCredentials, "username" | "password">;
+  testMode?: boolean;
 }
+
+export const TEST_CREDENTIALS = {
+  username: ECONT_DEMO_API_USERNAME,
+  password: ECONT_DEMO_API_PASSWORD,
+};
 
 export const fetcher = async ({
   url,
   body = {},
   credentials,
+  testMode = false,
 }: FetcherProps) => {
-  const isTestMode = !IS_PROD || IS_TEST_API_MODE;
+  let isRealMode;
+
+  if (testMode) {
+    isRealMode = false;
+  } else {
+    isRealMode = IS_PROD || !IS_TEST_API_MODE;
+  }
+
   const absoluteUrl = `${
-    !isTestMode ? ECONT_API_URL : ECONT_DEMO_API_URL
+    isRealMode ? ECONT_API_URL : ECONT_DEMO_API_URL
   }/${url}`;
   const auth =
-    (!isTestMode ? credentials?.username : ECONT_DEMO_API_USERNAME) +
+    (isRealMode ? credentials?.username : ECONT_DEMO_API_USERNAME) +
     ":" +
-    (!isTestMode ? credentials?.password : ECONT_DEMO_API_PASSWORD);
+    (isRealMode ? credentials?.password : ECONT_DEMO_API_PASSWORD);
   const response = await fetch(absoluteUrl, {
     body: JSON.stringify(body),
     method: "POST",
@@ -72,17 +86,23 @@ class Econt {
   credentials:
     | Pick<DeliveryCompanyCredentials, "username" | "password">
     | undefined;
-  constructor(credentials?: DeliveryCompanyCredentials) {
+  testMode: boolean;
+  constructor(
+    credentials?: Pick<DeliveryCompanyCredentials, "username" | "password">,
+    testMode: boolean = false
+  ) {
     //If the credentials are not provided we fallback to demo credentials and it's reponsibility of the caller to decide whether to call or not the service
-    this.credentials = credentials || {
-      username: ECONT_DEMO_API_USERNAME,
-      password: ECONT_DEMO_API_PASSWORD,
-    };
+    this.credentials = credentials;
+    this.testMode = testMode;
   }
 
   async getCountries(): Promise<Country[]> {
     const url = "Nomenclatures/NomenclaturesService.getCountries.json";
-    const data = await fetcher({ url, credentials: this.credentials });
+    const data = await fetcher({
+      url,
+      credentials: this.credentials,
+      testMode: this.testMode,
+    });
     return data.countries;
   }
 
@@ -94,6 +114,7 @@ class Econt {
         countryCode,
       },
       credentials: this.credentials,
+      testMode: this.testMode,
     });
     return data.cities;
   }
@@ -106,6 +127,7 @@ class Econt {
         cityID,
       },
       credentials: this.credentials,
+      testMode: this.testMode,
     });
     return data.streets;
   }
@@ -119,13 +141,18 @@ class Econt {
         cityID,
       },
       credentials: this.credentials,
+      testMode: this.testMode,
     });
     return data.offices;
   }
 
   async getClientProfiles() {
     const url = "Profile/ProfileService.getClientProfiles.json";
-    const data = await fetcher({ url, credentials: this.credentials });
+    const data = await fetcher({
+      url,
+      credentials: this.credentials,
+      testMode: this.testMode,
+    });
     return data.profiles[0];
   }
 
@@ -150,6 +177,7 @@ class Econt {
         },
       },
       credentials: this.credentials,
+      testMode: this.testMode,
     });
     let error = null;
     let address = null;
@@ -177,6 +205,7 @@ class Econt {
         label,
         mode: "create",
       },
+      testMode: this.testMode,
     });
     return data;
   }
@@ -200,7 +229,7 @@ class Econt {
       name: `${order.firstName} ${order.lastName}`,
       phones: [order.phone],
     };
-    const receiverOfficeCode = order.officeId;
+    const receiverOfficeCode = order.office?.code;
     let receiverAddress = null;
 
     if (!receiverOfficeCode) {
