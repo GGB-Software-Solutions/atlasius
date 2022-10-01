@@ -8,6 +8,7 @@ import {
 import Toolbar from "./Toolbar";
 import { Box } from "@mui/material";
 import useStore from "../../store/globalStore";
+import commonColumns from "./commonColumns";
 
 export interface Props<T extends GridValidRowModel> extends DataGridProps<T> {
   actions?: (rows: Map<GridRowId, T>) => React.ReactNode;
@@ -37,6 +38,7 @@ export default function Table<T extends GridValidRowModel>({
     <Box sx={{ width: "100%" }}>
       <DataGrid
         {...other}
+        columns={[...other.columns, ...commonColumns]}
         components={{
           Toolbar: toolbar,
         }}
