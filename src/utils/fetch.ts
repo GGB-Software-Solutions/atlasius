@@ -13,7 +13,7 @@ function getHeaders(token: string) {
 //http://92.247.54.172:8080
 export async function jsonFetch(url: string, options?: RequestInit) {
   const session = await getSession();
-  const response = await fetch(`http://127.0.0.1:8080/${url}`, {
+  const response = await fetch(`http://207.154.235.250:8080/${url}`, {
     ...options,
     headers: getHeaders(session?.accessToken),
   });
