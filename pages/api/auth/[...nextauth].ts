@@ -8,13 +8,18 @@ export default NextAuth({
       credentials: {},
       async authorize(credentials, req) {
         const url = "login?username=asd&password=asd";
-        const data = await jsonFetch(url, {
-          method: "POST",
-          body: JSON.stringify(credentials),
-        });
-        if (data) return data;
-        // Return null if user data could not be retrieved
-        return null;
+        try {
+          const data = await jsonFetch(url, {
+            method: "POST",
+            body: JSON.stringify(credentials),
+          });
+          if (data) return data;
+          // Return null if user data could not be retrieved
+          return null;
+        } catch (e) {
+          console.log("Err:", e);
+          return null;
+        }
       },
     }),
   ],
