@@ -17,12 +17,9 @@ export async function jsonFetch(url: string, options?: RequestInit) {
     ...options,
     headers: getHeaders(session?.accessToken),
   });
-  // if (!response.ok) {
-  //   console.log(response);
-  //   if (response.status === 403) {
-  //     router.push("/auth/login");
-  //   }
-  // }
+  if (!response.ok) {
+    console.log("Response:", response);
+  }
   const data = await response.json();
   return data;
 }
