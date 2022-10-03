@@ -16,7 +16,6 @@ import {
 } from "./api";
 import useProcessRowUpdate from "./useProcessRowUpdate";
 import UpdatePhoneDialog from "./UpdatePhoneDialog";
-import OrderSummaryDialog from "../FulfilledOrders/OrderSummaryDialog";
 
 export default function Admin() {
   const { processRowUpdate, onClose, promiseArguments, onError, onSuccess } =
