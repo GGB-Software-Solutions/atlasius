@@ -52,7 +52,10 @@ const map = (rows: Expedition[], companies: Company[]) =>
     company: companies.find((company) => company.id === row.companyId),
   }));
 
-const ExpeditionsTable = ({ rows }: Omit<Props<Expedition>, "columns">) => {
+const ExpeditionsTable = ({
+  rows,
+  ...other
+}: Omit<Props<Expedition>, "columns">) => {
   const companies = useStore((state) => state.companies);
   return (
     <Table
@@ -60,6 +63,7 @@ const ExpeditionsTable = ({ rows }: Omit<Props<Expedition>, "columns">) => {
       title="Експедиции"
       rows={map(rows, companies)}
       columns={columns}
+      {...other}
     />
   );
 };

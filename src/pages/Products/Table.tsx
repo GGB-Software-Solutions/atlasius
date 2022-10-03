@@ -7,9 +7,10 @@ import {
 import { Button } from "@mui/material";
 import Table from "../../components/Table";
 import withEditor from "../../components/Table/withEditor";
-import { FormProduct } from "../../types/product";
+import { FormProduct, ProductResponse } from "../../types/product";
 import useStore from "../../store/globalStore";
 import { Warehouse } from "../../types";
+import { Company } from "../Companies/types";
 
 const columns = (warehouses: Warehouse[]): GridColDef<FormProduct>[] => [
   { field: "id", type: "number", hide: true, headerName: "ID", width: 90 },
@@ -87,9 +88,26 @@ interface Props {
   rows: FormProduct[];
 }
 
+const transform = (
+  products: ProductResponse[] = [],
+  companies: Company[]
+): FormProduct[] =>
+  products.map((product) => ({
+    ...product,
+    company: companies.find(
+      (company) => company.id === product.productId.companyId
+    ) as Company,
+  }));
+
 export const ProductsTable = ({ onRowClick, rows, ...other }: Props) => {
   const selectedCompany = useStore((state) => state.selectedCompany);
   const warehouses = useStore((state) => state.warehouses);
+  const companies = useStore((state) => state.companies);
+
+  const mappedRows = React.useMemo(
+    () => transform(rows, companies),
+    [rows, companies]
+  );
 
   return (
     <Table
@@ -116,7 +134,7 @@ export const ProductsTable = ({ onRowClick, rows, ...other }: Props) => {
       }}
       columns={columns(warehouses)}
       onRowClick={onRowClick}
-      rows={rows}
+      rows={mappedRows}
       {...other}
     />
   );

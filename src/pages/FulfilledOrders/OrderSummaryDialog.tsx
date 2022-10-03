@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -15,13 +16,21 @@ import { ProductsTable } from "../Products/Table";
 import { EditorProps } from "../../components/Table/withEditor";
 import { jsonFetch } from "../../utils/fetch";
 import { API_ENDPOINTS } from "../../api";
+import ExpeditionsTable from "../Expeditions/Table";
 
 const fetchExpedition = async (orderId: string) => {
-  const response = await jsonFetch(API_ENDPOINTS.DeliveryDetails, {
-    method: "GET",
-  });
+  const response = await jsonFetch(
+    API_ENDPOINTS.DeliveryDetails + `/${orderId}`
+  );
   return response;
 };
+
+const renderInfo = (title: string, subtitle: string) => (
+  <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+    <Typography variant="subtitle2">{title}</Typography>
+    <Typography>{subtitle}</Typography>
+  </Box>
+);
 
 export default function OrderSummaryDialog({
   data,
@@ -59,33 +68,31 @@ export default function OrderSummaryDialog({
       <DialogTitle>Поръчка({order.id})</DialogTitle>
       <DialogContent>
         <Grid container spacing={2}>
-          <Grid item xs={6}>
-            <ProductsTable rows={products} />
-          </Grid>
-          <Grid item xs={6}>
-            <Paper>
-              <Typography>Информация за клиента</Typography>
-              <Typography>
-                {firstName}/{lastName}
-              </Typography>
-              <Typography>{email}</Typography>
-              <Typography>{phone}</Typography>
-            </Paper>
-            <Paper>
-              <Typography>Адрес за доставка</Typography>
-              <Typography>
-                {firstName}/{lastName}
-              </Typography>
-              <Typography>{officeName}</Typography>
-              <Typography>
-                {country}/{city}
-              </Typography>
-              <Typography>{address1}</Typography>
+          <Grid item xs={3}>
+            <Paper elevation={5} sx={{ pl: 2, pr: 2, pb: 2, height: "100%" }}>
+              <Typography variant="h6">Информация за клиента</Typography>
+              {renderInfo("Име", `${firstName} ${lastName}`)}
+              {renderInfo("Email", email)}
+              {renderInfo("Телефон", phone)}
             </Paper>
           </Grid>
-
+          <Grid item xs={3}>
+            <Paper elevation={5} sx={{ pl: 2, pr: 2, pb: 2, height: "100%" }}>
+              <Typography variant="h6">Адрес за доставка</Typography>
+              {renderInfo("Име", `${firstName} ${lastName}`)}
+              {renderInfo("Вид доставка", officeName)}
+              {renderInfo("Телефон", `${country}/${city}`)}
+              {renderInfo("Адрес", address1)}
+            </Paper>
+          </Grid>
           <Grid item xs={12}>
-            <Paper>Експедиция</Paper>
+            <ProductsTable rows={products} checkboxSelection={false} />
+          </Grid>
+          <Grid item xs={12}>
+            <ExpeditionsTable
+              rows={expedition || []}
+              checkboxSelection={false}
+            />
           </Grid>
         </Grid>
       </DialogContent>
