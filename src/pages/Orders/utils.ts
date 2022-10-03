@@ -333,8 +333,12 @@ export const mapOrders = async (
           | SpeedyCountry,
       };
 
-      //If the order has error we return early not to try to validate the address
-      if (order.errorStatus) {
+      //If the order has error or if its archived or cancelled we return early not to try to validate the address
+      if (
+        order.errorStatus ||
+        order.status === OrderStatus.ARCHIVED ||
+        order.status === OrderStatus.CANCELLED
+      ) {
         return mappedOrder;
       }
 

@@ -63,6 +63,10 @@ export const columns: GridColDef[] = [
         label = "Изпратена";
       }
 
+      if (status === OrderStatus.CANCELLED) {
+        label = "Отказана";
+      }
+
       if (errorStatus === ErrorStatus.WRONG_ADDRESS) {
         label = "Невалиден адрес";
       }
@@ -89,6 +93,10 @@ export const columns: GridColDef[] = [
 
       if (status === OrderStatus.ARCHIVED) {
         color = "#2e7d32";
+      }
+
+      if (status === OrderStatus.CANCELLED) {
+        color = "#8a8a8a";
       }
 
       if (errorStatus) {
