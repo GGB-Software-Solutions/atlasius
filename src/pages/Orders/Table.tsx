@@ -18,7 +18,7 @@ import {
 } from "../../types";
 import { ProductResponse } from "../../types/product";
 
-const columns: GridColDef[] = [
+export const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 150, hide: true },
   {
     field: "status",

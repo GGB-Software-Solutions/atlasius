@@ -23,8 +23,9 @@ const routes: Route[] = [
   },
   { name: "Компании", href: "/companies" },
   { name: "Складове", href: "/warehouses" },
-  { name: "Поръчки", href: "/orders" },
+  { name: "Задачи", href: "/tasks" },
   { name: "Експедиции", href: "/expeditions" },
+  { name: "Поръчки", href: "/expeditions" },
 ];
 
 interface RenderListItem {

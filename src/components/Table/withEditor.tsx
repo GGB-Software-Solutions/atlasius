@@ -13,7 +13,7 @@ export interface EditorProps<T = any> {
 
 interface Props<T = any> extends Partial<TableProps<T>> {
   Editor: React.JSXElementConstructor<EditorProps>;
-  onEditorSave: (data: T) => void;
+  onEditorSave?: (data: T) => void;
 }
 
 const withEditor =

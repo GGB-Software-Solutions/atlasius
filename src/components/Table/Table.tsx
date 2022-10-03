@@ -48,6 +48,7 @@ export default function Table<T extends GridValidRowModel>({
         pagination
         autoHeight
         initialState={{
+          ...other.initialState,
           pagination: {
             pageSize: 25,
           },
