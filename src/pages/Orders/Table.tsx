@@ -174,7 +174,7 @@ export const columns: GridColDef[] = [
     valueGetter: (
       params: GridValueGetterParams<string, ProductResponse>
     ): string => {
-      return `${params.row.prodcuts
+      return `${params.row.products
         .map((product) => `${product.name}/${product.orderedQuantity}`)
         .join("\n")}`;
     },
