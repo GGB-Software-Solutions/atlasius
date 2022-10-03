@@ -14,11 +14,7 @@ import {
   WarehouseStatus,
 } from "../../../types";
 import { LoadingButton } from "@mui/lab";
-import {
-  saveShippingLabel,
-  updateOrderStatus,
-  UpdateOrderStatus,
-} from "../api";
+import { updateOrderStatus, UpdateOrderStatus } from "../api";
 import useStore from "../../../store/globalStore";
 import {
   getBackgroundColor,
@@ -91,7 +87,6 @@ export default function PackingForm({ orders, onClose, setOrders }: Props) {
       warehouseStatus: WarehouseStatus.SHIPPING,
     };
     await updateOrderStatus(orderStatus);
-    await saveShippingLabel(data.shippingLabel);
     resetSelectedOrder(data.id);
   };
 

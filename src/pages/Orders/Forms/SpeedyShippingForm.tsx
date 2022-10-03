@@ -20,7 +20,11 @@ import { SpeedyAddress, SpeedyCountry } from "../../../types/speedy";
 import { Speedy } from "../../../speedy-api";
 import useSpeedy from "./useSpeedy";
 import ValidAddress from "./ValidAddress";
-import { OrderShippingDetails, updateShippingDetails } from "../api";
+import {
+  OrderShippingDetails,
+  saveShippingLabel,
+  updateShippingDetails,
+} from "../api";
 import { getDeliveryCompanyCredentials } from "../../../utils/common";
 
 type MappedSpeedyOrder = MappedOrder<DeliveryCompany.Speedy>;
@@ -132,13 +136,21 @@ export default function SpeedyShippingForm({
       });
       return;
     }
-    formContext.setValue(
-      "shippingLabel",
-      mapSpeedyLabelToExpedition(response, order)
-    );
-    const label = await speedyService.printLabel(response.parcels[0].id);
-    const printJS = (await import("print-js")).default;
-    printJS({ printable: label, type: "pdf", base64: true, showModal: true });
+    const shippingLabel = mapSpeedyLabelToExpedition(response, order);
+    const labelResponse = await saveShippingLabel(shippingLabel);
+
+    if (labelResponse && !labelResponse.error) {
+      setNotification({
+        type: "success",
+        message: labelResponse.created,
+      });
+      formContext.setValue("shippingLabel", shippingLabel);
+      const label = await speedyService.printLabel(response.parcels[0].id);
+      const printJS = (await import("print-js")).default;
+      printJS({ printable: label, type: "pdf", base64: true, showModal: true });
+    } else {
+      setNotification({ type: "error", message: labelResponse.error });
+    }
   };
 
   const cityFetch = async (inputValue: string, callback) => {

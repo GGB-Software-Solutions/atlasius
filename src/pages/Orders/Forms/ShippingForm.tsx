@@ -20,7 +20,11 @@ import {
 } from "../utils";
 import { DeliveryCompany } from "../../Companies/types";
 import ValidAddress from "./ValidAddress";
-import { OrderShippingDetails, updateShippingDetails } from "../api";
+import {
+  OrderShippingDetails,
+  saveShippingLabel,
+  updateShippingDetails,
+} from "../api";
 import { getDeliveryCompanyCredentials } from "../../../utils/common";
 
 type MappedEcontOrder = MappedOrder<DeliveryCompany.Econt>;
@@ -135,16 +139,24 @@ export default function ShippingForm({
       setNotification({ type: "error", message: getInnerErrors(response) });
       return;
     }
-    formContext.setValue(
-      "shippingLabel",
-      mapEcontLabelToExpedition(response.label, data)
-    );
-    const printJS = (await import("print-js")).default;
-    printJS({
-      printable: response.label.pdfURL,
-      type: "pdf",
-      showModal: true,
-    });
+    const shippingLabel = mapEcontLabelToExpedition(response.label, data);
+    const labelResponse = await saveShippingLabel(shippingLabel);
+
+    if (labelResponse && !labelResponse.error) {
+      setNotification({
+        type: "success",
+        message: labelResponse.created,
+      });
+      formContext.setValue("shippingLabel", shippingLabel);
+      const printJS = (await import("print-js")).default;
+      printJS({
+        printable: response.label.pdfURL,
+        type: "pdf",
+        showModal: true,
+      });
+    } else {
+      setNotification({ type: "error", message: labelResponse.error });
+    }
   };
 
   const handleCheckboxChange = (_, checked: boolean) =>
