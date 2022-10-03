@@ -84,15 +84,11 @@ export default function Admin() {
   };
 
   const changeStatus = async (data: MappedOrder[], status: OrderStatus) => {
-    await Promise.all(
-      data.map((order) => {
-        const orderStatus: UpdateOrderStatus = {
-          id: order.id,
-          status,
-        };
-        return updateOrderStatus(orderStatus);
-      })
-    );
+    const orderStatuses: UpdateOrderStatus[] = data.map((order) => ({
+      id: order.id,
+      status,
+    }));
+    await updateOrderStatus(orderStatuses);
   };
 
   const mapRows = async () => {

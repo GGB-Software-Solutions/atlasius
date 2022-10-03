@@ -37,10 +37,10 @@ export type UpdateOrderStatus = Partial<
   >
 > & { id: string };
 
-export const updateOrderStatus = async (orderStatus: UpdateOrderStatus) => {
+export const updateOrderStatus = async (orderStatuses: UpdateOrderStatus[]) => {
   const response = await jsonFetch(API_ENDPOINTS.Order + "/update-status", {
     method: "POST",
-    body: JSON.stringify(orderStatus),
+    body: JSON.stringify(orderStatuses),
   });
   return response;
 };

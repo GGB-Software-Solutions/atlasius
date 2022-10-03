@@ -58,15 +58,11 @@ export default function OrdersDialog({
   const handleFinishPicking = async () => {
     setIsLoading(true);
 
-    await Promise.all(
-      orders.map((order) => {
-        const orderStatus: UpdateOrderStatus = {
-          id: order.id,
-          warehouseStatus: WarehouseStatus.PACKING,
-        };
-        return updateOrderStatus(orderStatus);
-      })
-    );
+    const orderStatuses = orders.map((order) => ({
+      id: order.id,
+      warehouseStatus: WarehouseStatus.PACKING,
+    }));
+    await updateOrderStatus(orderStatuses);
 
     setOrders((data) =>
       data.map((order) => ({

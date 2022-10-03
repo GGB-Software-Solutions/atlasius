@@ -70,7 +70,7 @@ export default function PackingForm({ orders, onClose, setOrders }: Props) {
       id: selectedOrder.id,
       warehouseStatus: WarehouseStatus.PICKING,
     };
-    const response = await updateOrderStatus(orderStatus);
+    const response = await updateOrderStatus([orderStatus]);
     if (response.success) {
       setNotification({ type: "success", message: response.success });
       resetSelectedOrder(selectedOrder.id);
@@ -86,7 +86,7 @@ export default function PackingForm({ orders, onClose, setOrders }: Props) {
       fulfillmentStatus: FulfillmentStatus.FULFILLED,
       warehouseStatus: WarehouseStatus.SHIPPING,
     };
-    await updateOrderStatus(orderStatus);
+    await updateOrderStatus([orderStatus]);
     resetSelectedOrder(data.id);
   };
 
