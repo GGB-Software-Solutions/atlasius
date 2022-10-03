@@ -86,12 +86,17 @@ export default function OrderSummaryDialog({
             </Paper>
           </Grid>
           <Grid item xs={12}>
-            <ProductsTable rows={products} checkboxSelection={false} />
+            <ProductsTable
+              rows={products}
+              checkboxSelection={false}
+              autoHeight
+            />
           </Grid>
           <Grid item xs={12}>
             <ExpeditionsTable
               rows={expedition || []}
               checkboxSelection={false}
+              autoHeight
             />
           </Grid>
         </Grid>

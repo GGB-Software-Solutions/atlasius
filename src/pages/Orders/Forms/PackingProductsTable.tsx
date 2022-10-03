@@ -103,6 +103,7 @@ export const PackingProductsTable = ({
             packedProductsIds.includes(params.row.id) ? "Packed" : "NotPacked"
           }`
         }
+        autoHeight
         {...other}
       />
     </Box>

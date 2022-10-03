@@ -56,6 +56,7 @@ export const UncollectedTable = ({ onCollect, rows }: Props) => {
       }}
       rows={rows}
       columns={columns}
+      autoHeight
     />
   );
 };

@@ -35,7 +35,7 @@ export default function Table<T extends GridValidRowModel>({
     : [];
   const toolbar = () => <Toolbar title={title}>{actions}</Toolbar>;
   return (
-    <Box sx={{ width: "100%" }}>
+    <Box sx={{ width: "100%", flexGrow: 1 }}>
       <DataGrid
         {...other}
         columns={[...other.columns, ...commonColumns]}
@@ -46,7 +46,6 @@ export default function Table<T extends GridValidRowModel>({
           items: initialCompanyFilter,
         }}
         pagination
-        autoHeight
         initialState={{
           ...other.initialState,
           pagination: {

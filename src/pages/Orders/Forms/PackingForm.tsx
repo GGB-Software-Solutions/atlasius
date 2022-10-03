@@ -109,6 +109,7 @@ export default function PackingForm({ orders, onClose, setOrders }: Props) {
         rows={orders}
         checkboxSelection={false}
         onRowClick={onRowClick}
+        autoHeight
         getRowClassName={(params) =>
           `row--${
             selectedOrder && selectedOrder.id === params.row.id
@@ -141,7 +142,10 @@ export default function PackingForm({ orders, onClose, setOrders }: Props) {
             />
           </Paper>
           <Paper sx={{ padding: 2, mt: 4 }} variant="outlined">
-            <ExpeditionsTable rows={expedition ? [expedition] : []} />
+            <ExpeditionsTable
+              rows={expedition ? [expedition] : []}
+              autoHeight
+            />
           </Paper>
           <DialogActions>
             <LoadingButton color="primary" onClick={handleReturnForPicking}>
