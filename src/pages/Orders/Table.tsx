@@ -16,6 +16,7 @@ import {
   OrderStatus,
   WarehouseStatus,
 } from "../../types";
+import { ProductResponse } from "../../types/product";
 
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 150, hide: true },
@@ -165,6 +166,18 @@ const columns: GridColDef[] = [
     headerName: "Компания",
     valueGetter: (params: GridValueGetterParams) =>
       `${params.row.company?.name}`,
+  },
+  {
+    field: "products",
+    width: 150,
+    headerName: "Продукти",
+    valueGetter: (
+      params: GridValueGetterParams<string, ProductResponse>
+    ): string => {
+      return `${params.row.prodcuts
+        .map((product) => `${product.name}/${product.orderedQuantity}`)
+        .join("\n")}`;
+    },
   },
 ];
 
