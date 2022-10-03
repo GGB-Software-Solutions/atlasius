@@ -174,10 +174,63 @@ const columns: GridColDef[] = [
 // Reserved and Picking
 // Reserved and Packing
 
+const getActions = ({
+  rows,
+  onCancelOrder,
+  onUpdateOrder,
+  onCollectGoods,
+  onReturnForPreparation,
+}) => {
+  if (rows && rows.length) {
+    const isRowsStatusTheSame = rows.every(
+      (row) =>
+        row.status === rows[0].status &&
+        row.warehouseStatus === rows[0].warehouseStatus
+    );
+
+    const actions = [
+      <Button onClick={() => onCancelOrder(rows)}>{"Анулирай поръчки"}</Button>,
+    ];
+
+    if (isRowsStatusTheSame) {
+      if (rows[0].errorStatus && onUpdateOrder) {
+        actions.push(
+          <Button onClick={() => onUpdateOrder(rows)}>
+            {"Актуализирай поръчка"}
+          </Button>
+        );
+        return actions;
+      }
+
+      if (rows[0].status === OrderStatus.RESERVED && onReturnForPreparation) {
+        actions.push(
+          <Button onClick={() => onReturnForPreparation(rows)}>
+            {"Върни за обработка"}
+          </Button>
+        );
+        return actions;
+      }
+
+      if (onCollectGoods && isRowsStatusTheSame) {
+        const label =
+          rows[0].warehouseStatus === WarehouseStatus.PICKING
+            ? "Събери стока"
+            : "Пакетирай стока";
+        actions.push(
+          <Button onClick={() => onCollectGoods(rows)}>{label}</Button>
+        );
+        return actions;
+      }
+    }
+    return actions;
+  }
+};
+
 type Props = {
   onCollectGoods?: (data: MappedOrder[]) => void;
   onUpdateOrder?: (data: MappedOrder[]) => void;
   onReturnForPreparation?: (data: MappedOrder[]) => void;
+  onCancelOrder?: (data: MappedOrder[]) => void;
   rows: MappedOrder[];
 } & Partial<TableProps<MappedOrder>>;
 
@@ -185,6 +238,7 @@ const OrdersTable = ({
   onCollectGoods,
   onUpdateOrder,
   onReturnForPreparation,
+  onCancelOrder,
   rows = [],
   ...other
 }: Props) => {
@@ -195,49 +249,17 @@ const OrdersTable = ({
       experimentalFeatures={{ newEditingApi: true }}
       actions={(rowsMap) => {
         const rows = Array.from(rowsMap.values());
-        const isRowsStatusTheSame =
-          rows && rows.length
-            ? rows.every(
-                (row) =>
-                  row.status === rows[0].status &&
-                  row.warehouseStatus === rows[0].warehouseStatus
-              )
-            : false;
-        if (
-          rows &&
-          rows.length &&
-          rows[0].errorStatus &&
-          onUpdateOrder &&
-          isRowsStatusTheSame
-        ) {
-          return (
-            <Button onClick={() => onUpdateOrder(rows)}>
-              {"Актуализирай поръчка"}
-            </Button>
-          );
-        }
-
-        if (
-          rows &&
-          rows.length &&
-          rows[0].status === OrderStatus.RESERVED &&
-          onReturnForPreparation &&
-          isRowsStatusTheSame
-        ) {
-          return (
-            <Button onClick={() => onReturnForPreparation(rows)}>
-              {"Върни за обработка"}
-            </Button>
-          );
-        }
-
-        if (rows && rows.length && onCollectGoods && isRowsStatusTheSame) {
-          const label =
-            rows[0].warehouseStatus === WarehouseStatus.PICKING
-              ? "Събери стока"
-              : "Пакетирай стока";
-          return <Button onClick={() => onCollectGoods(rows)}>{label}</Button>;
-        }
+        return (
+          <>
+            {getActions({
+              rows,
+              onCancelOrder,
+              onCollectGoods,
+              onReturnForPreparation,
+              onUpdateOrder,
+            })}
+          </>
+        );
       }}
       rows={rows}
       columns={columns}
