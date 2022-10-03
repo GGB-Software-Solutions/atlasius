@@ -30,7 +30,7 @@ const map = (products: DeliveredProduct[], data: FormData) => {
 };
 
 async function sendRequest(url: string, options: Record<string, unknown>) {
-  return jsonFetch(url, { method: "PUT", body: JSON.stringify(options.arg) });
+  return jsonFetch(url, { method: "POST", body: JSON.stringify(options.arg) });
 }
 
 export default function Admin() {
