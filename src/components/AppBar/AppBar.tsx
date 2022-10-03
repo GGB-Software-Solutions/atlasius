@@ -132,16 +132,22 @@ export default function DrawerAppBar({ onDrawerToggle }: Props) {
           <Box sx={{ flexGrow: 1 }} />
           {user && (
             <div>
-              <IconButton
-                size="large"
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleMenu}
-                color="inherit"
-              >
-                <AccountCircle />
-              </IconButton>
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Typography sx={{ mr: 1 }}>
+                  {user.firstName} {user.lastName}
+                </Typography>
+                <IconButton
+                  size="large"
+                  aria-label="account of current user"
+                  aria-controls="menu-appbar"
+                  aria-haspopup="true"
+                  onClick={handleMenu}
+                  color="inherit"
+                >
+                  <AccountCircle />
+                </IconButton>
+              </Box>
+
               <Menu
                 id="menu-appbar"
                 anchorEl={anchorEl}
@@ -157,7 +163,7 @@ export default function DrawerAppBar({ onDrawerToggle }: Props) {
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
               >
-                <MenuItem onClick={handleClose}>Профиле</MenuItem>
+                {/* <MenuItem onClick={handleClose}>Профил</MenuItem> */}
                 <MenuItem onClick={signOut}>Излез</MenuItem>
               </Menu>
             </div>
