@@ -40,12 +40,6 @@ const columns = (warehouses: Warehouse[]): GridColDef<FormProduct>[] => [
     width: 100,
   },
   {
-    field: "weight",
-    headerName: "Тегло",
-    type: "number",
-    width: 100,
-  },
-  {
     field: "company",
     width: 150,
     headerName: "Компания",
@@ -100,6 +94,7 @@ export const ProductsTable = ({ onRowClick, rows, ...other }: Props) => {
   return (
     <Table
       title={"Продукти"}
+      getRowId={(row) => row.id}
       actions={() => {
         return (
           <>
