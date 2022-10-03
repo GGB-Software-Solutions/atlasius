@@ -13,13 +13,10 @@ import {
 
 const BASE_URL = "https://api.speedy.bg/v1";
 const IS_PROD = process.env.NODE_ENV === "production";
-const IS_TEST_API_MODE = process.env.SPEEDY_API_MODE === "test";
+const IS_TEST_API_MODE = process.env.NEXT_PUBLIC_SPEEDY_API_MODE === "test";
 export const BULGARIA_COUNTRY_ID = 100;
-const SPEEDY_TEST_USERNAME = "1995507";
-const SPEEDY_TEST_PASSWORD = "5813296229";
-
-// const SPEEDY_PASSWORD = "7574535198";
-// const SPEEDY_USERNAME = "997839";
+const SPEEDY_TEST_USERNAME = process.env.NEXT_PUBLIC_SPEEDY_TEST_USERNAME;
+const SPEEDY_TEST_PASSWORD = process.env.NEXT_PUBLIC_SPEEDY_TEST_PASSWORD;
 
 export const fetcher = async (
   api: string,

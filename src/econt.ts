@@ -19,11 +19,11 @@ import {
 
 const ECONT_DEMO_API_URL = "http://demo.econt.com/ee/services";
 const ECONT_API_URL = "http://ee.econt.com/services";
-const ECONT_DEMO_API_USERNAME = "iasp-dev";
-const ECONT_DEMO_API_PASSWORD = "iasp-dev";
+const ECONT_DEMO_API_USERNAME = process.env.NEXT_PUBLIC_ECONT_DEMO_API_USERNAME;
+const ECONT_DEMO_API_PASSWORD = process.env.NEXT_PUBLIC_ECONT_DEMO_API_PASSWORD;
 
 const IS_PROD = process.env.NODE_ENV === "production";
-const IS_TEST_API_MODE = process.env.ECONT_API_MODE === "test";
+const IS_TEST_API_MODE = process.env.NEXT_PUBLIC_ECONT_API_MODE === "test";
 
 const getBasicAuth = (str) => {
   return btoa(unescape(encodeURIComponent(str)));
