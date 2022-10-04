@@ -204,14 +204,16 @@ const getActions = ({
     );
 
     const actions = [
-      <Button onClick={() => onCancelOrder(rows)}>{"Анулирай поръчки"}</Button>,
+      <Button key="cancel-order" onClick={() => onCancelOrder(rows)}>
+        {"Анулирай поръчки"}
+      </Button>,
     ];
 
     if (isRowsStatusTheSame) {
       if (rows[0].errorStatus && onUpdateOrder) {
         actions.push(
-          <Button onClick={() => onUpdateOrder(rows)}>
-            {"Актуализирай поръчка"}
+          <Button key="update-order" onClick={() => onUpdateOrder(rows)}>
+            {"Актуализирай поръчки"}
           </Button>
         );
         return actions;
@@ -219,7 +221,10 @@ const getActions = ({
 
       if (rows[0].status === OrderStatus.RESERVED && onReturnForPreparation) {
         actions.push(
-          <Button onClick={() => onReturnForPreparation(rows)}>
+          <Button
+            key="return-order"
+            onClick={() => onReturnForPreparation(rows)}
+          >
             {"Върни за обработка"}
           </Button>
         );
@@ -232,7 +237,12 @@ const getActions = ({
             ? "Събери стока"
             : "Пакетирай стока";
         actions.push(
-          <Button onClick={() => onCollectGoods(rows)}>{label}</Button>
+          <Button
+            key="collect-goods-order"
+            onClick={() => onCollectGoods(rows)}
+          >
+            {label}
+          </Button>
         );
         return actions;
       }

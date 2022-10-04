@@ -79,7 +79,7 @@ export default function Admin() {
     await changeStatus(data, OrderStatus.NEW);
   };
 
-  const onHandleCancelOrder = async (data: MappedOrder[]) => {
+  const handleCancelOrder = async (data: MappedOrder[]) => {
     await changeStatus(data, OrderStatus.CANCELLED);
   };
 
@@ -134,7 +134,7 @@ export default function Admin() {
           onUpdateOrder={handleUpdateOrderClick}
           onReturnForPreparation={handleReturnOrderForPreparationClick}
           processRowUpdate={processRowUpdate}
-          onCancelOrder={onHandleCancelOrder}
+          onCancelOrder={handleCancelOrder}
         />
         <CollectGoodsDialog
           orders={selectedRows}

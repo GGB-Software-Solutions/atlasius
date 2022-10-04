@@ -34,6 +34,7 @@ function CompanySelect() {
 
   const handleChange = (company: Company) => () => {
     setSelectedCompany(company);
+    setLanguageMenu(null);
   };
 
   React.useEffect(() => {
