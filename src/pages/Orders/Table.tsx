@@ -126,6 +126,18 @@ export const columns: GridColDef[] = [
       `${params.row.firstName} ${params.row.lastName}`,
   },
   {
+    field: "products",
+    width: 150,
+    headerName: "Продукти",
+    valueGetter: (
+      params: GridValueGetterParams<string, ProductResponse>
+    ): string => {
+      return `${params.row.products
+        .map((product) => `${product.name}/${product.orderedQuantity}`)
+        .join("\n")}`;
+    },
+  },
+  {
     field: "phone",
     headerName: "Телефон",
     editable: true,
@@ -174,18 +186,6 @@ export const columns: GridColDef[] = [
     headerName: "Компания",
     valueGetter: (params: GridValueGetterParams) =>
       `${params.row.company?.name}`,
-  },
-  {
-    field: "products",
-    width: 150,
-    headerName: "Продукти",
-    valueGetter: (
-      params: GridValueGetterParams<string, ProductResponse>
-    ): string => {
-      return `${params.row.products
-        .map((product) => `${product.name}/${product.orderedQuantity}`)
-        .join("\n")}`;
-    },
   },
 ];
 
