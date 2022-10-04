@@ -117,7 +117,7 @@ export default function DrawerAppBar({ onDrawerToggle }: Props) {
             aria-label="open drawer"
             edge="start"
             onClick={onDrawerToggle}
-            sx={{ mr: 2, display: { sm: "none" } }}
+            sx={{ mr: 2, display: { lg: "none" } }}
           >
             <MenuIcon />
           </IconButton>
@@ -126,7 +126,7 @@ export default function DrawerAppBar({ onDrawerToggle }: Props) {
             component="div"
             sx={{ display: { xs: "none", sm: "block" } }}
           >
-            Storage Master
+            GGB
           </Typography>
           <CompanySelect />
           <Box sx={{ flexGrow: 1 }} />

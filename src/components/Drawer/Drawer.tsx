@@ -37,7 +37,7 @@ export default function AppDrawer({ onDrawerToggle, open }: Props) {
           },
         }}
         sx={{
-          display: { xs: "block", sm: "none" },
+          display: { xs: "block", lg: "none" },
         }}
       >
         <Toolbar />
@@ -55,7 +55,7 @@ export default function AppDrawer({ onDrawerToggle, open }: Props) {
           },
         }}
         sx={{
-          display: { xs: "none", sm: "block" },
+          display: { xs: "none", lg: "block" },
         }}
         open
       >
