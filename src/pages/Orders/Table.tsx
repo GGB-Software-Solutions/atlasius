@@ -189,12 +189,6 @@ export const columns: GridColDef[] = [
   },
 ];
 
-// !== Archived !== Cancelled and !== Shipped and !== Unfullfilled
-// New and Picking
-// New and Packing
-// Reserved and Picking
-// Reserved and Packing
-
 const getActions = ({
   rows,
   onCancelOrder,

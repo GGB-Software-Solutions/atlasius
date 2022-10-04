@@ -324,41 +324,41 @@ export const mapOrders = async (
   econtCountries: Country[]
 ): Promise<MappedOrder<DeliveryCompany.Speedy | DeliveryCompany.Econt>[]> => {
   const data = await Promise.all(
-    orders.map(async (order) => {
-      let mappedOrder: MappedOrder = {
-        ...order,
-        streetNumber: order.streetNumber || extractStreetNumber(order.address1),
-        country: getOrderCountry(order, econtCountries) as
-          | Country
-          | SpeedyCountry,
-      };
+    //Filter archived orders TODO: should be done by the server at some point
+    orders
+      .filter((order) => order.status !== OrderStatus.ARCHIVED)
+      .map(async (order) => {
+        let mappedOrder: MappedOrder = {
+          ...order,
+          streetNumber:
+            order.streetNumber || extractStreetNumber(order.address1),
+          country: getOrderCountry(order, econtCountries) as
+            | Country
+            | SpeedyCountry,
+        };
 
-      //If the order has error or if its archived or cancelled we return early not to try to validate the address
-      if (
-        order.errorStatus ||
-        order.status === OrderStatus.ARCHIVED ||
-        order.status === OrderStatus.CANCELLED
-      ) {
+        //If the order has error or cancelled we return early not to try to validate the address
+        if (order.errorStatus || order.status === OrderStatus.CANCELLED) {
+          return mappedOrder;
+        }
+
+        if (mappedOrder.officeName === "ЕКОНТ ДО ОФИС") {
+          mappedOrder = mapEcontOfficeDelivery(mappedOrder, econtOffices);
+        }
+
+        if (mappedOrder.officeName === "СПИЙДИ ДО ОФИС") {
+          mappedOrder = mapSpeedyOfficeDelivery(mappedOrder, speedyOffices);
+        }
+
+        if (mappedOrder.officeName === "ЕКОНТ ДО АДРЕС") {
+          mappedOrder = await mapEcontAddressDelivery(mappedOrder, econtCities);
+        }
+
+        if (mappedOrder.officeName === "СПИЙДИ ДО АДРЕС") {
+          mappedOrder = await mapSpeedyAddressDelivery(mappedOrder);
+        }
         return mappedOrder;
-      }
-
-      if (mappedOrder.officeName === "ЕКОНТ ДО ОФИС") {
-        mappedOrder = mapEcontOfficeDelivery(mappedOrder, econtOffices);
-      }
-
-      if (mappedOrder.officeName === "СПИЙДИ ДО ОФИС") {
-        mappedOrder = mapSpeedyOfficeDelivery(mappedOrder, speedyOffices);
-      }
-
-      if (mappedOrder.officeName === "ЕКОНТ ДО АДРЕС") {
-        mappedOrder = await mapEcontAddressDelivery(mappedOrder, econtCities);
-      }
-
-      if (mappedOrder.officeName === "СПИЙДИ ДО АДРЕС") {
-        mappedOrder = await mapSpeedyAddressDelivery(mappedOrder);
-      }
-      return mappedOrder;
-    })
+      })
   );
   return data;
 };

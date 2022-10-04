@@ -68,7 +68,7 @@ export default function OrderSummaryDialog({
       <DialogTitle>Поръчка({order.id})</DialogTitle>
       <DialogContent>
         <Grid container spacing={2}>
-          <Grid item xs={3}>
+          <Grid item xs={6}>
             <Paper elevation={5} sx={{ pl: 2, pr: 2, pb: 2, height: "100%" }}>
               <Typography variant="h6">Информация за клиента</Typography>
               {renderInfo("Име", `${firstName} ${lastName}`)}
@@ -76,7 +76,7 @@ export default function OrderSummaryDialog({
               {renderInfo("Телефон", phone)}
             </Paper>
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={6}>
             <Paper elevation={5} sx={{ pl: 2, pr: 2, pb: 2, height: "100%" }}>
               <Typography variant="h6">Адрес за доставка</Typography>
               {renderInfo("Име", `${firstName} ${lastName}`)}
