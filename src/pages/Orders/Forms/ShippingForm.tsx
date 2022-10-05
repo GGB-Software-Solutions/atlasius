@@ -6,7 +6,7 @@ import {
   AutocompleteElement,
 } from "react-hook-form-mui";
 import { Button, FormControlLabel, Grid, Switch } from "@mui/material";
-import Econt, { getInnerErrors } from "../../../econt";
+import Econt from "../../../econt";
 import { MappedOrder } from "../../../types";
 import { Address, Country } from "../../../types/econt";
 import useStore from "../../../store/globalStore";
@@ -14,34 +14,21 @@ import VirtualizedAutocomplete from "./VirtualizedAutocomplete";
 import Alert from "@mui/material/Alert";
 
 import useEcont from "./useEcont";
-import {
-  mapEcontLabelToExpedition,
-  shouldOrderBeDeliveredToOffice,
-} from "../utils";
+import { shouldOrderBeDeliveredToOffice } from "../utils";
 import { DeliveryCompany } from "../../Companies/types";
 import ValidAddress from "./ValidAddress";
-import {
-  OrderShippingDetails,
-  saveShippingLabel,
-  updateShippingDetails,
-} from "../api";
+import { OrderShippingDetails, updateShippingDetails } from "../api";
 import { getDeliveryCompanyCredentials } from "../../../utils/common";
 
 type MappedEcontOrder = MappedOrder<DeliveryCompany.Econt>;
 
 interface Props {
-  hideGenerateShippingLabel?: boolean;
   onSave?: () => void;
   onSubmit?: (data: MappedEcontOrder) => void;
   formContext: UseFormReturn<MappedEcontOrder>;
 }
 
-export default function ShippingForm({
-  formContext,
-  onSave,
-  onSubmit,
-  hideGenerateShippingLabel = false,
-}: Props) {
+export default function ShippingForm({ formContext, onSave, onSubmit }: Props) {
   const country = formContext.watch("country") as Country;
   const city = formContext.watch("city");
   const office = formContext.watch("office");
@@ -129,33 +116,6 @@ export default function ShippingForm({
       formContext.setValue("address1", address.fullAddress);
       setValidatedAddress(address);
       updateDetails(data, address);
-    }
-  };
-
-  const handleGenerateShippingLabel = async () => {
-    const data = formContext.getValues();
-    const response = await econtService.generateShippingLabel(data);
-    if (response.innerErrors) {
-      setNotification({ type: "error", message: getInnerErrors(response) });
-      return;
-    }
-    const shippingLabel = mapEcontLabelToExpedition(response.label, data);
-    const labelResponse = await saveShippingLabel(shippingLabel);
-
-    if (labelResponse && !labelResponse.error) {
-      setNotification({
-        type: "success",
-        message: labelResponse.created,
-      });
-      formContext.setValue("shippingLabel", shippingLabel);
-      const printJS = (await import("print-js")).default;
-      printJS({
-        printable: response.label.pdfURL,
-        type: "pdf",
-        showModal: true,
-      });
-    } else {
-      setNotification({ type: "error", message: labelResponse.error });
     }
   };
 
@@ -342,16 +302,6 @@ export default function ShippingForm({
         >
           Запази
         </Button>
-        {!hideGenerateShippingLabel && (
-          <Button
-            variant="contained"
-            onClick={handleGenerateShippingLabel}
-            color="primary"
-            disabled={!credentials}
-          >
-            Генерирай товарителница
-          </Button>
-        )}
       </FormContainer>
     </>
   );

@@ -42,17 +42,9 @@ export default function UpdateOrderDialog({
       <DialogTitle>Поръчка({order.id})</DialogTitle>
       <DialogContent>
         {getDeliveryCourier(order) === DeliveryCompany.Econt ? (
-          <ShippingForm
-            formContext={formContext}
-            hideGenerateShippingLabel
-            onSave={handleSave}
-          />
+          <ShippingForm formContext={formContext} onSave={handleSave} />
         ) : (
-          <SpeedyShippingForm
-            formContext={formContext}
-            hideGenerateShippingLabel
-            onSave={handleSave}
-          />
+          <SpeedyShippingForm formContext={formContext} onSave={handleSave} />
         )}
       </DialogContent>
       <DialogActions>

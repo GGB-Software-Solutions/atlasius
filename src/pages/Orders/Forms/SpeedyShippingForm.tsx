@@ -1,5 +1,5 @@
 import React from "react";
-import { useForm, UseFormReturn } from "react-hook-form";
+import { UseFormReturn } from "react-hook-form";
 import {
   FormContainer,
   TextFieldElement,
@@ -9,10 +9,7 @@ import { Alert, Button, FormControlLabel, Grid, Switch } from "@mui/material";
 import { MappedOrder } from "../../../types";
 import useStore from "../../../store/globalStore";
 import VirtualizedAutocomplete from "./VirtualizedAutocomplete";
-import {
-  mapSpeedyLabelToExpedition,
-  shouldOrderBeDeliveredToOffice,
-} from "../utils";
+import { shouldOrderBeDeliveredToOffice } from "../utils";
 import { DeliveryCompany } from "../../Companies/types";
 import SearchAsYouTypeAutocomplete from "./SearchAsYouTypeAutocomplete";
 import { speedyCountries } from "../../../speedy-countries";
@@ -20,17 +17,12 @@ import { SpeedyAddress, SpeedyCountry } from "../../../types/speedy";
 import { Speedy } from "../../../speedy-api";
 import useSpeedy from "./useSpeedy";
 import ValidAddress from "./ValidAddress";
-import {
-  OrderShippingDetails,
-  saveShippingLabel,
-  updateShippingDetails,
-} from "../api";
+import { OrderShippingDetails, updateShippingDetails } from "../api";
 import { getDeliveryCompanyCredentials } from "../../../utils/common";
 
 type MappedSpeedyOrder = MappedOrder<DeliveryCompany.Speedy>;
 
 interface Props {
-  hideGenerateShippingLabel?: boolean;
   onSave?: () => void;
   onSubmit?: (data: MappedSpeedyOrder) => void;
   formContext: UseFormReturn<MappedSpeedyOrder>;
@@ -40,7 +32,6 @@ export default function SpeedyShippingForm({
   onSave,
   onSubmit,
   formContext,
-  hideGenerateShippingLabel = false,
 }: Props) {
   const country = formContext.watch("country") as SpeedyCountry;
   const city = formContext.watch("city");
@@ -125,33 +116,6 @@ export default function SpeedyShippingForm({
 
   const handleCheckboxChange = (_, checked: boolean) =>
     setDeliverToOffice(checked);
-
-  const handleGenerateShippingLabel = async () => {
-    const order = formContext.getValues();
-    const response = await speedyService.generateLabel(order);
-    if (response.error) {
-      setNotification({
-        type: "error",
-        message: response.error.message,
-      });
-      return;
-    }
-    const shippingLabel = mapSpeedyLabelToExpedition(response, order);
-    const labelResponse = await saveShippingLabel(shippingLabel);
-
-    if (labelResponse && !labelResponse.error) {
-      setNotification({
-        type: "success",
-        message: labelResponse.created,
-      });
-      formContext.setValue("shippingLabel", shippingLabel);
-      const label = await speedyService.printLabel(response.parcels[0].id);
-      const printJS = (await import("print-js")).default;
-      printJS({ printable: label, type: "pdf", base64: true, showModal: true });
-    } else {
-      setNotification({ type: "error", message: labelResponse.error });
-    }
-  };
 
   const cityFetch = async (inputValue: string, callback) => {
     const country = formContext.getValues().country;
@@ -358,16 +322,6 @@ export default function SpeedyShippingForm({
         >
           Запази
         </Button>
-        {!hideGenerateShippingLabel && (
-          <Button
-            variant="contained"
-            onClick={handleGenerateShippingLabel}
-            color="primary"
-            disabled={!credentials}
-          >
-            Генерирай товарителница
-          </Button>
-        )}
       </FormContainer>
     </>
   );
