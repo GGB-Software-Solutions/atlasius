@@ -9,6 +9,7 @@ import createEmotionCache from "../src/createEmotionCache";
 import "./styles.css";
 import { SessionProvider } from "next-auth/react";
 import App from "../src/App";
+import { ConfirmProvider } from "material-ui-confirm";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -30,17 +31,19 @@ export default function MyApp(props: MyAppProps) {
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Head>
       <ThemeProvider theme={theme}>
-        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-        <CssBaseline />
-        <SessionProvider session={session}>
-          {Component.whitelist ? (
-            <Component {...pageProps} />
-          ) : (
-            <App>
+        <ConfirmProvider>
+          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+          <CssBaseline />
+          <SessionProvider session={session}>
+            {Component.whitelist ? (
               <Component {...pageProps} />
-            </App>
-          )}
-        </SessionProvider>
+            ) : (
+              <App>
+                <Component {...pageProps} />
+              </App>
+            )}
+          </SessionProvider>
+        </ConfirmProvider>
       </ThemeProvider>
     </CacheProvider>
   );

@@ -16,8 +16,10 @@ import {
 } from "./api";
 import useProcessRowUpdate from "./useProcessRowUpdate";
 import UpdatePhoneDialog from "./UpdatePhoneDialog";
+import { useConfirm } from "material-ui-confirm";
 
 export default function Admin() {
+  const confirm = useConfirm();
   const { processRowUpdate, onClose, promiseArguments, onError, onSuccess } =
     useProcessRowUpdate();
   const econtOffices = useStore((state) => state.econtOffices);
@@ -80,7 +82,14 @@ export default function Admin() {
   };
 
   const handleCancelOrder = async (data: MappedOrder[]) => {
-    await changeStatus(data, OrderStatus.CANCELLED);
+    confirm({
+      title: "Сигурни ли сте,че искате да анулирате избраните поръчки?",
+      confirmationText: "Да",
+      cancellationText: "Затвори",
+    }).then(() => {
+      changeStatus(data, OrderStatus.CANCELLED);
+      mutate();
+    });
   };
 
   const changeStatus = async (data: MappedOrder[], status: OrderStatus) => {
@@ -93,6 +102,7 @@ export default function Admin() {
 
   const mapRows = async () => {
     setIsLoading(true);
+    console.time();
     const rows = await mapOrders(
       data,
       econtOffices,
@@ -100,6 +110,7 @@ export default function Admin() {
       econtCities,
       econtCountries
     );
+    console.timeEnd();
     setMappedRows(rows);
     setIsLoading(false);
   };
