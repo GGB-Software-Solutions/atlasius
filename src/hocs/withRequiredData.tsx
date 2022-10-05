@@ -5,7 +5,7 @@ import { API_ENDPOINTS } from "../api";
 import useStore from "../store/globalStore";
 import Loader from "../components/Loader";
 import Econt, { TEST_CREDENTIALS as ECONT_TEST_CREDENTIALS } from "../econt";
-import { TEST_CREDENTIALS } from "../speedy-api";
+import { BULGARIA_COUNTRY_ID, TEST_CREDENTIALS } from "../speedy-api";
 
 const econtService = new Econt(ECONT_TEST_CREDENTIALS, true);
 
@@ -14,10 +14,11 @@ async function sendEcontServiceRequest(url) {
 }
 
 async function sendSpeedyServiceRequest(url) {
-  const response = await fetch(url, {
-    method: "POST",
-    body: JSON.stringify(TEST_CREDENTIALS),
+  const params = new URLSearchParams({
+    countryId: BULGARIA_COUNTRY_ID,
+    ...TEST_CREDENTIALS,
   });
+  const response = await fetch(url + "?" + params);
   const data = await response.json();
   return data;
 }

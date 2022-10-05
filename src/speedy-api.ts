@@ -65,29 +65,27 @@ export class Speedy {
     }
   }
 
-  async findSite({ countryId, name }: FindSiteProps) {
-    const response = await fetch("api/speedy/sites", {
-      method: "POST",
-      body: JSON.stringify({ countryId, name, ...this.credentials }),
+  async findSite({ countryId, name = "" }: FindSiteProps) {
+    const params = new URLSearchParams({
+      countryId,
+      name,
+      ...this.credentials,
     });
+    const response = await fetch("api/speedy/sites?" + params);
     const data = await response.json();
     return data;
   }
 
   async getOffices(countryId: number) {
-    const response = await fetch("api/speedy/sites", {
-      method: "POST",
-      body: JSON.stringify({ countryId, ...this.credentials }),
-    });
+    const params = new URLSearchParams({ countryId, ...this.credentials });
+    const response = await fetch("api/speedy/sites?" + params);
     const data = await response.json();
     return data;
   }
 
-  async getStreets({ siteId, name }: FindStreetsProps) {
-    const response = await fetch("api/speedy/streets", {
-      method: "POST",
-      body: JSON.stringify({ siteId, name, ...this.credentials }),
-    });
+  async getStreets({ siteId, name = "" }: FindStreetsProps) {
+    const params = new URLSearchParams({ siteId, name, ...this.credentials });
+    const response = await fetch("api/speedy/streets?" + params);
     const data = await response.json();
     return data;
   }
