@@ -28,6 +28,7 @@ import React from "react";
 import ExpeditionsTable from "../../Expeditions/Table";
 import Econt, { getInnerErrors } from "../../../econt";
 import { UseFormReturn } from "react-hook-form";
+import { useConfirm } from "material-ui-confirm";
 
 interface Props {
   order: MappedOrder;
@@ -45,7 +46,7 @@ export default function PackingOrder({
   setSelectedOrder,
 }: Props) {
   const setNotification = useStore((state) => state.setNotification);
-
+  const confirm = useConfirm();
   const [packedProducts, setPackedProducts] = React.useState<ProductResponse[]>(
     []
   );
@@ -120,6 +121,18 @@ export default function PackingOrder({
   const handleGenerateShippingLabel = async () => {
     const order = formContext.getValues();
     const isSpeedy = getDeliveryCourier(order) === DeliveryCompany.Speedy;
+
+    if (order.shippingLabel) {
+      await confirm({
+        title: "Сигурни ли сте?",
+        description: `Вече има генерирана товарителница и преди да продължите се уверете,че е изтрита от ${
+          isSpeedy ? "Speedy" : "Еконт"
+        }.`,
+        confirmationText: "Продължи",
+        cancellationText: "Затвори",
+      });
+    }
+
     const response = isSpeedy
       ? await (service as Speedy).generateLabel(order)
       : await (service as Econt).generateShippingLabel(order);
@@ -207,7 +220,11 @@ export default function PackingOrder({
         />
       </Paper>
       <Paper sx={{ padding: 2, mt: 4 }} variant="outlined">
-        <ExpeditionsTable rows={expedition ? [expedition] : []} autoHeight />
+        <ExpeditionsTable
+          rows={expedition ? [expedition] : []}
+          autoHeight
+          checkboxSelection={false}
+        />
       </Paper>
       <DialogActions>
         <LoadingButton
