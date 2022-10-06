@@ -27,17 +27,24 @@ export default function Admin() {
   const econtCities = useStore((state) => state.econtCities);
   const speedyOffices = useStore((state) => state.speedyOffices);
   const setNotification = useStore((state) => state.setNotification);
+  const selectedCompany = useStore((state) => state.selectedCompany);
   const [mappedRows, setMappedRows] = React.useState<MappedOrder[]>([]);
   const {
     data = [],
     isLoading: isLoadingData,
     mutate,
-  } = useSWR(API_ENDPOINTS.Order, jsonFetch);
+  } = useSWR(selectedCompany ? API_ENDPOINTS.Order : null, jsonFetch);
   const [open, setOpen] = React.useState(false);
   const [openUpdateOrderDialog, setOpenUpdateOrderDialog] =
     React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const [selectedRows, setSelectedRows] = React.useState<MappedOrder[]>([]);
+
+  React.useEffect(() => {
+    if (!selectedCompany)
+      setNotification({ type: "warning", message: "Няма избрана компания." });
+  }, [selectedCompany]);
+
   const handleCollectGoods = async (data: MappedOrder[]) => {
     await changeStatus(data, OrderStatus.RESERVED);
     setOpen(true);

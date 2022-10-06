@@ -60,13 +60,13 @@ function CompanySelect() {
         onClose={handleLanguageMenuClose}
         sx={{ width: 250 }}
       >
-        <MenuItem
+        {/* <MenuItem
           key={"Всички"}
           selected={selectedCompany === null}
           onClick={handleChange(null)}
         >
           {"Всички"}
-        </MenuItem>
+        </MenuItem> */}
         {companies.map((company) => (
           <MenuItem
             key={company.name}

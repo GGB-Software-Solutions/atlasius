@@ -29,12 +29,23 @@ const map = (data: FormProduct): ProductSubmit[] => {
 };
 
 export default function Admin() {
+  const selectedCompany = useStore((state) => state.selectedCompany);
+  const setNotification = useStore((state) => state.setNotification);
   const { trigger } = useSWRMutation(API_ENDPOINTS.Product, saveProduct);
   const {
     data = [],
     error,
     isLoading,
-  } = useSWR<ProductResponse[]>(API_ENDPOINTS.Product, jsonFetch);
+  } = useSWR<ProductResponse[]>(
+    selectedCompany ? API_ENDPOINTS.Product : null,
+    jsonFetch
+  );
+
+  React.useEffect(() => {
+    if (!selectedCompany)
+      setNotification({ type: "warning", message: "Няма избрана компания." });
+  }, [selectedCompany]);
+
   const handleSave = async (data: FormProduct) => trigger(map(data));
 
   return (
