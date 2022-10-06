@@ -76,7 +76,7 @@ export const columns: GridColDef[] = [
       }
 
       if (errorStatus === ErrorStatus.MISSING_WRONG_PHONE) {
-        label = "Невалиден/липсващ телефон";
+        label = "Невалиден телефон";
       }
 
       if (errorStatus === ErrorStatus.NOT_ENOUGH_QUANTITY) {
