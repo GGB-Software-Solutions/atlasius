@@ -10,15 +10,17 @@ function getHeaders(token: string) {
   if (token) headers["Authorization"] = `Bearer ${token}`;
   return headers;
 }
-//http://92.247.54.172:8080
+
 export async function jsonFetch(url: string, options?: RequestInit) {
   const session = await getSession();
-  const response = await fetch(`http://207.154.235.250:8080/${url}`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API}/${url}`, {
     ...options,
     headers: getHeaders(session?.accessToken),
   });
   if (!response.ok) {
-    console.log("Response:", response);
+    if (response.status === 403) {
+      window.location.href = "/auth/login";
+    }
   }
   const data = await response.json();
   return data;

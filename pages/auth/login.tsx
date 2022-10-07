@@ -17,6 +17,7 @@ const Home: NextPage = () => {
         justify-content: center;
         align-items: center;
         padding: 0;
+        max-width: 100% !important;
       `}
     >
       <Login />
