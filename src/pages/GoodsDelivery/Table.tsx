@@ -7,6 +7,11 @@ import { getData } from "../../utils/xlsx";
 const columns: GridColDef[] = [
   { field: "Ean", headerName: "Баркод", width: 200 },
   {
+    field: "SKU Set",
+    headerName: "Промоции",
+    width: 100,
+  },
+  {
     field: "Product name",
     headerName: "Име на продукт",
     width: 400,
@@ -15,13 +20,13 @@ const columns: GridColDef[] = [
     field: "ml",
     headerName: "Тегло",
     type: "number",
-    width: 150,
+    width: 100,
   },
   {
     field: "Общо Бройка",
     headerName: "Общо бройка",
     type: "number",
-    width: 150,
+    width: 100,
     editable: true,
   },
   {
@@ -36,6 +41,7 @@ const columns: GridColDef[] = [
 export interface DeliveredProduct {
   Ean: string;
   "Product name": string;
+  "SKU Set"?: string;
   ml: number;
   Type: string;
   Контрагент: string;
