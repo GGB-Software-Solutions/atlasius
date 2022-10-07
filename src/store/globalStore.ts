@@ -1,6 +1,6 @@
 import { AlertColor } from "@mui/material";
 import create from "zustand";
-import { devtools } from "zustand/middleware";
+import { devtools, persist } from "zustand/middleware";
 import { Company } from "../pages/Companies/types";
 import { Warehouse } from "../types";
 import { City, Country, Office } from "../types/econt";
@@ -32,25 +32,34 @@ interface State {
 }
 
 const useStore = create<State>()(
-  devtools((set) => ({
-    speedyOffices: [],
-    econtCountries: [],
-    econtCities: [],
-    econtOffices: [],
-    warehouses: [],
-    companies: [],
-    selectedCompany: null,
-    notification: null,
-    setNotification: (notification: Notification) =>
-      set(() => ({ notification })),
-    setWarehouses: (warehouses) => set(() => ({ warehouses })),
-    setCompanies: (companies) => set(() => ({ companies })),
-    setEcontCountries: (econtCountries) => set(() => ({ econtCountries })),
-    setEcontOffices: (econtOffices) => set(() => ({ econtOffices })),
-    setEcontCities: (econtCities) => set(() => ({ econtCities })),
-    setSpeedyOffices: (speedyOffices) => set(() => ({ speedyOffices })),
-    setSelectedCompany: (company) => set(() => ({ selectedCompany: company })),
-  }))
+  devtools(
+    persist(
+      (set) => ({
+        speedyOffices: [],
+        econtCountries: [],
+        econtCities: [],
+        econtOffices: [],
+        warehouses: [],
+        companies: [],
+        selectedCompany: null,
+        notification: null,
+        setNotification: (notification: Notification) =>
+          set(() => ({ notification })),
+        setWarehouses: (warehouses) => set(() => ({ warehouses })),
+        setCompanies: (companies) => set(() => ({ companies })),
+        setEcontCountries: (econtCountries) => set(() => ({ econtCountries })),
+        setEcontOffices: (econtOffices) => set(() => ({ econtOffices })),
+        setEcontCities: (econtCities) => set(() => ({ econtCities })),
+        setSpeedyOffices: (speedyOffices) => set(() => ({ speedyOffices })),
+        setSelectedCompany: (company) =>
+          set(() => ({ selectedCompany: company })),
+      }),
+      {
+        name: "ggb-storage",
+        partialize: (state) => ({ selectedCompany: state.selectedCompany }),
+      }
+    )
+  )
 );
 
 export default useStore;

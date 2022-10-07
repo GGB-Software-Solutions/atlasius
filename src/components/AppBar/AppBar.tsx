@@ -28,18 +28,14 @@ function CompanySelect() {
     setLanguageMenu(null);
   };
 
-  const setCompanyInStore = useStore((state) => state.setSelectedCompany);
+  const selectedCompany = useStore((state) => state.selectedCompany);
+  const setSelectedCompany = useStore((state) => state.setSelectedCompany);
   const companies = useStore((state) => state.companies);
-  const [selectedCompany, setSelectedCompany] = React.useState<Company>(null);
 
   const handleChange = (company: Company) => () => {
     setSelectedCompany(company);
     setLanguageMenu(null);
   };
-
-  React.useEffect(() => {
-    setCompanyInStore(selectedCompany);
-  }, [selectedCompany]);
 
   if (!companies || companies.length === 0) return null;
 
