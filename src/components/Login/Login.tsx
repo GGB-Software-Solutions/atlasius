@@ -10,13 +10,16 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import React from "react";
 import { useForm, Controller } from "react-hook-form";
 import { css } from "@emotion/react";
-import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
+import { setJwtToken } from "../../utils/jwt";
+import { jsonFetch } from "../../utils/fetch";
+import useStore from "../../store/globalStore";
 
 const Login = () => {
   const [showPassword, setShowPassword] = React.useState(false);
   const [error, setError] = React.useState("");
   const router = useRouter();
+  const setUser = useStore((state) => state.setUser);
 
   const { control, handleSubmit, formState } = useForm({
     defaultValues: {
@@ -30,13 +33,28 @@ const Login = () => {
     router.prefetch("/");
   }, []);
 
+  const login = async (data) => {
+    const url = "login?username=asd&password=asd"; //TODO:
+    try {
+      const data = await jsonFetch(url, {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+      if (data) return data;
+      // Return null if user data could not be retrieved
+      return null;
+    } catch (e) {
+      return null;
+    }
+  };
+
   const onSubmit = async (data) => {
     setError("");
-    const response = await signIn("credentials", {
-      ...data,
-      redirect: false,
-    });
-    if (response?.ok && !response.error) {
+    const response = await login(data);
+    if (response) {
+      const { access_token, user } = response;
+      setUser(user);
+      setJwtToken(access_token);
       router.push("/");
     } else {
       setError("Въведената комбинация от потребител и парола не съществуват.");

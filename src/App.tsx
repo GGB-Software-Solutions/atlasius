@@ -3,25 +3,21 @@ import React from "react";
 import AppBar from "./components/AppBar";
 import AppDrawer from "./components/Drawer/Drawer";
 
-import { useSession } from "next-auth/react";
 import WithRequiredData from "./hocs/withRequiredData";
-import Loader from "./components/Loader";
 import withNotifications from "./hocs/withNotifications";
+import { useRouter } from "next/router";
 
 interface Props {
   children: React.ReactNode;
 }
 
 const App = ({ children }: Props) => {
-  const session = useSession({ required: true });
-
+  const router = useRouter();
   const [open, setOpen] = React.useState(false);
 
   const handleDrawerToggle = () => {
     setOpen(!open);
   };
-
-  if (session.status === "loading") return <Loader />;
 
   return (
     <Box sx={{ display: "flex", minHeight: "100vh" }}>

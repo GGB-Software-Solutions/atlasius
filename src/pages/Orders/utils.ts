@@ -199,9 +199,8 @@ export const mapSpeedyAddressDelivery = async (
       siteName: order.city as string,
       postCode: order.zipCode,
     };
-    const { valid: isAddressValid } = await speedyService.validateAddress(
-      address
-    );
+    const { valid: isAddressValid, error } =
+      await speedyService.validateAddress(address);
     valid = isAddressValid;
     if (valid) {
       mappedOrder.validatedAddress = address;
@@ -246,7 +245,7 @@ export const mapEcontAddressDelivery = async (
     const econtService = new Econt(credentials);
     const streets = await econtService.getStreets(city.id);
     const results = fuseSearch(streets, order.address1);
-    const topResult = results[0].item;
+    const topResult = results[0]?.item;
 
     if (topResult) {
       const street = topResult as Street;

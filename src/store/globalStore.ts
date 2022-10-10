@@ -13,6 +13,7 @@ export interface Notification {
 }
 
 interface State {
+  user: Record<string, unknown>;
   speedyOffices: SpeedyOffice[];
   econtCountries: Country[];
   econtOffices: Office[];
@@ -29,6 +30,7 @@ interface State {
   setEcontCities: (cities: City[]) => void;
   setSpeedyOffices: (offices: SpeedyOffice[]) => void;
   setSelectedCompany: (company: Company) => void;
+  setUser: (user: Record<string, unknown>) => void;
 }
 
 const useStore = create<State>()(
@@ -53,6 +55,7 @@ const useStore = create<State>()(
         setSpeedyOffices: (speedyOffices) => set(() => ({ speedyOffices })),
         setSelectedCompany: (company) =>
           set(() => ({ selectedCompany: company })),
+        setUser: (user) => set(() => ({ user })),
       }),
       {
         name: "ggb-storage",

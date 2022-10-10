@@ -24,7 +24,6 @@
     "lodash.throttle": "^4.1.1",
     "material-ui-confirm": "^3.0.6",
     "next": "latest",
-    "next-auth": "^4.10.3",
     "print-js": "^1.6.0",
     "react": "latest",
     "react-dom": "latest",

@@ -8,12 +8,13 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
-import { signOut, useSession } from "next-auth/react";
 import useStore from "../../store/globalStore";
 import { alpha, Button } from "@mui/material";
 import { ExpandMore } from "@mui/icons-material";
 import BusinessIcon from "@mui/icons-material/Business";
 import { Company } from "../../pages/Companies/types";
+import { setJwtToken } from "../../utils/jwt";
+import { useRouter } from "next/router";
 
 interface Props {
   onDrawerToggle: () => void;
@@ -89,7 +90,8 @@ function CompanySelect() {
 }
 
 export default function DrawerAppBar({ onDrawerToggle }: Props) {
-  const { data } = useSession();
+  const user = useStore((state) => state.user);
+  const router = useRouter();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -100,7 +102,11 @@ export default function DrawerAppBar({ onDrawerToggle }: Props) {
     setAnchorEl(null);
   };
 
-  const user = data?.user;
+  const logout = () => {
+    setJwtToken("");
+    window.localStorage.setItem("logout", Date.now().toString());
+    router.push("/auth/login");
+  };
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -160,8 +166,7 @@ export default function DrawerAppBar({ onDrawerToggle }: Props) {
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
               >
-                {/* <MenuItem onClick={handleClose}>Профил</MenuItem> */}
-                <MenuItem onClick={signOut}>Излез</MenuItem>
+                <MenuItem onClick={logout}>Излез</MenuItem>
               </Menu>
             </div>
           )}
