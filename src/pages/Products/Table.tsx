@@ -11,6 +11,10 @@ import { FormProduct, ProductResponse } from "../../types/product";
 import useStore from "../../store/globalStore";
 import { Warehouse } from "../../types";
 import { Company } from "../Companies/types";
+import {
+  getBackgroundColor,
+  getHoverBackgroundColor,
+} from "../../utils/common";
 
 const columns = (warehouses: Warehouse[]): GridColDef<FormProduct>[] => [
   { field: "id", type: "number", hide: true, headerName: "ID", width: 90 },
@@ -111,6 +115,22 @@ export const ProductsTable = ({ onRowClick, rows, ...other }: Props) => {
 
   return (
     <Table
+      sx={{
+        "& .row--Promotion": {
+          bgcolor: (theme) =>
+            getBackgroundColor(theme.palette.info.main, theme.palette.mode),
+          "&:hover": {
+            bgcolor: (theme) =>
+              getHoverBackgroundColor(
+                theme.palette.info.main,
+                theme.palette.mode
+              ),
+          },
+        },
+      }}
+      getRowClassName={(params) =>
+        `row--${params.row.promotions ? "Promotion" : "Default"}`
+      }
       title={"Продукти"}
       getRowId={(row) => row.id}
       actions={() => {

@@ -17,8 +17,66 @@ import {
 import useProcessRowUpdate from "./useProcessRowUpdate";
 import UpdatePhoneDialog from "./UpdatePhoneDialog";
 import { useConfirm } from "material-ui-confirm";
+import {
+  GridFilterItem,
+  GridFilterModel,
+  GridSortItem,
+  GridSortModel,
+} from "@mui/x-data-grid";
+
+const operatorMap = {
+  equals: "eq",
+  contains: "like",
+  startsWith: "startwith",
+  endsWith: "endwith",
+  isEmpty: "isempty",
+  isNotEmpty: "isnotempty",
+  is: "is",
+};
+
+// NOT_EQUAL("neq"),
+// GREATER_THAN("gt"),
+// GREATER_THAN_OR_EQUAL_TO("gte"),
+// LESS_THAN("lt"),
+// LESSTHAN_OR_EQUAL_TO("lte"),
+// IN("in"),
+// NOT_IN("nin"),
+// BETWEEN("btn"),
+// NOT_CONTAINS("notLike"),
+// IS_NULL("isnull"),
+// IS_NOT_NULL("isnotnull"),
+// JOIN("jn"),
+
+const mapFilters = (
+  filters: GridFilterItem[] = [],
+  companyFilter: GridFilterItem[]
+) =>
+  [...filters, ...companyFilter]
+    .filter((filter) => Boolean(filter.value))
+    .map(
+      (filter) =>
+        `${filter.columnField}|${operatorMap[filter.operatorValue]}|${
+          filter.value
+        }`
+    )
+    .join("&");
 
 export default function Admin() {
+  const selectedCompany = useStore((state) => state.selectedCompany);
+  const initialCompanyFilter = selectedCompany
+    ? [
+        {
+          columnField: "company.id",
+          operatorValue: "equals",
+          value: selectedCompany.id,
+        },
+      ]
+    : [];
+
+  const [page, setPage] = React.useState(0);
+  const [pageSize, setPageSize] = React.useState(25);
+  const [sorting, setSorting] = React.useState<GridSortItem>();
+  const [filters, setFilters] = React.useState<GridFilterItem[]>();
   const confirm = useConfirm();
   const { processRowUpdate, onClose, promiseArguments, onError, onSuccess } =
     useProcessRowUpdate();
@@ -27,13 +85,35 @@ export default function Admin() {
   const econtCities = useStore((state) => state.econtCities);
   const speedyOffices = useStore((state) => state.speedyOffices);
   const setNotification = useStore((state) => state.setNotification);
-  const selectedCompany = useStore((state) => state.selectedCompany);
   const [mappedRows, setMappedRows] = React.useState<MappedOrder[]>([]);
+  const params = {
+    page,
+    size: pageSize,
+    sort: sorting ? `${sorting?.field},${sorting?.sort}` : "",
+    filterAnd: mapFilters(filters, initialCompanyFilter),
+  };
   const {
-    data = [],
+    data = {},
     isLoading: isLoadingData,
     mutate,
-  } = useSWR(selectedCompany ? API_ENDPOINTS.Order : null, jsonFetch);
+  } = useSWR(
+    selectedCompany
+      ? `${API_ENDPOINTS.Order}?${new URLSearchParams(params)}`
+      : null,
+    jsonFetch,
+    { revalidateOnFocus: false }
+  );
+
+  const { totalElements, content } = data;
+
+  const [rowCountState, setRowCountState] = React.useState(totalElements || 0);
+
+  React.useEffect(() => {
+    setRowCountState((prevRowCountState) =>
+      totalElements !== undefined ? totalElements : prevRowCountState
+    );
+  }, [totalElements, setRowCountState]);
+
   const [open, setOpen] = React.useState(false);
   const [openUpdateOrderDialog, setOpenUpdateOrderDialog] =
     React.useState(false);
@@ -111,7 +191,7 @@ export default function Admin() {
     setIsLoading(true);
     console.time();
     const rows = await mapOrders(
-      data,
+      content,
       econtOffices,
       speedyOffices,
       econtCities,
@@ -125,7 +205,6 @@ export default function Admin() {
   React.useEffect(() => {
     if (
       !isLoadingData &&
-      Boolean(data.length) &&
       Boolean(econtOffices.length) &&
       Boolean(speedyOffices.length) &&
       Boolean(econtCities.length) &&
@@ -133,14 +212,19 @@ export default function Admin() {
     ) {
       mapRows();
     }
-  }, [
-    data,
-    econtOffices,
-    speedyOffices,
-    econtCities,
-    econtCountries,
-    isLoadingData,
-  ]);
+  }, [econtOffices, speedyOffices, econtCities, econtCountries, isLoadingData]);
+
+  const onFilterChange = React.useCallback((filterModel: GridFilterModel) => {
+    setPage(0);
+    setFilters(filterModel.items);
+  }, []);
+
+  const handleSortModelChange = React.useCallback(
+    (sortModel: GridSortModel) => {
+      setSorting(sortModel[0]);
+    },
+    []
+  );
 
   return (
     <>
@@ -153,6 +237,17 @@ export default function Admin() {
           onReturnForPreparation={handleReturnOrderForPreparationClick}
           processRowUpdate={processRowUpdate}
           onCancelOrder={handleCancelOrder}
+          rowCount={rowCountState}
+          pagination
+          page={page}
+          pageSize={pageSize}
+          paginationMode="server"
+          filterMode="server"
+          sortingMode="server"
+          onSortModelChange={handleSortModelChange}
+          onFilterModelChange={onFilterChange}
+          onPageChange={(newPage) => setPage(newPage)}
+          onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
         />
         <CollectGoodsDialog
           orders={selectedRows}

@@ -42,14 +42,16 @@ export default function Table<T extends GridValidRowModel>({
         components={{
           Toolbar: toolbar,
         }}
-        filterModel={{
-          items: initialCompanyFilter,
-        }}
         pagination
         initialState={{
           ...other.initialState,
           pagination: {
             pageSize: 25,
+          },
+          filter: {
+            filterModel: {
+              items: initialCompanyFilter,
+            },
           },
         }}
         rowsPerPageOptions={[10, 25, 50, 100]}
