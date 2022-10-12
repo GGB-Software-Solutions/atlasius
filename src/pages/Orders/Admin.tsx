@@ -23,43 +23,7 @@ import {
   GridSortItem,
   GridSortModel,
 } from "@mui/x-data-grid";
-
-const operatorMap = {
-  equals: "eq",
-  contains: "like",
-  startsWith: "startwith",
-  endsWith: "endwith",
-  isEmpty: "isempty",
-  isNotEmpty: "isnotempty",
-  is: "is",
-};
-
-// NOT_EQUAL("neq"),
-// GREATER_THAN("gt"),
-// GREATER_THAN_OR_EQUAL_TO("gte"),
-// LESS_THAN("lt"),
-// LESSTHAN_OR_EQUAL_TO("lte"),
-// IN("in"),
-// NOT_IN("nin"),
-// BETWEEN("btn"),
-// NOT_CONTAINS("notLike"),
-// IS_NULL("isnull"),
-// IS_NOT_NULL("isnotnull"),
-// JOIN("jn"),
-
-const mapFilters = (
-  filters: GridFilterItem[] = [],
-  companyFilter: GridFilterItem[]
-) =>
-  [...filters, ...companyFilter]
-    .filter((filter) => Boolean(filter.value))
-    .map(
-      (filter) =>
-        `${filter.columnField}|${operatorMap[filter.operatorValue]}|${
-          filter.value
-        }`
-    )
-    .join("&");
+import { mapFilters } from "../../components/Table/utils";
 
 export default function Admin() {
   const selectedCompany = useStore((state) => state.selectedCompany);
@@ -76,7 +40,7 @@ export default function Admin() {
   const [page, setPage] = React.useState(0);
   const [pageSize, setPageSize] = React.useState(25);
   const [sorting, setSorting] = React.useState<GridSortItem>();
-  const [filters, setFilters] = React.useState<GridFilterItem[]>();
+  const [filters, setFilters] = React.useState<GridFilterItem[]>([]);
   const confirm = useConfirm();
   const { processRowUpdate, onClose, promiseArguments, onError, onSuccess } =
     useProcessRowUpdate();
@@ -90,7 +54,7 @@ export default function Admin() {
     page,
     size: pageSize,
     sort: sorting ? `${sorting?.field},${sorting?.sort}` : "",
-    filterAnd: mapFilters(filters, initialCompanyFilter),
+    filterAnd: mapFilters([...filters, ...initialCompanyFilter]),
   };
   const {
     data = {},
