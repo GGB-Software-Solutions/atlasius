@@ -151,7 +151,7 @@ export default function Admin() {
     await updateOrderStatus(orderStatuses);
   };
 
-  const mapRows = async () => {
+  const mapRows = async (content) => {
     setIsLoading(true);
     console.time();
     const rows = await mapOrders(
@@ -174,9 +174,16 @@ export default function Admin() {
       Boolean(econtCities.length) &&
       Boolean(econtCountries.length)
     ) {
-      mapRows();
+      mapRows(content);
     }
-  }, [econtOffices, speedyOffices, econtCities, econtCountries, isLoadingData]);
+  }, [
+    econtOffices,
+    speedyOffices,
+    econtCities,
+    econtCountries,
+    isLoadingData,
+    content,
+  ]);
 
   const onFilterChange = React.useCallback((filterModel: GridFilterModel) => {
     setPage(0);

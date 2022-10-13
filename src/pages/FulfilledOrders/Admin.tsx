@@ -87,7 +87,7 @@ export default function Admin() {
       <PageContainer title="Приключени поръчки">
         <Table
           loading={isLoading}
-          rows={data.content || []}
+          rows={content || []}
           Editor={OrderSummaryDialog}
           page={page}
           pageSize={pageSize}
