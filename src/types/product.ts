@@ -5,20 +5,6 @@ export interface ProductId {
   companyId: string;
 }
 
-export interface ProductWarehouseQuantityId {
-  productId: ProductId;
-  warehouseId: string;
-}
-
-export interface ProductWarehouseQuantity {
-  id: ProductWarehouseQuantityId;
-  itemLocation: string;
-  quantity: number;
-  reserved?: number;
-  readyToDeliver?: number;
-  warehouseId: string;
-}
-
 export interface ProductResponse {
   productId: ProductId;
   id: string;
@@ -28,7 +14,10 @@ export interface ProductResponse {
   ean: string;
   weight: number;
   orderedQuantity: number;
-  productWarehouseQuantities: ProductWarehouseQuantity[];
+  itemLocation: string;
+  quantity: number;
+  reserved?: number;
+  warehouseId: string;
 }
 
 export interface CollectProduct extends ProductResponse {

@@ -79,17 +79,6 @@ const renderField = (
           disabled={isNew}
         />
       </Grid>
-      <Grid item xs={4} sm={3} md={2}>
-        <TextFieldElement
-          variant="standard"
-          {...register(`productWarehouseQuantities.${index}.readyToDeliver`)}
-          label="Готови за изпращане"
-          type="number"
-          required={!isNew}
-          fullWidth
-          disabled={isNew}
-        />
-      </Grid>
       <Grid item xs={1}>
         <IconButton onClick={() => remove(index)}>
           <DeleteIcon />

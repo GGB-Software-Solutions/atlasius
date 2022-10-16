@@ -19,13 +19,10 @@ const map = (products: DeliveredProduct[], data: FormData) => {
       companyId: data.company?.id,
       promotions: product["SKU Set"]?.split(","),
       createdBy: "6314d8f70e29a132b0262393", //TODO:
-      productWarehouseQuantities: [
-        {
-          itemLocation: data.itemLocation,
-          quantity: product["Общо Бройка"],
-          warehouseId: data.warehouse?.id,
-        },
-      ],
+      itemLocation: data.itemLocation,
+      quantity: product["Общо Бройка"],
+      warehouseId: data.warehouse?.id,
+      reserved: 0,
     };
   });
 };

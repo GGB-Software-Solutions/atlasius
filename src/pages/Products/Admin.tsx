@@ -14,7 +14,12 @@ import {
 } from "../../types/product";
 
 async function saveProduct(url: string, options: Record<string, unknown>) {
-  return jsonFetch(url, { method: "POST", body: JSON.stringify(options.arg) });
+  const product = options.arg[0];
+  const productBody = product.productWarehouseQuantities.map((entry) => ({
+    ...product,
+    ...entry,
+  }));
+  return jsonFetch(url, { method: "POST", body: JSON.stringify(productBody) });
 }
 
 const map = (data: FormProduct): ProductSubmit[] => {
@@ -27,6 +32,35 @@ const map = (data: FormProduct): ProductSubmit[] => {
     },
   ];
 };
+
+const mapProducts = (products) =>
+  products.reduce((p, c) => {
+    const key = c.productId.sku + c.productId.companyId;
+    if (p.has(key)) {
+      const product = p.get(key);
+      product.productWarehouseQuantities =
+        product.productWarehouseQuantities || [];
+      product.productWarehouseQuantities.push({
+        quantity: c.quantity,
+        itemLocation: c.itemLocation,
+        reserved: c.reserved,
+        warehouseId: c.warehouseId,
+      });
+
+      p.set(key, product);
+    } else {
+      c.productWarehouseQuantities = [
+        {
+          quantity: c.quantity,
+          itemLocation: c.itemLocation,
+          reserved: c.reserved,
+          warehouseId: c.warehouseId,
+        },
+      ];
+      p.set(key, c);
+    }
+    return p;
+  }, new Map());
 
 export default function Admin() {
   const selectedCompany = useStore((state) => state.selectedCompany);
@@ -48,12 +82,17 @@ export default function Admin() {
 
   const handleSave = async (data: FormProduct) => trigger(map(data));
 
+  const rows = React.useMemo(
+    () => Array.from(mapProducts(data).values()),
+    [data]
+  );
+
   return (
     <PageContainer title="Продукти">
       <Table
         loading={isLoading}
         error={error}
-        rows={data}
+        rows={rows}
         Editor={ProductDialog}
         onEditorSave={handleSave}
       />
