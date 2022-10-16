@@ -199,7 +199,7 @@ export default function Admin() {
 
   return (
     <>
-      <PageContainer title="Поръчки">
+      <PageContainer>
         <Table
           loading={isLoading || isLoadingData}
           rows={mappedRows || []}

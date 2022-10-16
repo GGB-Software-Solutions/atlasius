@@ -12,7 +12,7 @@ export default function CompaniesAdmin() {
   );
 
   return (
-    <PageContainer title="Експедиции">
+    <PageContainer>
       <ExpeditionsTable loading={isLoading} rows={data} />
     </PageContainer>
   );

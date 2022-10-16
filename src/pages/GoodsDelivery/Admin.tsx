@@ -60,7 +60,7 @@ export default function Admin() {
 
   return (
     <>
-      <PageContainer title="Стока за заприхождаване">
+      <PageContainer>
         <Table onSubmitForDelivery={submitForDelivery} />
       </PageContainer>
       <DeliveredProductsSubmitDialog

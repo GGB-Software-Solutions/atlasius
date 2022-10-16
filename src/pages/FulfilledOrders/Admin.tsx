@@ -84,7 +84,7 @@ export default function Admin() {
 
   return (
     <>
-      <PageContainer title="Приключени поръчки">
+      <PageContainer>
         <Table
           loading={isLoading}
           rows={content || []}

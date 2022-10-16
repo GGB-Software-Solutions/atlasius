@@ -16,7 +16,7 @@ export default function WarehouseAdmin() {
   const { trigger } = useSWRMutation(API_ENDPOINTS.Warehouse, sendRequest);
 
   return (
-    <PageContainer title="Складове">
+    <PageContainer>
       <WarehouseTable
         rows={data || []}
         Editor={WarehouseDialog}

@@ -24,7 +24,7 @@ export default function CompaniesAdmin() {
   const handleSave = (data: Company) => trigger(map(data));
 
   return (
-    <PageContainer title="Компании">
+    <PageContainer>
       <CompanyTable
         rows={data || []}
         Editor={CompanyDialog}

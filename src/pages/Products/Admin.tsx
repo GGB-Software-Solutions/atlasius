@@ -88,7 +88,7 @@ export default function Admin() {
   );
 
   return (
-    <PageContainer title="Продукти">
+    <PageContainer>
       <Table
         loading={isLoading}
         error={error}
