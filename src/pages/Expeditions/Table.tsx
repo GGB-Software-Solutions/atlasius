@@ -4,6 +4,7 @@ import Table, { Props } from "../../components/Table";
 import { Expedition } from "../../types/expedition";
 import useStore from "../../store/globalStore";
 import { Company } from "../Companies/types";
+import withClientFiltering from "../../hocs/withClientFiltering";
 
 const columns: GridColDef<Expedition>[] = [
   {
@@ -68,4 +69,4 @@ const ExpeditionsTable = ({
   );
 };
 
-export default ExpeditionsTable;
+export default withClientFiltering(ExpeditionsTable);

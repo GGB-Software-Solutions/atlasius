@@ -15,6 +15,8 @@ import {
   getBackgroundColor,
   getHoverBackgroundColor,
 } from "../../utils/common";
+import withClientFiltering from "../../hocs/withClientFiltering";
+import compose from "../../utils/compose";
 
 const columns = (warehouses: Warehouse[]): GridColDef<FormProduct>[] => [
   { field: "id", type: "number", hide: true, headerName: "ID", width: 90 },
@@ -133,6 +135,7 @@ export const ProductsTable = ({ onRowClick, rows, ...other }: Props) => {
       }
       title={"Продукти"}
       getRowId={(row) => row.id}
+      isRowSelectable={(params) => !params.row.promotions}
       actions={() => {
         return (
           <>
@@ -160,4 +163,4 @@ export const ProductsTable = ({ onRowClick, rows, ...other }: Props) => {
   );
 };
 
-export default withEditor<FormProduct>(ProductsTable);
+export default compose(withEditor, withClientFiltering)(ProductsTable);

@@ -7,7 +7,6 @@ import {
 } from "@mui/x-data-grid";
 import Toolbar from "./Toolbar";
 import { Box } from "@mui/material";
-import useStore from "../../store/globalStore";
 import commonColumns from "./commonColumns";
 
 export interface Props<T extends GridValidRowModel> extends DataGridProps<T> {
@@ -23,16 +22,6 @@ export default function Table<T extends GridValidRowModel>({
   checkboxSelection = true,
   ...other
 }: Props<T>) {
-  const selectedCompany = useStore((state) => state.selectedCompany);
-  const initialCompanyFilter = selectedCompany
-    ? [
-        {
-          columnField: "company",
-          operatorValue: "equals",
-          value: selectedCompany.name,
-        },
-      ]
-    : [];
   const toolbar = () => <Toolbar title={title}>{actions}</Toolbar>;
   return (
     <Box sx={{ width: "100%", flexGrow: 1 }}>
@@ -47,11 +36,6 @@ export default function Table<T extends GridValidRowModel>({
           ...other.initialState,
           pagination: {
             pageSize: 25,
-          },
-          filter: {
-            filterModel: {
-              items: initialCompanyFilter,
-            },
           },
         }}
         rowsPerPageOptions={[10, 25, 50, 100]}
