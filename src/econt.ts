@@ -108,51 +108,63 @@ class Econt {
 
   async getCities(countryCode = "BGR"): Promise<City[]> {
     const url = "Nomenclatures/NomenclaturesService.getCities.json";
-    const data = await fetcher({
-      url,
-      body: {
+    const response = await fetch("api/econt", {
+      method: "POST",
+      body: JSON.stringify({
         countryCode,
-      },
-      credentials: this.credentials,
-      testMode: this.testMode,
+        url,
+        credentials: this.credentials,
+        testMode: this.testMode,
+      }),
     });
+    const data = await response.json();
     return data.cities;
   }
 
   async getStreets(cityID: number): Promise<Address[]> {
     const url = "Nomenclatures/NomenclaturesService.getStreets.json";
-    const data = await fetcher({
-      url,
-      body: {
+
+    const response = await fetch("api/econt", {
+      method: "POST",
+      body: JSON.stringify({
         cityID,
-      },
-      credentials: this.credentials,
-      testMode: this.testMode,
+        url,
+        credentials: this.credentials,
+        testMode: this.testMode,
+      }),
     });
+    const data = await response.json();
     return data.streets;
   }
 
   async getOffices(countryCode = "BGR", cityID: number): Promise<Office[]> {
     const url = "Nomenclatures/NomenclaturesService.getOffices.json";
-    const data = await fetcher({
-      url,
-      body: {
-        countryCode,
+    const response = await fetch("api/econt", {
+      method: "POST",
+      body: JSON.stringify({
         cityID,
-      },
-      credentials: this.credentials,
-      testMode: this.testMode,
+        countryCode,
+        url,
+        credentials: this.credentials,
+        testMode: this.testMode,
+      }),
     });
+    const data = await response.json();
     return data.offices;
   }
 
   async getClientProfiles() {
     const url = "Profile/ProfileService.getClientProfiles.json";
-    const data = await fetcher({
-      url,
-      credentials: this.credentials,
-      testMode: this.testMode,
+
+    const response = await fetch("api/econt", {
+      method: "POST",
+      body: JSON.stringify({
+        credentials: this.credentials,
+        testMode: this.testMode,
+      }),
     });
+    const data = await response.json();
+
     return data.profiles[0];
   }
 
@@ -164,27 +176,31 @@ class Econt {
     postCode: string
   ) {
     const url = "Nomenclatures/AddressService.validateAddress.json";
-    const response = await fetcher({
-      url,
-      body: {
+
+    const response = await fetch("api/econt", {
+      method: "POST",
+      body: JSON.stringify({
         address: {
           city: {
             name: city,
-            postCode,
+            // postCode,
           },
           street,
           num: streetNumber,
         },
-      },
-      credentials: this.credentials,
-      testMode: this.testMode,
+        url,
+        credentials: this.credentials,
+        testMode: this.testMode,
+      }),
     });
+    const data = await response.json();
+
     let error = null;
     let address = null;
-    if (response.innerErrors) {
-      error = getInnerErrors(response);
-    } else if (response.validationStatus === "normal") {
-      address = response.address;
+    if (data.innerErrors) {
+      error = getInnerErrors(data);
+    } else if (data.validationStatus === "normal") {
+      address = data.address;
     }
     return { error, address };
   }
@@ -198,15 +214,17 @@ class Econt {
   // for shipments on request (sent to Econt office): valid Econt office code (tag <office_code>)
   async createLabel(label: ShippingLabel): Promise<ShipmentStatus> {
     const url = "Shipments/LabelService.createLabel.json";
-    const data = await fetcher({
-      url,
-      credentials: this.credentials,
-      body: {
+
+    const response = await fetch("api/econt", {
+      method: "POST",
+      body: JSON.stringify({
         label,
         mode: "create",
-      },
-      testMode: this.testMode,
+        credentials: this.credentials,
+        testMode: this.testMode,
+      }),
     });
+    const data = await response.json();
     return data;
   }
 
