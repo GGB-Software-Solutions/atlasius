@@ -7,6 +7,8 @@ export enum DeliveryCompany {
 
 export enum Ecommerce {
   Shopify = "SHOPIFY",
+  CloudCart = "CLOUDCART",
+  WooCommerce = "WOOCOMMERCE",
 }
 
 export interface DeliveryCompanyCredentials {
