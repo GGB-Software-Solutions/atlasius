@@ -4,7 +4,7 @@ import {
   MappedOrder,
   Order,
   OrderStatus,
-  PaymentType,
+  DeliveryProvider,
   WarehouseStatus,
 } from "../../types";
 import {
@@ -81,7 +81,7 @@ const streetNumberRegex = new RegExp(
   /(\d+\s*[\p{General_Category=Letter}]*)$/u
 );
 
-export const extractStreetNumber = (address1: string) => {
+export const extractStreetNumber = (address1: string = "") => {
   const result = address1.match(streetNumberRegex);
   if (result) {
     return result[0];
@@ -91,20 +91,23 @@ export const extractStreetNumber = (address1: string) => {
 
 export const shouldOrderBeDeliveredToOffice = (order: MappedOrder) => {
   return (
-    order.officeName === "СПИЙДИ ДО ОФИС" ||
-    order.officeName === "ЕКОНТ ДО ОФИС"
+    order.deliveryProvider === "СПИЙДИ ДО ОФИС" ||
+    order.deliveryProvider === "ЕКОНТ ДО ОФИС" ||
+    order.officeId
   );
 };
 
 export const getDeliveryCourier = (order: Order | MappedOrder) => {
   if (
-    order.officeName === "СПИЙДИ ДО ОФИС" ||
-    order.officeName === "СПИЙДИ ДО АДРЕС"
+    order.deliveryProvider === "СПИЙДИ ДО ОФИС" ||
+    order.deliveryProvider === "СПИЙДИ ДО АДРЕС" ||
+    order.deliveryProvider === "speedy"
   )
     return DeliveryCompany.Speedy;
   if (
-    order.officeName === "ЕКОНТ ДО ОФИС" ||
-    order.officeName === "ЕКОНТ ДО АДРЕС"
+    order.deliveryProvider === "ЕКОНТ ДО ОФИС" ||
+    order.deliveryProvider === "ЕКОНТ ДО АДРЕС" ||
+    order.deliveryProvider === "econt"
   )
     return DeliveryCompany.Econt;
 };
@@ -323,41 +326,53 @@ export const mapOrders = async (
   econtCountries: Country[]
 ): Promise<MappedOrder<DeliveryCompany.Speedy | DeliveryCompany.Econt>[]> => {
   const data = await Promise.all(
-    //Filter archived orders TODO: should be done by the server at some point
-    orders
-      .filter((order) => order.status !== OrderStatus.ARCHIVED)
-      .map(async (order) => {
-        let mappedOrder: MappedOrder = {
-          ...order,
-          streetNumber:
-            order.streetNumber || extractStreetNumber(order.address1),
-          country: getOrderCountry(order, econtCountries) as
-            | Country
-            | SpeedyCountry,
-        };
+    orders.map(async (order) => {
+      let mappedOrder: MappedOrder = {
+        ...order,
+        streetNumber: order.streetNumber || extractStreetNumber(order.address1),
+        country: getOrderCountry(order, econtCountries) as
+          | Country
+          | SpeedyCountry,
+      };
 
-        //If the order has error or cancelled we return early not to try to validate the address
-        if (order.errorStatus || order.status === OrderStatus.CANCELLED) {
-          return mappedOrder;
-        }
+      //If the order has error or cancelled we return early not to try to validate the address
+      if (order.errorStatus || order.status === OrderStatus.CANCELLED) {
+        return mappedOrder;
+      }
 
-        if (mappedOrder.officeName === "ЕКОНТ ДО ОФИС") {
+      if (mappedOrder.deliveryProvider === "econt") {
+        if (mappedOrder.officeId) {
           mappedOrder = mapEcontOfficeDelivery(mappedOrder, econtOffices);
-        }
-
-        if (mappedOrder.officeName === "СПИЙДИ ДО ОФИС") {
-          mappedOrder = mapSpeedyOfficeDelivery(mappedOrder, speedyOffices);
-        }
-
-        if (mappedOrder.officeName === "ЕКОНТ ДО АДРЕС") {
+        } else {
           mappedOrder = await mapEcontAddressDelivery(mappedOrder, econtCities);
         }
+      }
 
-        if (mappedOrder.officeName === "СПИЙДИ ДО АДРЕС") {
+      if (mappedOrder.deliveryProvider === "ЕКОНТ ДО ОФИС") {
+        mappedOrder = mapEcontOfficeDelivery(mappedOrder, econtOffices);
+      }
+
+      if (mappedOrder.deliveryProvider === "ЕКОНТ ДО АДРЕС") {
+        mappedOrder = await mapEcontAddressDelivery(mappedOrder, econtCities);
+      }
+
+      if (mappedOrder.deliveryProvider === "speedy") {
+        if (mappedOrder.officeId) {
+          mappedOrder = mapSpeedyOfficeDelivery(mappedOrder, speedyOffices);
+        } else {
           mappedOrder = await mapSpeedyAddressDelivery(mappedOrder);
         }
-        return mappedOrder;
-      })
+      }
+
+      if (mappedOrder.deliveryProvider === "СПИЙДИ ДО ОФИС") {
+        mappedOrder = mapSpeedyOfficeDelivery(mappedOrder, speedyOffices);
+      }
+
+      if (mappedOrder.deliveryProvider === "СПИЙДИ ДО АДРЕС") {
+        mappedOrder = await mapSpeedyAddressDelivery(mappedOrder);
+      }
+      return mappedOrder;
+    })
   );
   return data;
 };

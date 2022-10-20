@@ -25,6 +25,25 @@ import {
 } from "@mui/x-data-grid";
 import { mapFilters } from "../../components/Table/utils";
 
+const mapStatusFilter = (filters: GridFilterItem[]) => {
+  const statusFilter = filters.find(
+    (filter) => filter.columnField === "status"
+  );
+  const newFilters = filters.filter(
+    (filter) => filter.columnField !== "status"
+  );
+
+  const statusFilters = statusFilter?.value
+    ? Object.keys(statusFilter?.value).map((key) => ({
+        columnField: key,
+        value: statusFilter?.value[key],
+        operatorValue: statusFilter?.value[key] === null ? "isnull" : "equals",
+      }))
+    : [];
+  newFilters.push(...statusFilters);
+  return newFilters;
+};
+
 export default function Admin() {
   const selectedCompany = useStore((state) => state.selectedCompany);
   const initialCompanyFilter = selectedCompany
@@ -54,7 +73,9 @@ export default function Admin() {
     page,
     size: pageSize,
     sort: sorting ? `${sorting?.field},${sorting?.sort}` : "",
-    filterAnd: mapFilters([...filters, ...initialCompanyFilter]),
+    filterAnd: mapFilters(
+      mapStatusFilter([...filters, ...initialCompanyFilter])
+    ),
   };
   const {
     data = {},

@@ -21,15 +21,15 @@ export const operatorMap = {
   isEmpty: "isempty",
   isNotEmpty: "isnotempty",
   is: "is",
+  isnull: "isnull",
 };
 
 export const mapFilters = (filters: GridFilterItem[] = []) =>
   filters
-    .filter((filter) => Boolean(filter.value))
     .map(
       (filter) =>
-        `${filter.columnField}|${operatorMap[filter.operatorValue]}|${
-          filter.value
+        `${filter.columnField}|${operatorMap[filter.operatorValue]}${
+          filter.value ? "|" + filter.value : "|" + filter.value
         }`
     )
     .join("&");

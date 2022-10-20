@@ -6,7 +6,6 @@ import {
   SpeedyAddress,
   SpeedyCity,
   SpeedyCountry,
-  SpeedyLabel,
   SpeedyOffice,
 } from "./types/speedy";
 
@@ -33,6 +32,7 @@ interface Timestamps {
 export enum PaymentType {
   CASH = "CASH",
   CARD = "CARD",
+  VOUCHER = "VOUCHER",
 }
 
 export enum OrderStatus {
@@ -80,6 +80,8 @@ type OfficeName =
   | "ЕКОНТ ДО ОФИС"
   | "ЕКОНТ ДО АДРЕС";
 
+export type DeliveryProvider = OfficeName & ("econt" | "speedy");
+
 export interface Order {
   id: string;
   products: ProductResponse[];
@@ -99,6 +101,7 @@ export interface Order {
   company: Company;
   countryCode: string;
   provinceCode: string;
+  deliveryProvider: DeliveryProvider;
   officeId: string;
   officeName: OfficeName;
   customerNote: string;

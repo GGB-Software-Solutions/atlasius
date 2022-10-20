@@ -1,8 +1,8 @@
 import React from "react";
 import {
+  getGridSingleSelectOperators,
   GridColDef,
   GridRenderCellParams,
-  GridRowParams,
   GridValueGetterParams,
 } from "@mui/x-data-grid";
 import { Button, Chip } from "@mui/material";
@@ -17,6 +17,7 @@ import {
   WarehouseStatus,
 } from "../../types";
 import { ProductResponse } from "../../types/product";
+import StatusFilter from "./StatusFilter";
 
 export const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 150, hide: true },
@@ -24,6 +25,12 @@ export const columns: GridColDef[] = [
     field: "status",
     width: 250,
     headerName: "Статус",
+    filterOperators: getGridSingleSelectOperators()
+      .filter((operator) => operator.value !== "isAnyOf")
+      .map((operator) => ({
+        ...operator,
+        InputComponent: operator.InputComponent ? StatusFilter : undefined,
+      })),
     renderCell: (params: GridRenderCellParams) => {
       const { status, warehouseStatus, errorStatus } = params.row;
       let label;

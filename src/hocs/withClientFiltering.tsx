@@ -8,7 +8,6 @@ export default (WrappedComponent) => {
     const selectedCompany = useStore((state) => state.selectedCompany);
 
     React.useEffect(() => {
-      console.log("Selected comapny:", selectedCompany);
       if (selectedCompany) {
         setFilters((filters) => {
           return [
