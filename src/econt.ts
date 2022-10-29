@@ -161,6 +161,7 @@ class Econt {
       body: JSON.stringify({
         credentials: this.credentials,
         testMode: this.testMode,
+        url,
       }),
     });
     const data = await response.json();
@@ -222,6 +223,7 @@ class Econt {
         mode: "create",
         credentials: this.credentials,
         testMode: this.testMode,
+        url,
       }),
     });
     const data = await response.json();

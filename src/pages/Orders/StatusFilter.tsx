@@ -67,7 +67,6 @@ const options = [
 
 function StatusFilter(props: GridFilterInputValueProps) {
   const { item, applyValue } = props;
-
   const handleFilterChange = (event, newValue) => {
     console.log("New value:", newValue);
     applyValue({ ...item, value: newValue?.value });
@@ -75,11 +74,13 @@ function StatusFilter(props: GridFilterInputValueProps) {
 
   return (
     <Autocomplete
-      value={item.value}
+      value={options.find(
+        (option) => JSON.stringify(option.value) === JSON.stringify(item.value)
+      )}
       onChange={handleFilterChange}
       getOptionLabel={(option) => option.label}
       isOptionEqualToValue={(option, value) => {
-        return option.value === value;
+        return JSON.stringify(option.value) === JSON.stringify(value);
       }}
       options={options}
       renderInput={(params) => (

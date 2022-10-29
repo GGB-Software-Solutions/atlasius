@@ -51,7 +51,7 @@ const columns = (warehouses: Warehouse[]): GridColDef<FormProduct>[] => [
     width: 150,
     headerName: "Компания",
     valueGetter: (params: GridValueGetterParams) =>
-      `${params.row.company.name}`,
+      `${params.row.company?.name}`,
   },
   {
     field: "productWarehouseQuantities",
