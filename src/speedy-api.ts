@@ -121,7 +121,7 @@ export class Speedy {
     const body = {
       ...this.credentials,
       type: "print",
-      paperSize: "A4",
+      paperSize: "A6",
       parcels: [
         {
           parcel: {
