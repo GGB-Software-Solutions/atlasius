@@ -21,11 +21,12 @@ export const operatorMap = {
   isEmpty: "isempty",
   isNotEmpty: "isnotempty",
   is: "is",
+  not: "neq",
   isnull: "isnull",
 };
 
-export const mapFilters = (filters: GridFilterItem[] = []) =>
-  filters
+export const mapFilters = (filters: GridFilterItem[] = []) => {
+  return filters
     .map(
       (filter) =>
         `${filter.columnField}|${operatorMap[filter.operatorValue]}${
@@ -33,3 +34,4 @@ export const mapFilters = (filters: GridFilterItem[] = []) =>
         }`
     )
     .join("&");
+};

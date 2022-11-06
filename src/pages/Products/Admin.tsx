@@ -33,35 +33,6 @@ const map = (data: FormProduct): ProductSubmit[] => {
   ];
 };
 
-const mapProducts = (products) =>
-  products.reduce((p, c) => {
-    const key = c.productId.sku + c.productId.companyId;
-    if (p.has(key)) {
-      const product = p.get(key);
-      product.productWarehouseQuantities =
-        product.productWarehouseQuantities || [];
-      product.productWarehouseQuantities.push({
-        quantity: c.quantity,
-        itemLocation: c.itemLocation,
-        reserved: c.reserved,
-        warehouseId: c.warehouseId,
-      });
-
-      p.set(key, product);
-    } else {
-      c.productWarehouseQuantities = [
-        {
-          quantity: c.quantity,
-          itemLocation: c.itemLocation,
-          reserved: c.reserved,
-          warehouseId: c.warehouseId,
-        },
-      ];
-      p.set(key, c);
-    }
-    return p;
-  }, new Map());
-
 export default function Admin() {
   const selectedCompany = useStore((state) => state.selectedCompany);
   const setNotification = useStore((state) => state.setNotification);
@@ -82,17 +53,12 @@ export default function Admin() {
 
   const handleSave = async (data: FormProduct) => trigger(map(data));
 
-  const rows = React.useMemo(
-    () => Array.from(mapProducts(data).values()),
-    [data]
-  );
-
   return (
     <PageContainer>
       <Table
         loading={isLoading}
         error={error}
-        rows={rows}
+        rows={data}
         Editor={ProductDialog}
         onEditorSave={handleSave}
       />

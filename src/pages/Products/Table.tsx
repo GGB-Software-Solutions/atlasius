@@ -94,6 +94,35 @@ interface Props {
   rows: FormProduct[];
 }
 
+const mapProducts = (products) =>
+  products.reduce((p, c) => {
+    const key = c.productId.sku + c.productId.companyId;
+    if (p.has(key)) {
+      const product = p.get(key);
+      product.productWarehouseQuantities =
+        product.productWarehouseQuantities || [];
+      product.productWarehouseQuantities.push({
+        quantity: c.quantity,
+        itemLocation: c.itemLocation,
+        reserved: c.reserved,
+        warehouseId: c.warehouseId,
+      });
+
+      p.set(key, product);
+    } else {
+      c.productWarehouseQuantities = [
+        {
+          quantity: c.quantity,
+          itemLocation: c.itemLocation,
+          reserved: c.reserved,
+          warehouseId: c.warehouseId,
+        },
+      ];
+      p.set(key, c);
+    }
+    return p;
+  }, new Map());
+
 const transform = (
   products: ProductResponse[] = [],
   companies: Company[]
@@ -110,10 +139,10 @@ export const ProductsTable = ({ onRowClick, rows, ...other }: Props) => {
   const warehouses = useStore((state) => state.warehouses);
   const companies = useStore((state) => state.companies);
 
-  const mappedRows = React.useMemo(
-    () => transform(rows, companies),
-    [rows, companies]
-  );
+  const mappedRows = React.useMemo(() => {
+    const mappedProducts = Array.from(mapProducts(rows).values());
+    return transform(mappedProducts, companies);
+  }, [rows, companies]);
 
   return (
     <Table
