@@ -7,6 +7,8 @@ import {
   getHoverBackgroundColor,
 } from "../../../utils/common";
 import { ProductResponse } from "../../../types/product";
+import BarcodeInput from "../../../components/BarcodeInput";
+import useStore from "../../../store/globalStore";
 
 const renderPackButton =
   (
@@ -77,6 +79,23 @@ export const PackingProductsTable = ({
   packedProductsIds,
   ...other
 }: Props) => {
+  const setNotification = useStore((state) => state.setNotification);
+
+  const handleScan = (barcode: string) => {
+    const product = rows.find((row) => row.ean === barcode);
+    if (product) {
+      onPack(product, true);
+      setNotification({
+        type: "success",
+        message: `Продукт с баркод:${barcode} е пакетиран`,
+      });
+    } else {
+      setNotification({
+        type: "error",
+        message: `Не е намерен продукт с баркод:${barcode}`,
+      });
+    }
+  };
   return (
     <Box
       sx={{
@@ -93,6 +112,7 @@ export const PackingProductsTable = ({
         },
       }}
     >
+      <BarcodeInput onScan={handleScan} />
       <Table
         checkboxSelection={false}
         title={"Продукти за пакетиране"}

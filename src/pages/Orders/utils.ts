@@ -29,20 +29,42 @@ import { Expedition } from "../../types/expedition";
 import { CollectProduct } from "../../types/product";
 import { getDeliveryCompanyCredentials } from "../../utils/common";
 
-export const mapProductsPieces = (data: MappedOrder[]): CollectProduct[] =>
-  data.reduce<CollectProduct[]>((previousValue, currentValue) => {
+export const mapProductsPieces = (data: MappedOrder[]): CollectProduct[] => {
+  const orders = data.map((order) => {
+    const products = order.products
+      .map((product) => {
+        if (product.promotions && product.promotions.length > 0) {
+          const promotionProducts = product.promotions.map(
+            (promotionProduct) => promotionProduct.product
+          );
+          return promotionProducts;
+        }
+        return product;
+      })
+      .flat();
+    return {
+      ...order,
+      products,
+    };
+  });
+
+  return orders.reduce<CollectProduct[]>((previousValue, currentValue) => {
     currentValue.products.forEach((product) => {
       const exists = previousValue.findIndex(
         (product1) => product1.id === product.id
       );
       if (exists === -1) {
-        previousValue.push({ ...product, pieces: 1 });
+        previousValue.push({
+          ...product,
+          orderedQuantity: product.orderedQuantity,
+        });
       } else {
-        previousValue[exists].pieces += 1;
+        previousValue[exists].orderedQuantity += product.orderedQuantity;
       }
     });
     return previousValue;
   }, []);
+};
 
 export const getContentsDescription = (order: MappedOrder) => {
   const contents = order.products.map(

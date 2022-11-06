@@ -5,7 +5,7 @@ import Table from "../../components/Table";
 import { getData } from "../../utils/xlsx";
 
 const columns: GridColDef[] = [
-  { field: "Ean", headerName: "Баркод", width: 200 },
+  { field: "EAN", headerName: "Баркод", width: 200 },
   {
     field: "SKU Set",
     headerName: "Промоции",
@@ -39,9 +39,9 @@ const columns: GridColDef[] = [
 ];
 
 export interface DeliveredProduct {
+  Sku: string;
   Ean: string;
   "Product name": string;
-  "SKU Set"?: string;
   ml: number;
   Type: string;
   Контрагент: string;
@@ -74,7 +74,7 @@ const GoodsTable = ({ onSubmitForDelivery }: Props) => {
     <Table
       title="Стока за заприхождаване"
       loading={loading}
-      getRowId={(row) => row.Ean}
+      getRowId={(row) => row.SKU}
       actions={(rowsMap) => (
         <>
           <Button
@@ -82,7 +82,7 @@ const GoodsTable = ({ onSubmitForDelivery }: Props) => {
             onClick={() => {
               const rowIdsToDelete = Array.from(rowsMap.keys());
               setRows((rows) =>
-                rows.filter((row) => !rowIdsToDelete.includes(row.Ean))
+                rows.filter((row) => !rowIdsToDelete.includes(row.SKU))
               );
             }}
           >

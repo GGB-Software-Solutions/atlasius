@@ -13,6 +13,7 @@ export interface Props<T extends GridValidRowModel> extends DataGridProps<T> {
   actions?: (rows: Map<GridRowId, T>) => React.ReactNode;
   title?: string;
   rows: T[];
+  extendWithCommonColumns?: boolean;
 }
 
 export default function Table<T extends GridValidRowModel>({
@@ -20,6 +21,7 @@ export default function Table<T extends GridValidRowModel>({
   title,
   rows,
   checkboxSelection = true,
+  extendWithCommonColumns = true,
   ...other
 }: Props<T>) {
   const toolbar = () => <Toolbar title={title}>{actions}</Toolbar>;
@@ -27,7 +29,10 @@ export default function Table<T extends GridValidRowModel>({
     <Box sx={{ width: "100%", flexGrow: 1 }}>
       <DataGrid
         {...other}
-        columns={[...other.columns, ...commonColumns]}
+        columns={[
+          ...other.columns,
+          ...(extendWithCommonColumns ? commonColumns : []),
+        ]}
         components={{
           Toolbar: toolbar,
         }}

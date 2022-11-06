@@ -10,17 +10,22 @@ import useStore from "../../store/globalStore";
 
 const map = (products: DeliveredProduct[], data: FormData) => {
   return products.map((product) => {
+    const promotions = String(product.SKU).split(";");
+    const isPromotion = promotions.length > 1;
+
     return {
-      sku: product.Ean,
+      sku: isPromotion ? promotions.join("") : product.SKU,
       name: product["Product name"],
       weight: product.ml,
       category: product.Type,
-      ean: product.Ean,
+      ean: product.EAN,
       companyId: data.company?.id,
-      promotions: product["SKU Set"]?.split(","),
+      promotions: isPromotion ? promotions : null,
       createdBy: "6314d8f70e29a132b0262393", //TODO:
       itemLocation: data.itemLocation,
-      quantity: product["Общо Бройка"],
+      quantity: Number.isNaN(Number(product["Общо Бройка"]))
+        ? 0
+        : product["Общо Бройка"],
       warehouseId: data.warehouse?.id,
       reserved: 0,
     };

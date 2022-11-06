@@ -21,6 +21,12 @@ const columns: GridColDef<CollectProduct>[] = [
     headerName: "Баркод",
     width: 150,
   },
+  {
+    field: "orderedQuantity",
+    headerName: "Бройка",
+    type: "number",
+    width: 100,
+  },
 ];
 
 interface Props {
@@ -51,6 +57,7 @@ export const CollectedTable = ({ onUncollect, rows }: Props) => {
       rows={rows}
       columns={columns}
       autoHeight
+      extendWithCommonColumns={false}
     />
   );
 };

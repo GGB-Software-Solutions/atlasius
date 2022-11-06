@@ -6,6 +6,7 @@ import {
   DialogTitle,
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
+import update from "immutability-helper";
 
 import React from "react";
 import { MappedOrder, WarehouseStatus } from "../../types";
@@ -39,17 +40,76 @@ export default function OrdersDialog({
     mapProductsPieces(orders)
   );
 
-  const handleCollect = (toCollect: CollectProduct[]) => {
-    const toCollectKeys = toCollect.map((item) => item.id);
-    setCollected((prev) => [...prev, ...toCollect]);
-    setUncollected((prev) =>
-      prev.filter((item) => !toCollectKeys.includes(item.id))
-    );
+  const handleCollect = (
+    toCollect: CollectProduct[],
+    shouldCollectAll = true
+  ) => {
+    if (shouldCollectAll) {
+      setCollected((prev) => [...prev, ...toCollect]);
+      const toCollectKeys = toCollect.map((item) => item.id);
+      setUncollected((prev) =>
+        prev.filter((item) => !toCollectKeys.includes(item.id))
+      );
+    } else {
+      const product = toCollect[0];
+      const uncollectedProduxIndex = uncollected.findIndex(
+        (uncollectedProduct) => uncollectedProduct.id === product.id
+      );
+      const collectedProductIndex = collected.findIndex(
+        (collectedProduct) => collectedProduct.id === product.id
+      );
+
+      const newCollected =
+        collectedProductIndex > -1
+          ? update(collected, {
+              [collectedProductIndex]: {
+                orderedQuantity: { $set: product.orderedQuantity + 1 },
+              },
+            })
+          : update(collected, {
+              $push: [
+                { ...product, orderedQuantity: product.orderedQuantity - 1 },
+              ],
+            });
+      setCollected(newCollected);
+      if (product.orderedQuantity === 1) {
+        setUncollected(
+          update(uncollected, { $splice: [[uncollectedProduxIndex, 1]] })
+        );
+      } else {
+        setUncollected(
+          update(uncollected, {
+            [uncollectedProduxIndex]: {
+              orderedQuantity: { $set: product.orderedQuantity - 1 },
+            },
+          })
+        );
+      }
+    }
   };
 
   const handleUnCollect = (toUnCollect: CollectProduct[]) => {
     const toUnCollectKeys = toUnCollect.map((item) => item.id);
-    setUncollected((prev) => [...prev, ...toUnCollect]);
+
+    let newUncollected = [...uncollected];
+
+    toUnCollect.forEach((product) => {
+      const uncollectedProduxIndex = uncollected.findIndex(
+        (uncollectedProduct) => uncollectedProduct.id === product.id
+      );
+      newUncollected =
+        uncollectedProduxIndex > -1
+          ? update(newUncollected, {
+              [uncollectedProduxIndex]: {
+                orderedQuantity: { $set: product.orderedQuantity + 1 },
+              },
+            })
+          : update(newUncollected, {
+              $push: [product],
+            });
+    });
+
+    setUncollected(newUncollected);
     setCollected((prev) =>
       prev.filter((item) => !toUnCollectKeys.includes(item.id))
     );
