@@ -8,10 +8,6 @@ interface Props {
 export default function BarcodeInput({ onScan }: Props) {
   const [barcode, setBarcode] = React.useState("");
   const onKeyPress = (e) => {
-    if (e.charCode !== 13) {
-      setBarcode((a) => `${a}${String.fromCharCode(e.charCode)}`);
-    }
-
     if (e.charCode === 13) {
       onScan(barcode);
       setBarcode("");
