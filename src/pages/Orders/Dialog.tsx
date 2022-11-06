@@ -51,6 +51,7 @@ export default function OrdersDialog({
         prev.filter((item) => !toCollectKeys.includes(item.id))
       );
     } else {
+      // Here we are collecting product with scanning so it will always be one product
       const product = toCollect[0];
       const uncollectedProduxIndex = uncollected.findIndex(
         (uncollectedProduct) => uncollectedProduct.id === product.id
@@ -59,6 +60,7 @@ export default function OrdersDialog({
         (collectedProduct) => collectedProduct.id === product.id
       );
 
+      // If the product is already in the collected items we bump the ordered quantity
       const newCollected =
         collectedProductIndex > -1
           ? update(collected, {
@@ -79,6 +81,7 @@ export default function OrdersDialog({
             });
       setCollected(newCollected);
       if (product.orderedQuantity === 1) {
+        // If the scanned product ordered quantity is 1 we remove it from the uncollected
         setUncollected(
           update(uncollected, { $splice: [[uncollectedProduxIndex, 1]] })
         );

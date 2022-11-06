@@ -32,7 +32,6 @@ const mapStatusFilter = (filters: GridFilterItem[]) => {
   const newFilters = filters.filter(
     (filter) => filter.columnField !== "status"
   );
-
   const statusFilters = statusFilter?.value
     ? Object.keys(statusFilter?.value).map((key) => ({
         columnField: key,
@@ -52,6 +51,11 @@ export default function Admin() {
           columnField: "company.id",
           operatorValue: "equals",
           value: selectedCompany.id,
+        },
+        {
+          columnField: "status",
+          operatorValue: "not",
+          value: "ARCHIVED",
         },
       ]
     : [];
@@ -73,9 +77,10 @@ export default function Admin() {
     page,
     size: pageSize,
     sort: sorting ? `${sorting?.field},${sorting?.sort}` : "",
-    filterAnd: mapFilters(
-      mapStatusFilter([...filters, ...initialCompanyFilter])
-    ),
+    filterAnd: mapFilters([
+      ...initialCompanyFilter,
+      ...mapStatusFilter([...filters]),
+    ]),
   };
   const {
     data = {},

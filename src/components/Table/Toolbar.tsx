@@ -29,7 +29,11 @@ export default function Toolbar<T>({ title, children }: Props<T>) {
       {children && <Divider orientation="vertical" flexItem />}
       {children && children(selectedRows)}
       <Box sx={{ marginLeft: "auto" }}>
-        <GridToolbarExport />
+        <GridToolbarExport
+          csvOptions={{
+            utf8WithBom: true,
+          }}
+        />
       </Box>
     </GridToolbarContainer>
   );
