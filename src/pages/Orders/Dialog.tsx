@@ -68,7 +68,13 @@ export default function OrdersDialog({
             })
           : update(collected, {
               $push: [
-                { ...product, orderedQuantity: product.orderedQuantity - 1 },
+                {
+                  ...product,
+                  orderedQuantity:
+                    product.orderedQuantity === 1
+                      ? product.orderedQuantity
+                      : product.orderedQuantity - 1,
+                },
               ],
             });
       setCollected(newCollected);
