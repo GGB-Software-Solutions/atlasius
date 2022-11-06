@@ -151,6 +151,7 @@ export default function Admin() {
 
   const handleReturnOrderForPreparationClick = async (data: MappedOrder[]) => {
     await changeStatus(data, OrderStatus.NEW);
+    mutate();
   };
 
   const handleCancelOrder = async (data: MappedOrder[]) => {
