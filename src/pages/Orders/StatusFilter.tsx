@@ -68,7 +68,6 @@ const options = [
 function StatusFilter(props: GridFilterInputValueProps) {
   const { item, applyValue } = props;
   const handleFilterChange = (event, newValue) => {
-    console.log("New value:", newValue);
     applyValue({ ...item, value: newValue?.value });
   };
 
