@@ -111,6 +111,13 @@ export default function Admin() {
   const [selectedRows, setSelectedRows] = React.useState<MappedOrder[]>([]);
 
   React.useEffect(() => {
+    if (selectedRows.length === 0) {
+      setOpen(false);
+      mutate();
+    }
+  }, [selectedRows]);
+
+  React.useEffect(() => {
     if (!selectedCompany)
       setNotification({ type: "warning", message: "Няма избрана компания." });
   }, [selectedCompany]);

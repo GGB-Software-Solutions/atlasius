@@ -110,6 +110,7 @@ export default function PackingOrder({
     const orderStatus: UpdateOrderStatus = {
       id: order.id,
       warehouseStatus: WarehouseStatus.PICKING,
+      status: OrderStatus.NEW,
     };
     const response = await updateOrderStatus([orderStatus]);
     if (response.success) {
