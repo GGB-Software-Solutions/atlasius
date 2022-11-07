@@ -148,6 +148,7 @@ export default function Admin() {
     if (response.success) {
       setNotification({ type: "success", message: response.success });
       onSuccess(newRow);
+      mutate();
     } else {
       setNotification({ type: "error", message: response.error });
       onError();
