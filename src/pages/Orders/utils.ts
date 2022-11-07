@@ -29,19 +29,24 @@ import { Expedition } from "../../types/expedition";
 import { CollectProduct } from "../../types/product";
 import { getDeliveryCompanyCredentials } from "../../utils/common";
 
+//If there is a promotion it will pull the products from the promotion and add it to the order products array
+const getOrderProducts = (order: MappedOrder) => {
+  return order.products
+    .map((product) => {
+      if (product.promotions && product.promotions.length > 0) {
+        const promotionProducts = product.promotions.map(
+          (promotionProduct) => promotionProduct.product
+        );
+        return promotionProducts;
+      }
+      return product;
+    })
+    .flat();
+};
+
 export const mapProductsPieces = (data: MappedOrder[]): CollectProduct[] => {
   const orders = data.map((order) => {
-    const products = order.products
-      .map((product) => {
-        if (product.promotions && product.promotions.length > 0) {
-          const promotionProducts = product.promotions.map(
-            (promotionProduct) => promotionProduct.product
-          );
-          return promotionProducts;
-        }
-        return product;
-      })
-      .flat();
+    const products = getOrderProducts(order);
     return {
       ...order,
       products,

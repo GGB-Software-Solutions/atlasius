@@ -4,6 +4,7 @@ import PackingProductsTable from "./PackingProductsTable";
 import {
   getDeliveryCourier,
   mapEcontLabelToExpedition,
+  mapProductsPieces,
   mapSpeedyLabelToExpedition,
 } from "../utils";
 import SpeedyShippingForm from "./SpeedyShippingForm";
@@ -51,6 +52,7 @@ export default function PackingOrder({
     []
   );
   const expedition = formContext.watch("shippingLabel");
+  const orderProducts = mapProductsPieces([order]);
 
   const isSpeedy = getDeliveryCourier(order) === DeliveryCompany.Speedy;
   const credentials = getDeliveryCompanyCredentials(
@@ -102,7 +104,7 @@ export default function PackingOrder({
     resetSelectedOrder(data.id);
   };
 
-  const isAllProductsPacked = packedProducts.length === order?.products.length;
+  const isAllProductsPacked = packedProducts.length === orderProducts.length;
 
   const handleReturnForPicking = async () => {
     const orderStatus: UpdateOrderStatus = {
@@ -215,7 +217,7 @@ export default function PackingOrder({
       <Paper sx={{ padding: 2, mt: 4 }} variant="outlined">
         <PackingProductsTable
           onPack={handlePack}
-          rows={order.products}
+          rows={orderProducts}
           packedProductsIds={packedProducts.map((product) => product.id)}
         />
       </Paper>
