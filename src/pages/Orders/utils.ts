@@ -227,24 +227,25 @@ export const mapSpeedyAddressDelivery = async (
     const { valid: isAddressValid, error } =
       await speedyService.validateAddress(address);
     valid = isAddressValid;
+
+    const sites = await speedyService.findSite({
+      countryId,
+      name: order.city as string,
+    });
+    if (sites.length > 0) {
+      mappedOrder.city = sites[0];
+      const streets = await speedyService.getStreets({
+        siteId: sites[0].id,
+        name: order.streetName,
+      });
+      if (streets.length > 0) {
+        console.log(streets[0]);
+        mappedOrder.street = streets[0];
+      }
+    }
+
     if (valid) {
       mappedOrder.validatedAddress = address;
-    } else {
-      const sites = await speedyService.findSite({
-        countryId,
-        name: order.city as string,
-      });
-
-      if (sites.length > 0) {
-        mappedOrder.city = sites[0];
-        const streets = await speedyService.getStreets({
-          siteId: sites[0].id,
-          name: order.streetName,
-        });
-        if (streets.length > 0) {
-          mappedOrder.street = streets[0];
-        }
-      }
     }
   }
 
