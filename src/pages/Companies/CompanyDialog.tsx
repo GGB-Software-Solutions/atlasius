@@ -19,7 +19,7 @@ export default function WarehouseDialog({
   data,
 }: EditorProps<Company>) {
   return (
-    <Dialog open={open} fullWidth maxWidth="md">
+    <Dialog open={open} fullScreen>
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         <CompanyForm data={data} onSave={onSave} />
