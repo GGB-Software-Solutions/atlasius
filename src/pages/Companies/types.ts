@@ -5,10 +5,31 @@ export enum DeliveryCompany {
   Econt = "ECONT",
 }
 
+export enum DeliveryCalculationType {
+  Калкулатор,
+  "Фиксирана стойност по цена",
+}
+
 export enum Ecommerce {
   Shopify = "SHOPIFY",
   CloudCart = "CLOUDCART",
   WooCommerce = "WOOCOMMERCE",
+}
+
+export interface FixedDeliveryOption {
+  from: number;
+  to: number;
+  price: number;
+}
+
+export enum DeliveryPayer {
+  Получател,
+  Изпращач,
+}
+
+export interface CalculatedDeliveryOption {
+  to: number;
+  payer: DeliveryPayer;
 }
 
 export interface DeliveryCompanyCredentials {
@@ -17,6 +38,12 @@ export interface DeliveryCompanyCredentials {
   password: string;
   agreementId?: string; // Agreement id valid only for Econt
   senderAgent?: string; // Sender agent valid only for Econt
+  payAfterAccept: boolean;
+  payAfterTest: boolean;
+  smsOnDelivery: boolean;
+  deliveryCalculationType: DeliveryCalculationType;
+  fixedDeliveryOptions: FixedDeliveryOption[];
+  calculatedDeliveryOption: CalculatedDeliveryOption;
 }
 
 interface EcommerceCredentials {

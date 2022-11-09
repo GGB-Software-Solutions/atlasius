@@ -244,7 +244,6 @@ export const mapSpeedyAddressDelivery = async (
         name: order.streetName,
       });
       if (streets.length > 0) {
-        console.log(streets[0]);
         mappedOrder.street = streets[0];
       }
     }

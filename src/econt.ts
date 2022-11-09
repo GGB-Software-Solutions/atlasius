@@ -16,6 +16,7 @@ import {
   ShippingLabel,
   ShippingLabelServices,
 } from "./types/econt";
+import { getDeliveryPriceAndPayer } from "./utils/common";
 
 const ECONT_DEMO_API_URL = "http://demo.econt.com/ee/services";
 const ECONT_API_URL = "http://ee.econt.com/services";
@@ -236,6 +237,11 @@ class Econt {
       (credentials) => credentials.deliveryCompanyName === DeliveryCompany.Econt
     );
 
+    const { orderPrice, courierServicePayer } = getDeliveryPriceAndPayer(
+      econtCredentials,
+      order.price
+    );
+
     const senderClient: ClientProfile = profile.client;
     const senderAgent = {
       name: econtCredentials?.senderAgent,
@@ -247,7 +253,7 @@ class Econt {
 
     const receiverClient: ClientProfile = {
       name: `${order.firstName} ${order.lastName}`,
-      phones: [order.phone],
+      phones: [order.phone.replaceAll(" ", "")],
     };
     const receiverOfficeCode = order.office?.code;
     let receiverAddress = null;
@@ -265,10 +271,15 @@ class Econt {
 
     const services: { services?: Partial<ShippingLabelServices> } =
       order.paymentType === PaymentType.CARD
-        ? {}
+        ? {
+            services: {
+              smsNotification: econtCredentials?.smsOnDelivery,
+            },
+          }
         : {
             services: {
-              cdAmount: order.price,
+              smsNotification: econtCredentials?.smsOnDelivery,
+              cdAmount: orderPrice,
               cdType: "get",
               cdCurrency: "BGN",
               cdPayOptions: (profile.cdPayOptions as CDPayOptions[]).find(
@@ -276,9 +287,10 @@ class Econt {
               ),
             },
           };
-
+    console.log(econtCredentials);
     const label: ShippingLabel = {
-      payAfterAccept: true,
+      payAfterAccept: econtCredentials?.payAfterAccept,
+      payAfterTest: econtCredentials?.payAfterTest,
       senderClient,
       senderOfficeCode,
       senderAgent,
@@ -291,7 +303,12 @@ class Econt {
       instructions: profile.instructionTemplates,
       weight,
       shipmentDescription,
-      paymentSenderMethod: "credit",
+      // метод на плащане от страна на подателя (оставяте празно, ако подателят няма да плаща доставката на пратката, cash, ако ще плати в брой, при предаване на пратката или credit, ако ще се плати по договор)
+      paymentSenderMethod:
+        courierServicePayer === "SENDER" ? "credit" : undefined,
+      //метод на плащане от страна на получателя (оставяте празно, ако получателят няма да плаща доставката на пратката, cash, ако ще плати в брой, при получаване на пратката или credit, ако ще се плати по договор)
+      paymentReceiverMethod:
+        courierServicePayer === "RECIPIENT" ? "cash" : undefined,
     };
 
     return this.createLabel(label);

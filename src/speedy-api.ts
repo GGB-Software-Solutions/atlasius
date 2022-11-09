@@ -10,6 +10,7 @@ import {
   SpeedyError,
   SpeedyLabel,
 } from "./types/speedy";
+import { getDeliveryPriceAndPayer } from "./utils/common";
 
 const BASE_URL = "https://api.speedy.bg/v1";
 const IS_PROD = process.env.NODE_ENV === "production";
@@ -140,12 +141,31 @@ export class Speedy {
   }
 
   async generateLabel(order: MappedOrder<DeliveryCompany.Speedy>) {
+    const speedyCredentials = order.company.deliveryCompanyCredentials.find(
+      (credentials) =>
+        credentials.deliveryCompanyName === DeliveryCompany.Speedy
+    );
+    const { orderPrice, courierServicePayer } = getDeliveryPriceAndPayer(
+      speedyCredentials,
+      order.price
+    );
+
+    //Options before payment
+    const obpd =
+      speedyCredentials?.payAfterAccept || speedyCredentials?.payAfterTest
+        ? {
+            option: speedyCredentials.payAfterTest ? "TEST" : "OPEN",
+            returnShipmentServiceId: 505,
+            returnShipmentPayer: "RECIPIENT",
+          }
+        : {};
+
     const cod =
       order.paymentType === PaymentType.CARD
         ? {}
         : {
             cod: {
-              amount: order.price,
+              amount: orderPrice,
               payoutToLoggedClient: true,
               includeShippingPrice: false,
               processingType: "POSTAL_MONEY_TRANSFER",
@@ -154,7 +174,7 @@ export class Speedy {
     const label = {
       recipient: {
         phone1: {
-          number: order.phone,
+          number: order.phone.replaceAll(" ", ""),
         },
         clientName: `${order.firstName} ${order.lastName}`,
         privatePerson: true,
@@ -166,11 +186,7 @@ export class Speedy {
         autoAdjustPickupDate: true,
         additionalServices: {
           ...cod,
-          obpd: {
-            option: "OPEN",
-            returnShipmentServiceId: 505,
-            returnShipmentPayer: "RECIPIENT",
-          },
+          obpd,
           returns: {
             swap: {
               serviceId: 505,
@@ -188,7 +204,7 @@ export class Speedy {
         package: "BOX",
       },
       payment: {
-        courierServicePayer: "SENDER",
+        courierServicePayer,
         packagePayer: "RECIPIENT",
       },
     };
