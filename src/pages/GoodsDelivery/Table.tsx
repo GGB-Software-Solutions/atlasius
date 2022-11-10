@@ -17,7 +17,7 @@ const columns: GridColDef[] = [
     width: 400,
   },
   {
-    field: "ml",
+    field: "kg",
     headerName: "Тегло",
     type: "number",
     width: 100,
@@ -42,7 +42,7 @@ export interface DeliveredProduct {
   Sku: string;
   Ean: string;
   "Product name": string;
-  ml: number;
+  kg: number;
   Type: string;
   Контрагент: string;
   "Общо Бройка": number;

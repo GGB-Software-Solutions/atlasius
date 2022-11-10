@@ -16,7 +16,7 @@ const map = (products: DeliveredProduct[], data: FormData) => {
     return {
       sku: isPromotion ? promotions.join("") : product.SKU,
       name: product["Product name"],
-      weight: product.ml,
+      weight: product.kg,
       category: product.Type,
       ean: product.EAN,
       companyId: data.company?.id,
