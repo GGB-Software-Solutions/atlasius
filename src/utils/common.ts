@@ -28,7 +28,8 @@ export const getDeliveryCompanyCredentials = (
 
 export const getDeliveryPriceAndPayer = (
   credentials: DeliveryCompanyCredentials,
-  price: number
+  price: number,
+  deliveryToOffice: boolean
 ) => {
   let orderPrice = price;
   let courierServicePayer = "SENDER";
@@ -39,7 +40,10 @@ export const getDeliveryPriceAndPayer = (
   //Фиксирана цена на доставка
   if (isFixedDeliveryPrice) {
     const fixedDeliveryOption = credentials.fixedDeliveryOptions.find(
-      (option) => price >= option.from && price <= option.to
+      (option) =>
+        price >= option.from &&
+        price <= option.to &&
+        option.deliveryToOffice === deliveryToOffice
     );
     //Ако цената на поръчката попадне в някой от рейнджовете за фиксирана цена на доставка тогава доставката се плаща от нас и я добавяме фиксираната цена към цената на наложения платеж
     if (fixedDeliveryOption) {

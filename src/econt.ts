@@ -2,7 +2,10 @@ import {
   DeliveryCompany,
   DeliveryCompanyCredentials,
 } from "./pages/Companies/types";
-import { getContentsDescription } from "./pages/Orders/utils";
+import {
+  getContentsDescription,
+  shouldOrderBeDeliveredToOffice,
+} from "./pages/Orders/utils";
 import { MappedOrder, PaymentType } from "./types";
 import {
   Address,
@@ -239,7 +242,8 @@ class Econt {
 
     const { orderPrice, courierServicePayer } = getDeliveryPriceAndPayer(
       econtCredentials,
-      order.price
+      order.price,
+      shouldOrderBeDeliveredToOffice(order)
     );
 
     const senderClient: ClientProfile = profile.client;

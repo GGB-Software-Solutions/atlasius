@@ -2,7 +2,10 @@ import {
   DeliveryCompany,
   DeliveryCompanyCredentials,
 } from "./pages/Companies/types";
-import { getContentsDescription } from "./pages/Orders/utils";
+import {
+  getContentsDescription,
+  shouldOrderBeDeliveredToOffice,
+} from "./pages/Orders/utils";
 import { MappedOrder, PaymentType } from "./types";
 import {
   SpeedyAddress,
@@ -147,7 +150,8 @@ export class Speedy {
     );
     const { orderPrice, courierServicePayer } = getDeliveryPriceAndPayer(
       speedyCredentials,
-      order.price
+      order.price,
+      shouldOrderBeDeliveredToOffice(order)
     );
 
     //Options before payment

@@ -20,6 +20,7 @@ export interface FixedDeliveryOption {
   from: number;
   to: number;
   price: number;
+  deliveryToOffice: boolean;
 }
 
 export enum DeliveryPayer {

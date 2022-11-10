@@ -1,7 +1,13 @@
 import React from "react";
-import { IconButton, Stack, Typography } from "@mui/material";
-import { useFieldArray, UseFormReturn } from "react-hook-form";
-import { TextFieldElement } from "react-hook-form-mui";
+import {
+  FormControlLabel,
+  IconButton,
+  Stack,
+  Switch,
+  Typography,
+} from "@mui/material";
+import { Controller, useFieldArray, UseFormReturn } from "react-hook-form";
+import { SelectElement, TextFieldElement } from "react-hook-form-mui";
 import { Company } from "./types";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
@@ -74,6 +80,20 @@ export default function FixedDeliveryOptionsForm({
                 label="Цена"
                 required
                 fullWidth
+              />
+              <FormControlLabel
+                control={
+                  <Controller
+                    {...formContext.register(
+                      `deliveryCompanyCredentials.${index}.fixedDeliveryOptions.${optionIndex}.deliveryToOffice`
+                    )}
+                    defaultValue={false}
+                    render={({ field }) => {
+                      return <Switch {...field} checked={field.value} />;
+                    }}
+                  />
+                }
+                label="До офис"
               />
               <IconButton onClick={() => remove(optionIndex)}>
                 <DeleteIcon />
