@@ -208,7 +208,11 @@ export class Speedy {
         package: "BOX",
       },
       payment: {
-        courierServicePayer,
+        //If payment was made by card the courier service is always paid by the recipient
+        courierServicePayer:
+          order.paymentType === PaymentType.CARD
+            ? "RECIPIENT"
+            : courierServicePayer,
         packagePayer: "RECIPIENT",
       },
     };

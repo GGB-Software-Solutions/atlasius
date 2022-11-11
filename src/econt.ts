@@ -291,7 +291,7 @@ class Econt {
               ),
             },
           };
-    console.log(econtCredentials);
+
     const label: ShippingLabel = {
       payAfterAccept: econtCredentials?.payAfterAccept,
       payAfterTest: econtCredentials?.payAfterTest,
@@ -309,10 +309,16 @@ class Econt {
       shipmentDescription,
       // метод на плащане от страна на подателя (оставяте празно, ако подателят няма да плаща доставката на пратката, cash, ако ще плати в брой, при предаване на пратката или credit, ако ще се плати по договор)
       paymentSenderMethod:
-        courierServicePayer === "SENDER" ? "credit" : undefined,
+        courierServicePayer === "SENDER" ||
+        order.paymentType === PaymentType.CARD
+          ? "credit"
+          : undefined,
       //метод на плащане от страна на получателя (оставяте празно, ако получателят няма да плаща доставката на пратката, cash, ако ще плати в брой, при получаване на пратката или credit, ако ще се плати по договор)
       paymentReceiverMethod:
-        courierServicePayer === "RECIPIENT" ? "cash" : undefined,
+        courierServicePayer === "RECIPIENT" &&
+        order.paymentType !== PaymentType.CARD
+          ? "cash"
+          : undefined,
     };
 
     return this.createLabel(label);
