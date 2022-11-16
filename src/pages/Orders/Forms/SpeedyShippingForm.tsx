@@ -304,9 +304,17 @@ export default function SpeedyShippingForm({
               <Grid item xs={6} md={4}>
                 <TextFieldElement
                   variant="standard"
+                  name="city"
+                  label="Град"
+                  fullWidth
+                  disabled
+                />
+              </Grid>
+              <Grid item xs={6} md={4}>
+                <TextFieldElement
+                  variant="standard"
                   name="address1"
                   label="Адрес 1"
-                  required
                   fullWidth
                   disabled
                 />

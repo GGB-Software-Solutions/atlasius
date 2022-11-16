@@ -61,12 +61,14 @@ const columns = (warehouses: Warehouse[]): GridColDef<FormProduct>[] => [
     valueGetter: (
       params: GridValueGetterParams<string, FormProduct>
     ): string => {
+      console.log(params.row.productWarehouseQuantities);
       return `${params.row.productWarehouseQuantities
         .map((quantity) => {
           const warehouse = warehouses.find(
             (warehouse) => warehouse.id.toString() === quantity.warehouseId
           );
-          return `${warehouse?.name}/${quantity.quantity}`;
+          return `${quantity.quantity}`;
+          // return `${warehouse?.name}/${quantity.quantity}`;
         })
         .join("\n")}`;
     },
