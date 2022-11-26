@@ -95,6 +95,7 @@ const WithRequiredData = (WrappedComponent) => {
       isLoadingOffices ||
       isLoadingCities ||
       isLoadingSpeedyOffices ||
+      !econtCountries ||
       econtCountries.length === 0 ? (
       <Loader />
     ) : (
