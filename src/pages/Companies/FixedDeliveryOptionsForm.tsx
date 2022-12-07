@@ -25,7 +25,6 @@ export default function FixedDeliveryOptionsForm({
     control: formContext.control,
     name: `deliveryCompanyCredentials.${index}.fixedDeliveryOptions`,
   });
-  console.log(fields);
   return (
     <>
       <Stack
