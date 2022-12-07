@@ -9,6 +9,11 @@ import {
   SpeedyOffice,
 } from "./types/speedy";
 
+export enum Role {
+  Admin = "ADMIN",
+  User = "USER",
+}
+
 export interface Warehouse {
   id: number;
   name: string;

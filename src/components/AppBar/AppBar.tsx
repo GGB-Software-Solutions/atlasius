@@ -15,6 +15,7 @@ import BusinessIcon from "@mui/icons-material/Business";
 import { Company } from "../../pages/Companies/types";
 import { setJwtToken } from "../../utils/jwt";
 import { useRouter } from "next/router";
+import { Role } from "../../types";
 
 interface Props {
   onDrawerToggle: () => void;
@@ -32,6 +33,7 @@ function CompanySelect() {
   const selectedCompany = useStore((state) => state.selectedCompany);
   const setSelectedCompany = useStore((state) => state.setSelectedCompany);
   const companies = useStore((state) => state.companies);
+  const user = useStore((state) => state.user);
 
   const handleChange = (company: Company) => () => {
     setSelectedCompany(company);
@@ -69,6 +71,7 @@ function CompanySelect() {
             key={company.name}
             selected={selectedCompany?.name === company.name}
             onClick={handleChange(company)}
+            disabled={user?.role === Role.User}
           >
             {company.name}
           </MenuItem>

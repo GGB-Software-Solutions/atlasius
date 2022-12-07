@@ -6,6 +6,7 @@ import useStore from "../store/globalStore";
 import Loader from "../components/Loader";
 import Econt, { TEST_CREDENTIALS as ECONT_TEST_CREDENTIALS } from "../econt";
 import { BULGARIA_COUNTRY_ID, TEST_CREDENTIALS } from "../speedy-api";
+import { Role } from "../types";
 
 const econtService = new Econt(ECONT_TEST_CREDENTIALS, true);
 
@@ -27,11 +28,13 @@ const WithRequiredData = (WrappedComponent) => {
   const withRequiredData = (props) => {
     const setWarehouses = useStore((state) => state.setWarehouses);
     const setCompanies = useStore((state) => state.setCompanies);
+    const setSelectedCompany = useStore((state) => state.setSelectedCompany);
     const setEcontCountries = useStore((state) => state.setEcontCountries);
     const econtCountries = useStore((state) => state.econtCountries);
     const setEcontOffices = useStore((state) => state.setEcontOffices);
     const setEcontCities = useStore((state) => state.setEcontCities);
     const setSpeedyOffices = useStore((state) => state.setSpeedyOffices);
+    const user = useStore((state) => state.user);
 
     const { data: warehouses, isLoading: isLoadingWarehouses } = useSWR(
       API_ENDPOINTS.Warehouse,
@@ -89,6 +92,15 @@ const WithRequiredData = (WrappedComponent) => {
       };
       getCountries();
     }, []);
+
+    React.useEffect(() => {
+      if (companies && companies.length && user?.role === Role.User) {
+        const userCompany = companies.find(
+          (company) => company.id === user.companyId
+        );
+        setSelectedCompany(userCompany);
+      }
+    }, [user?.role, companies]);
 
     return isLoadingCompanies ||
       isLoadingWarehouses ||
