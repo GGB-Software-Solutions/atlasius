@@ -34,13 +34,13 @@ const Login = () => {
   }, []);
 
   const login = async (data) => {
-    const url = "login?username=asd&password=asd"; //TODO:
+    const url = `login?username=${data.username}&password=${data.password}`;
     try {
-      const data = await jsonFetch(url, {
+      const response = await jsonFetch(url, {
         method: "POST",
         body: JSON.stringify(data),
       });
-      if (data) return data;
+      if (response) return response;
       // Return null if user data could not be retrieved
       return null;
     } catch (e) {
@@ -104,7 +104,6 @@ const Login = () => {
               {...field}
               variant="standard"
               label="Потребител"
-              type="email"
               required
             />
           )}
