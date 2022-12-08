@@ -21,8 +21,8 @@ import {
 } from "./types/econt";
 import { getDeliveryPriceAndPayer } from "./utils/common";
 
-const ECONT_DEMO_API_URL = "http://demo.econt.com/ee/services";
-const ECONT_API_URL = "http://ee.econt.com/services";
+const ECONT_DEMO_API_URL = "https://demo.econt.com/ee/services";
+const ECONT_API_URL = "https://ee.econt.com/services";
 const ECONT_DEMO_API_USERNAME = process.env.NEXT_PUBLIC_ECONT_DEMO_API_USERNAME;
 const ECONT_DEMO_API_PASSWORD = process.env.NEXT_PUBLIC_ECONT_DEMO_API_PASSWORD;
 
