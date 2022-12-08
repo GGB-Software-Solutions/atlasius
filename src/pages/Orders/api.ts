@@ -48,7 +48,7 @@ export const updateOrderStatus = async (orderStatuses: UpdateOrderStatus[]) => {
 export const saveShippingLabel = async (label: Expedition) => {
   const response = await jsonFetch(API_ENDPOINTS.DeliveryDetails, {
     method: "POST",
-    body: JSON.stringify({ ...label, createdBy: "6314d8f70e29a132b0262393" }), //TODO: Remove createdBy
+    body: JSON.stringify(label),
   });
   return response;
 };

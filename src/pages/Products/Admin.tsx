@@ -28,7 +28,6 @@ const map = (data: FormProduct): ProductSubmit[] => {
     {
       ...data,
       companyId: company.id,
-      createdBy: "6314d8f70e29a132b0262393", //TODO: Get user from the state
     },
   ];
 };
