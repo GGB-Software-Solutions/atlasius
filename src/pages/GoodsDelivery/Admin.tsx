@@ -21,7 +21,6 @@ const map = (products: DeliveredProduct[], data: FormData) => {
       ean: product.EAN,
       companyId: data.company?.id,
       promotions: isPromotion ? promotions : null,
-      createdBy: "6314d8f70e29a132b0262393", //TODO:
       itemLocation: data.itemLocation,
       quantity: Number.isNaN(Number(product["Общо Бройка"]))
         ? 0
