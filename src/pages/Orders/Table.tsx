@@ -187,13 +187,6 @@ export const columns: GridColDef[] = [
     headerName: "Вид плащане",
     width: 150,
   },
-  {
-    field: "company",
-    width: 150,
-    headerName: "Компания",
-    valueGetter: (params: GridValueGetterParams) =>
-      `${params.row.company?.name}`,
-  },
 ];
 
 const getActions = ({
@@ -277,7 +270,7 @@ const OrdersTable = ({
   return (
     <Table
       {...other}
-      title="Поръчки"
+      title="Задачи"
       experimentalFeatures={{ newEditingApi: true }}
       actions={(rowsMap) => {
         const rows = Array.from(rowsMap.values());

@@ -120,7 +120,8 @@ export const shouldOrderBeDeliveredToOffice = (order: MappedOrder) => {
   return (
     order.deliveryProvider === "СПИЙДИ ДО ОФИС" ||
     order.deliveryProvider === "ЕКОНТ ДО ОФИС" ||
-    order.officeId
+    order.officeId ||
+    order.officeName
   );
 };
 
@@ -128,13 +129,13 @@ export const getDeliveryCourier = (order: Order | MappedOrder) => {
   if (
     order.deliveryProvider === "СПИЙДИ ДО ОФИС" ||
     order.deliveryProvider === "СПИЙДИ ДО АДРЕС" ||
-    order.deliveryProvider === "speedy"
+    order.deliveryProvider.toLowerCase() === "speedy"
   )
     return DeliveryCompany.Speedy;
   if (
     order.deliveryProvider === "ЕКОНТ ДО ОФИС" ||
     order.deliveryProvider === "ЕКОНТ ДО АДРЕС" ||
-    order.deliveryProvider === "econt"
+    order.deliveryProvider.toLowerCase() === "econt"
   )
     return DeliveryCompany.Econt;
 };

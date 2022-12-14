@@ -29,7 +29,7 @@ const routes: Route[] = [
   { name: "Складове", href: "/warehouses" },
   { name: "Задачи", href: "/tasks", role: [Role.User] },
   { name: "Експедиции", href: "/expeditions", role: [Role.User] },
-  { name: "Приключени поръчки", href: "/orders", role: [Role.User] },
+  { name: "Поръчки", href: "/orders", role: [Role.User] },
 ];
 
 interface RenderListItem {

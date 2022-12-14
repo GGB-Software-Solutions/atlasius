@@ -1,3 +1,4 @@
+import { Button } from "@mui/material";
 import React from "react";
 import Table, { Props as TableProps } from "../../components/Table";
 import withEditor from "../../components/Table/withEditor";
@@ -9,18 +10,26 @@ type Props = {
 } & Partial<TableProps<Order>>;
 
 function FulfilledOrdersTable(props: Props) {
-  props.rows;
   return (
     <Table
+      actions={() => (
+        <Button
+          onClick={() => {
+            props.onRowClick({ row: {} });
+          }}
+        >
+          Добави
+        </Button>
+      )}
       columns={columns}
       {...props}
-      initialState={{
-        columns: {
-          columnVisibilityModel: {
-            status: false,
-          },
-        },
-      }}
+      // initialState={{
+      //   columns: {
+      //     columnVisibilityModel: {
+      //       status: false,
+      //     },
+      //   },
+      // }}
     />
   );
 }

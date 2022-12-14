@@ -1,11 +1,10 @@
 import React from "react";
 import PageContainer from "../../components/PageContainer";
 import Table from "./Table";
-import { Order, OrderStatus } from "../../types";
 import useSWR from "swr";
+import useSWRMutation from "swr/mutation";
 import { API_ENDPOINTS } from "../../api";
 import { jsonFetch } from "../../utils/fetch";
-import OrderSummaryDialog from "./OrderSummaryDialog";
 import useStore from "../../store/globalStore";
 import { mapFilters } from "../../components/Table/utils";
 import {
@@ -14,20 +13,27 @@ import {
   GridSortItem,
   GridSortModel,
 } from "@mui/x-data-grid";
+import OrderDialog from "./OrderDialog";
 
-const archivedStatusFilter = {
-  columnField: "status",
-  operatorValue: "equals",
-  value: OrderStatus.ARCHIVED,
-};
+// const archivedStatusFilter = {
+//   columnField: "status",
+//   operatorValue: "equals",
+//   value: OrderStatus.ARCHIVED,
+// };
 
-const cancelledStatusFilter = {
-  columnField: "status",
-  operatorValue: "equals",
-  value: OrderStatus.CANCELLED,
-};
+// const cancelledStatusFilter = {
+//   columnField: "status",
+//   operatorValue: "equals",
+//   value: OrderStatus.CANCELLED,
+// };
+
+async function saveOrder(url: string, options: Record<string, unknown>) {
+  const order = options.arg;
+  return jsonFetch(url, { method: "POST", body: JSON.stringify([order]) });
+}
 
 export default function Admin() {
+  const { trigger } = useSWRMutation(API_ENDPOINTS.Order, saveOrder);
   const selectedCompany = useStore((state) => state.selectedCompany);
   const initialCompanyFilter = selectedCompany
     ? [
@@ -49,7 +55,7 @@ export default function Admin() {
     size: pageSize,
     sort: sorting ? `${sorting?.field},${sorting?.sort}` : "",
     filterAnd: mapFilters([...filters, ...initialCompanyFilter]),
-    filterOr: mapFilters([archivedStatusFilter, cancelledStatusFilter]),
+    // filterOr: mapFilters([archivedStatusFilter, cancelledStatusFilter]),
   };
 
   const { data = {}, isLoading } = useSWR(
@@ -82,13 +88,18 @@ export default function Admin() {
     []
   );
 
+  const handleSave = async (data) =>
+    trigger({ ...data, company: selectedCompany });
+
   return (
     <>
       <PageContainer>
         <Table
+          title="Поръчки"
           loading={isLoading}
           rows={content || []}
-          Editor={OrderSummaryDialog}
+          Editor={OrderDialog}
+          onEditorSave={handleSave}
           page={page}
           pageSize={pageSize}
           rowCount={rowCountState}
