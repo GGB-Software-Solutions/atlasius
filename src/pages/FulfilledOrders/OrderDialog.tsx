@@ -31,6 +31,7 @@ import { Order, PaymentType } from "../../types";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { shouldOrderBeDeliveredToOffice } from "../Orders/utils";
+import useStore from "../../store/globalStore";
 
 interface Props {
   data: Order;
@@ -46,6 +47,8 @@ export default function OrderDialog({
   open,
   onClose,
 }: Props) {
+  const selectedCompany = useStore((state) => state.selectedCompany);
+
   const formContext = useForm({
     defaultValues: formData,
   });
@@ -239,7 +242,7 @@ export default function OrderDialog({
                       variant="standard"
                       name="officeName"
                       label="Офис"
-                      required
+                      required={toOffice}
                       fullWidth
                       disabled={!toOffice || disabled}
                     />
@@ -317,7 +320,10 @@ export default function OrderDialog({
                       name="products"
                       label="Продукти"
                       multiple
-                      options={products || []}
+                      options={(products || []).filter(
+                        (product) =>
+                          product.productId.companyId === selectedCompany.id
+                      )}
                     />
                   </Grid>
                 </Grid>
