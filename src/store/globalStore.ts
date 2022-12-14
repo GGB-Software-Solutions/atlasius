@@ -59,7 +59,10 @@ const useStore = create<State>()(
       }),
       {
         name: "ggb-storage",
-        partialize: (state) => ({ selectedCompany: state.selectedCompany }),
+        partialize: (state) => ({
+          selectedCompany: state.selectedCompany,
+          user: state.user,
+        }),
       }
     )
   )
