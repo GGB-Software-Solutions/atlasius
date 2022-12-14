@@ -120,8 +120,8 @@ export const shouldOrderBeDeliveredToOffice = (order: MappedOrder) => {
   return (
     order.deliveryProvider === "СПИЙДИ ДО ОФИС" ||
     order.deliveryProvider === "ЕКОНТ ДО ОФИС" ||
-    order.officeId ||
-    order.officeName
+    Boolean(order.officeId) ||
+    Boolean(order.officeName)
   );
 };
 
