@@ -8,7 +8,7 @@ import Econt, { TEST_CREDENTIALS as ECONT_TEST_CREDENTIALS } from "../econt";
 import { BULGARIA_COUNTRY_ID, TEST_CREDENTIALS } from "../speedy-api";
 import { Role } from "../types";
 
-const econtService = new Econt(ECONT_TEST_CREDENTIALS, true);
+const econtService = new Econt(ECONT_TEST_CREDENTIALS);
 
 async function sendEcontServiceRequest(url) {
   return econtService[url]();
