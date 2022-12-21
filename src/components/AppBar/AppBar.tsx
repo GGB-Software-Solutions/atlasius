@@ -44,50 +44,54 @@ function CompanySelect() {
 
   return (
     <>
-      <Menu
-        id="language-menu"
-        anchorEl={languageMenu}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-        open={Boolean(languageMenu)}
-        onClose={handleLanguageMenuClose}
-        sx={{ width: 250 }}
-      >
-        {/* <MenuItem
+      {user?.role !== Role.User && (
+        <>
+          <Menu
+            id="language-menu"
+            anchorEl={languageMenu}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "right",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+            open={Boolean(languageMenu)}
+            onClose={handleLanguageMenuClose}
+            sx={{ width: 250 }}
+          >
+            {/* <MenuItem
           key={"Всички"}
           selected={selectedCompany === null}
           onClick={handleChange(null)}
         >
           {"Всички"}
         </MenuItem> */}
-        {companies.map((company) => (
-          <MenuItem
-            key={company.name}
-            selected={selectedCompany?.name === company.name}
-            onClick={handleChange(company)}
-            disabled={user?.role === Role.User}
+            {companies.map((company) => (
+              <MenuItem
+                key={company.name}
+                selected={selectedCompany?.name === company.name}
+                onClick={handleChange(company)}
+                disabled={user?.role === Role.User}
+              >
+                {company.name}
+              </MenuItem>
+            ))}
+          </Menu>
+          <Button
+            sx={{ ml: 3, width: 250 }}
+            color="inherit"
+            onClick={handleLanguageIconClick}
           >
-            {company.name}
-          </MenuItem>
-        ))}
-      </Menu>
-      <Button
-        sx={{ ml: 3, width: 250 }}
-        color="inherit"
-        onClick={handleLanguageIconClick}
-      >
-        <BusinessIcon />
-        <span style={{ margin: 4 }}>
-          {selectedCompany?.name || "Изберия компания"}
-        </span>
-        <ExpandMore fontSize="small" />
-      </Button>
+            <BusinessIcon />
+            <span style={{ margin: 4 }}>
+              {selectedCompany?.name || "Изберия компания"}
+            </span>
+            <ExpandMore fontSize="small" />
+          </Button>
+        </>
+      )}
     </>
   );
 }
