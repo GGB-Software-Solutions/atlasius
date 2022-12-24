@@ -252,8 +252,8 @@ export default function Admin() {
           sortingMode="server"
           onSortModelChange={handleSortModelChange}
           onFilterModelChange={onFilterChange}
-          onPageChange={(newPage) => setPage(newPage)}
-          onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+          onPageChange={setPage}
+          onPageSizeChange={setPageSize}
         />
         <CollectGoodsDialog
           orders={selectedRows}

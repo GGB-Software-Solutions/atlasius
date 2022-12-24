@@ -101,7 +101,11 @@ export const fuseSearch = (
   keys: string[] = ["name", "nameEn"]
 ) => {
   const fuse = new Fuse(list, options(keys));
-  return fuse.search(pattern);
+  try {
+    return fuse.search(pattern);
+  } catch (err) {
+    return [];
+  }
 };
 
 const streetNumberRegex = new RegExp(
@@ -339,6 +343,15 @@ export const getOrderCountry = (
   return country;
 };
 
+//Address1 can be undefined in some cases so we use streetName+streetNumber
+const getOrderAddress1 = (order: Order) => {
+  if (order.address1) return order.address1;
+  if (order.streetName && order.streetNumber) {
+    return `${order.streetName} ${order.streetNumber}`;
+  }
+  return "";
+};
+
 // СПИЙДИ ДО АДРЕС, СПИЙДИ ДО ОФИС, ЕКОНТ ДО АДРЕС, ЕКОНТ ДО ОФИС, Не е избрано нищо(до адрес)
 // - ЕКОНТ ДО ОФИС
 //      - УСПЕШНО - мапваме офиса в ново поле office, не е нужно да мапваме града и улицата ако е до офис
@@ -358,6 +371,7 @@ export const mapOrders = async (
       let mappedOrder: MappedOrder = {
         ...order,
         streetNumber: order.streetNumber || extractStreetNumber(order.address1),
+        address1: getOrderAddress1(order),
         country: getOrderCountry(order, econtCountries) as
           | Country
           | SpeedyCountry,
